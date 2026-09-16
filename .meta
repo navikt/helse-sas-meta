@@ -38,7 +38,6 @@
     "spesidaler": "git@github.com:navikt/helse-spesidaler.git",
     "spetakkel": "git@github.com:navikt/helse-spetakkel.git",
     "spill-av-im": "git@github.com:navikt/helse-spill-av-im.git",
-    "spillkar": "git@github.com:navikt/helse-spillkar.git",
     "spinnvill": "git@github.com:navikt/helse-spinnvill.git",
     "spleis": "git@github.com:navikt/helse-spleis.git",
     "spleis-testdata": "git@github.com:navikt/helse-spleis-testdata.git",
