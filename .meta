@@ -63,7 +63,6 @@
     "sykepenger-web": "git@github.com:navikt/helse-sykepenger-web.git",
     "tbd": "git@github.com:navikt/tbd.git",
     "tbd-libs": "git@github.com:navikt/tbd-libs.git",
-    "vedtaksfeed": "git@github.com:navikt/helse-vedtaksfeed.git",
-    "ws-proxy": "git@github.com:navikt/ws-proxy.git"
+    "vedtaksfeed": "git@github.com:navikt/helse-vedtaksfeed.git"
   }
 }
