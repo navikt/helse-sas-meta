@@ -1,0 +1,15 @@
+{
+  "contractVersion": "1",
+  "name": "helse-sas-meta",
+  "description": "Skills for sykepengeområdet",
+  "owner": {
+    "repo": "navikt/helse-sas-meta",
+    "team": "tbd"
+  },
+  "clients": {
+    "copilot": {}
+  },
+  "layout": {
+    "skills": ".github/skills"
+  }
+}
