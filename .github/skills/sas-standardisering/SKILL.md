@@ -1,6 +1,6 @@
 ---
 name: sas-standardisering
-description: Convert a navikt/helse (tbd) Gradle project from an ad-hoc build and GitHub Actions setup to the standardized sas setup — the four sas-gradle-plugins (sas-root, sas-module, sas-kotlin, sas-deployable), standardized settings.gradle.kts, standard repo files, and reusable workflows from helse-sas-github-workflows. Trigger on requests like "standardiser dette prosjektet", "konverter til sas-oppsettet", "ta i bruk sas-gradle-plugins", "bytt ut Dockerfile med jib", or "rydd opp i workflowene".
+description: Convert a navikt/helse (tbd) Gradle project from an ad-hoc build and GitHub Actions setup to the standardized sas setup — the four sas-gradle-plugins (sas-root, sas-module, sas-kotlin, sas-deployable), standardized settings.gradle.kts, standard repo files, and reusable workflows from sykepenger-github-workflows. Trigger on requests like "standardiser dette prosjektet", "konverter til sas-oppsettet", "ta i bruk sas-gradle-plugins", "bytt ut Dockerfile med jib", or "rydd opp i workflowene".
 license: MIT
 compatibility: navikt/helse (team tbd) Kotlin/Gradle repositories deployed on Nais
 metadata:
@@ -19,12 +19,12 @@ Never guess — read these when in doubt. They are the source of truth, and they
 | Reference | Role |
 | --- | --- |
 | `navikt/helse-sas-gradle-plugins` | The four Gradle plugins. Read the plugin sources to know what they already provide. |
-| `navikt/helse-sas-github-workflows` | The reusable workflows and their inputs. |
+| `navikt/sykepenger-github-workflows` | The reusable workflows and their inputs. |
 | `navikt/helse-sp-forsikring` | Authoritative example of a **multimodule** project. |
 | `navikt/sparkel-norg` | Authoritative example of a **single-module** project. |
 
 If the user has a local clone of the `navikt/helse-sas-meta` meta repo, these live as sibling
-directories in it (`sas-gradle-plugins/`, `sas-github-workflows/`, `sp-forsikring/`, `sparkel-norg/`)
+directories in it (`sas-gradle-plugins/`, `sykepenger-github-workflows/`, `sp-forsikring/`, `sparkel-norg/`)
 and should be read from disk. Otherwise fetch them with `gh`.
 
 ## Workflow
@@ -36,10 +36,10 @@ completed the survey and asked the questions it raises.
 
 1. Read all four plugin sources in `sas-gradle-plugins/src/main/kotlin/`.
    `no.nav.helse.sas.sas-singlemodule-deployable` is deprecated — ignore it, never apply it.
-2. Read the reusable workflows in `sas-github-workflows/.github/workflows/`.
+2. Read the reusable workflows in `sykepenger-github-workflows/.github/workflows/`.
 3. Read `sp-forsikring` or `sparkel-norg` in full, depending on the shape of the target project.
 4. Note the pinned SHA + version comment that the matching reference repo uses for
-   `navikt/helse-sas-github-workflows/...@<sha> # vX.Y.Z`. **Copy that exact SHA and comment** into
+   `navikt/sykepenger-github-workflows/...@<sha> # vX.Y.Z`. **Copy that exact SHA and comment** into
    the workflows you generate. Do not invent a SHA and do not look up the latest release.
 
 ### Phase 2 — Survey the target project

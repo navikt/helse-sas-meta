@@ -14,7 +14,6 @@
 /rapids-and-rivers-cli
 /redteam
 /risk-mock
-/sas-github-workflows
 /sas-gradle-plugins
 /sp-forsikring
 /sp-forsikring-statistikk
@@ -62,6 +61,7 @@
 /sprute
 /spurtedu
 /spydig
+/sykepenger-github-workflows
 /sykepenger-libs
 /sykepenger-web
 /tbd
