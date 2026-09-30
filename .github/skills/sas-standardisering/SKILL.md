@@ -24,7 +24,7 @@ Never guess — read these when in doubt. They are the source of truth, and they
 | `navikt/sparkel-norg` | Authoritative example of a **single-module** project. |
 
 If the user has a local clone of the `navikt/helse-sas-meta` meta repo, these live as sibling
-directories in it (`sas-gradle-plugins/`, `sykepenger-github-workflows/`, `sp-forsikring/`, `sparkel-norg/`)
+directories in it (`sas-gradle-plugins/`, `github-workflows/`, `sp-forsikring/`, `sparkel-norg/`)
 and should be read from disk. Otherwise fetch them with `gh`.
 
 ## Workflow
@@ -36,7 +36,7 @@ completed the survey and asked the questions it raises.
 
 1. Read all four plugin sources in `sas-gradle-plugins/src/main/kotlin/`.
    `no.nav.helse.sas.sas-singlemodule-deployable` is deprecated — ignore it, never apply it.
-2. Read the reusable workflows in `sykepenger-github-workflows/.github/workflows/`.
+2. Read the reusable workflows in `github-workflows/.github/workflows/`.
 3. Read `sp-forsikring` or `sparkel-norg` in full, depending on the shape of the target project.
 4. Note the pinned SHA + version comment that the matching reference repo uses for
    `navikt/sykepenger-github-workflows/...@<sha> # vX.Y.Z`. **Copy that exact SHA and comment** into

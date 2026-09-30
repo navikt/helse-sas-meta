@@ -9,6 +9,7 @@
 /bomlo-data-analyse
 /bomlo-dbt
 /dataprodukter
+/github-workflows
 /helse
 /omrade-helse-etterlevelse-topic
 /rapids-and-rivers-cli
@@ -61,7 +62,6 @@
 /sprute
 /spurtedu
 /spydig
-/sykepenger-github-workflows
 /sykepenger-libs
 /sykepenger-web
 /tbd
