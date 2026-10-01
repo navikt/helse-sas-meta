@@ -1,6 +1,6 @@
 # Bruk av bibliotekene i tbd-libs
 
-Generert av `generer-biblioteksbruk.sh` 19.09.2026. Ikke rediger for hånd.
+Generert av `generer-biblioteksbruk.sh` 01.10.2026. Ikke rediger for hånd.
 
 Maven-group: `com.github.navikt.tbd-libs`. Modulnavn er stien i metarepoet, med `:` som skilletegn.
 Interne avhengigheter mellom modulene i tbd-libs er tatt med i egen tabell.
@@ -18,14 +18,14 @@ Interne avhengigheter mellom modulene i tbd-libs er tatt med i egen tabell.
 | naisful-test-app | 10 | spapi, spedisjon:spedisjon-selve, speed:api, spekemat:foredler, spenn:spenn-simulering-api, spesidaler:api, spleis-testdata, spokelse, spurtedu, vedtaksfeed |
 | mock-http-client | 6 | speed:api, speed:async, spekemat:slakter, spenn:spenn-simulering, spenn:spenn-simulering-api, spesidaler:async |
 | access-token-provider-texas | 4 | spesialist:clients:spesialist-client-entra-id, sp-forsikring:sp-forsikring, sporhund, sp-vilkarsproving:sp-vilkarsproving |
+| populasjonstilgangskontroll-provider-api | 4 | spesialist:spesialist-api, spesialist:spesialist-application, sp-forsikring:sp-forsikring, sporhund |
 | signed-jwt-issuer-test | 4 | spapi, spesidaler:api, spokelse, vedtaksfeed |
 | spurtedu-client | 4 | spaghet, spammer, spanner:backend, spoiler |
 | access-token-provider-api | 3 | spesialist:spesialist-application, sp-forsikring:sp-forsikring, sporhund |
-| populasjonstilgangskontroll-provider-api | 3 | spesialist:spesialist-api, spesialist:spesialist-application, sporhund |
+| populasjonstilgangskontroll-provider-tilgangsmaskinen | 3 | spesialist:clients:spesialist-client-tilgangsmaskinen, sp-forsikring:sp-forsikring, sporhund |
 | spedisjon-client | 3 | spaghet, sparkelapper:arbeidsgiver, sporbar |
 | kafka | 2 | sparkiv-subsumsjon, sporhund |
 | person-pseudo-id | 2 | spesialist:clients:spesialist-client-personpseudoid, sporhund |
-| populasjonstilgangskontroll-provider-tilgangsmaskinen | 2 | spesialist:clients:spesialist-client-tilgangsmaskinen, sporhund |
 | azure-token-client | 1 | spurtedu |
 | jackson | 1 | risk-mock |
 | kafka-test | 1 | vedtaksfeed |
@@ -86,7 +86,7 @@ Interne avhengigheter mellom modulene i tbd-libs er tatt med i egen tabell.
 | spesidaler:opprydding-dev | postgres-testdatabaser, rapids-and-rivers-test |
 | spetakkel | postgres-testdatabaser, rapids-and-rivers-test |
 | sp-forsikring:opprydding-dev | rapids-and-rivers-test |
-| sp-forsikring:sp-forsikring | access-token-provider-api, access-token-provider-texas, rapids-and-rivers-test, retry |
+| sp-forsikring:sp-forsikring | access-token-provider-api, access-token-provider-texas, populasjonstilgangskontroll-provider-api, populasjonstilgangskontroll-provider-tilgangsmaskinen, rapids-and-rivers-test, retry |
 | spill-av-im | postgres-testdatabaser, rapids-and-rivers-test |
 | spinnvill:spinnvill-app | rapids-and-rivers-test |
 | spleisesparkel:aap | azure-token-client-default, rapids-and-rivers-test, retry |

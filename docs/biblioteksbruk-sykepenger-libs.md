@@ -1,6 +1,6 @@
 # Bruk av bibliotekene i sykepenger-libs
 
-Generert av `generer-biblioteksbruk.sh` 19.09.2026. Ikke rediger for hånd.
+Generert av `generer-biblioteksbruk.sh` 01.10.2026. Ikke rediger for hånd.
 
 Maven-group: `no.nav.sykepenger.libs`. Modulnavn er stien i metarepoet, med `:` som skilletegn.
 Interne avhengigheter mellom modulene i sykepenger-libs er tatt med i egen tabell.
@@ -9,13 +9,14 @@ Interne avhengigheter mellom modulene i sykepenger-libs er tatt med i egen tabel
 
 | Bibliotek | Antall moduler | Moduler |
 | --- | --- | --- |
-| logging | 11 | spaghet, sparkel-norg, sparsom:api, sparsom:opprydding, sparsom:sparsom, spedisjon:spedisjon-async, spedisjon:spedisjon-opprydding-dev, spedisjon:spedisjon-selve, sp-forsikring:opprydding-dev, sp-forsikring:sp-forsikring, spout |
+| logging | 14 | behovsakkumulator, spaghet, sparkel-norg, sparsom:api, sparsom:opprydding, sparsom:sparsom, spedisjon:spedisjon-async, spedisjon:spedisjon-opprydding-dev, spedisjon:spedisjon-selve, sp-forsikring:opprydding-dev, sp-forsikring:sp-forsikring, spock:opprydding-dev, spock:spock, spout |
 | testing | 1 | sp-forsikring:sp-forsikring |
 
 ## Modul til bibliotek
 
 | Modul | Biblioteker |
 | --- | --- |
+| behovsakkumulator | logging |
 | spaghet | logging |
 | sparkel-norg | logging |
 | sparsom:api | logging |
@@ -26,6 +27,8 @@ Interne avhengigheter mellom modulene i sykepenger-libs er tatt med i egen tabel
 | spedisjon:spedisjon-selve | logging |
 | sp-forsikring:opprydding-dev | logging |
 | sp-forsikring:sp-forsikring | logging, testing |
+| spock:opprydding-dev | logging |
+| spock:spock | logging |
 | spout | logging |
 
 ## Interne avhengigheter i sykepenger-libs
