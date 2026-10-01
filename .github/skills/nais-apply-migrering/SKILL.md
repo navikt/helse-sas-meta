@@ -2,7 +2,7 @@
 name: nais-apply-migrering
 description: Migrate a navikt/helse (tbd) repository from Handlebars-templated Nais manifests (VARS files, nais/deploy, the deploy.yml reusable workflow) to the new Nais deploy standard. The result is plain manifests in .nais/ with per-environment mixins, deployed with nais/setup and nais apply through the deploy-v2.yml reusable workflow from sykepenger-github-workflows. Trigger on requests like "oppgrader til nais apply", "bytt templating med mixins", "ta i bruk deploy-v2", "flytt manifestene til .nais", or "migrer bort fra VARS-filer".
 license: MIT
-compatibility: navikt/helse (team tbd) repositories deployed on Nais that are already converted with the sas-standardisering skill but still use deploy.yml (sas-standardisering now includes this migration for unconverted repos)
+compatibility: navikt/helse (team tbd) repositories deployed on Nais that are already converted with the sykepenger-standardisering skill but still use deploy.yml (sykepenger-standardisering now includes this migration for unconverted repos)
 metadata:
   domain: deploy
   tags: nais nais-apply mixins handlebars github-actions deploy-v2 tbd
@@ -117,7 +117,7 @@ Also find:
   scripts and `CODEOWNERS`.
 - **Repos that are not standardized.** If deploys are hand-written `nais/deploy` steps rather
   than the `deploy.yml` reusable workflow, raise it in Phase 4. The user may want to run the
-  `sas-standardisering` skill instead, which includes this migration.
+  `sykepenger-standardisering` skill instead, which includes this migration.
 
 ### Phase 3: Render the baseline
 

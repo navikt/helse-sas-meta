@@ -11,6 +11,6 @@ repositories {
             }
         }
     } else {
-        maven("https://repo.adeo.no/repository/github-package-registry-navikt/")
+        maven("https://github-package-registry-mirror.gc.nav.no/cached/maven-release/")
     }
 }

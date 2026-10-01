@@ -9,7 +9,7 @@ Første argument (`melding`) til loggfunksjonene skal aldri inneholde personiden
 
 ## Les kilden først
 
-Les [README for logging](../../../sykepenger-libs/logging/README.md) før du endrer loggkall. Stien er relativ til denne skillen i sas-meta. Hvis du arbeider fra et underrepo, finn filen i sas-meta i stedet for å anta at arbeidsmappen er roten.
+Les [README for logging](../../../libs/logging/README.md) før du endrer loggkall. Stien er relativ til denne skillen i sas-meta. Hvis du arbeider fra et underrepo, finn filen i sas-meta i stedet for å anta at arbeidsmappen er roten.
 
 README-en beskriver kontrakten:
 
@@ -18,7 +18,7 @@ README-en beskriver kontrakten:
 - `Throwable` som andre argument gir stacktrace bare i Team Logs.
 - MDC-felter går bare til Team Logs med bibliotekets logback-oppsett.
 
-Ved behov, les signaturene i `sykepenger-libs/logging/src/main/kotlin/no/nav/sykepenger/libs/logging/`. Hvis kilden ikke er tilgjengelig, si fra. Ikke gjett API-er eller påstå at loggrutingen er bekreftet.
+Ved behov, les signaturene i `libs/logging/src/main/kotlin/no/nav/sykepenger/libs/logging/`. Hvis kilden ikke er tilgjengelig, si fra. Ikke gjett API-er eller påstå at loggrutingen er bekreftet.
 
 ## Regler for loggkall
 

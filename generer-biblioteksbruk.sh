@@ -19,10 +19,10 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT"
 
-# bibliotekprosjekt|maven-group
+# katalog|bibliotekprosjekt|maven-group
 PROSJEKTER=(
-    "tbd-libs|com.github.navikt.tbd-libs"
-    "sykepenger-libs|no.nav.sykepenger.libs"
+    "tbd-libs|tbd-libs|com.github.navikt.tbd-libs"
+    "libs|sykepenger-libs|no.nav.sykepenger.libs"
 )
 
 # Gjør en streng om til et regex som matcher den bokstavelig.
@@ -132,13 +132,13 @@ publiserte_moduler() {
 }
 
 skriv_rapport() {
-    local prosjekt="$1" group="$2" bruksfil="$3" utfil="$4"
+    local prosjekt="$1" group="$2" bruksfil="$3" utfil="$4" navn="$5"
 
     {
-        printf '# Bruk av bibliotekene i %s\n\n' "$prosjekt"
+        printf '# Bruk av bibliotekene i %s\n\n' "$navn"
         printf 'Generert av `generer-biblioteksbruk.sh` %s. Ikke rediger for hånd.\n\n' "$(date '+%d.%m.%Y')"
         printf 'Maven-group: `%s`. Modulnavn er stien i metarepoet, med `:` som skilletegn.\n' "$group"
-        printf 'Interne avhengigheter mellom modulene i %s er tatt med i egen tabell.\n\n' "$prosjekt"
+        printf 'Interne avhengigheter mellom modulene i %s er tatt med i egen tabell.\n\n' "$navn"
 
         printf '## Bibliotek til modul\n\n'
         printf '| Bibliotek | Antall moduler | Moduler |\n| --- | --- | --- |\n'
@@ -154,7 +154,7 @@ skriv_rapport() {
                         END { for (m in b) { sub(/^, /, "", b[m]); printf "| %s | %s |\n", m, b[m] } }' |
             sort
 
-        printf '\n## Interne avhengigheter i %s\n\n' "$prosjekt"
+        printf '\n## Interne avhengigheter i %s\n\n' "$navn"
         printf '| Modul | Avhenger av |\n| --- | --- |\n'
         awk -F'\t' -v p="$prosjekt" '$1 == "intern" { sub("^" p ":", "", $2); print $2 "\t" $3 " (" $4 ")" }' "$bruksfil" | sort -u |
             awk -F'\t' '{ b[$1] = b[$1] ", " $2 }
@@ -170,12 +170,12 @@ skriv_rapport() {
             <(awk -F'\t' '{ print $3 }' "$bruksfil" | sort -u) | paste -sd, - | sed 's/,/, /g')"
 
         if [ -n "$bare_internt" ]; then
-            printf 'Brukes bare av andre moduler i %s: %s.\n\n' "$prosjekt" "$bare_internt"
+            printf 'Brukes bare av andre moduler i %s: %s.\n\n' "$navn" "$bare_internt"
         else
             printf 'Ingen moduler brukes utelukkende internt.\n\n'
         fi
         if [ -n "$helt_ubrukte" ]; then
-            printf 'Ingen treff verken i andre komponenter eller internt i %s: %s.\n' "$prosjekt" "$helt_ubrukte"
+            printf 'Ingen treff verken i andre komponenter eller internt i %s: %s.\n' "$navn" "$helt_ubrukte"
         else
             printf 'Alle publiserte moduler har minst én bruker.\n'
         fi
@@ -184,6 +184,7 @@ skriv_rapport() {
 
 for oppsett in "${PROSJEKTER[@]}"; do
     prosjekt="${oppsett%%|*}"
+    navn="$(printf '%s' "$oppsett" | cut -d'|' -f2)"
     group="${oppsett##*|}"
 
     if [ ! -d "$prosjekt" ]; then
@@ -195,8 +196,8 @@ for oppsett in "${PROSJEKTER[@]}"; do
     trap 'rm -f "$bruksfil"' EXIT
 
     samle_bruk "$prosjekt" "$group" | sort -u > "$bruksfil"
-    skriv_rapport "$prosjekt" "$group" "$bruksfil" "docs/biblioteksbruk-$prosjekt.md"
-    printf 'Skrev biblioteksbruk-%s.md (%s treff)\n' "$prosjekt" "$(wc -l < "$bruksfil" | tr -d ' ')"
+    skriv_rapport "$prosjekt" "$group" "$bruksfil" "docs/biblioteksbruk-$navn.md" "$navn"
+    printf 'Skrev biblioteksbruk-%s.md (%s treff)\n' "$navn" "$(wc -l < "$bruksfil" | tr -d ' ')"
 
     rm -f "$bruksfil"
     trap - EXIT

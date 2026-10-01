@@ -7,12 +7,13 @@
     "bomlo-dbt": "git@github.com:navikt/bomlo-dbt.git",
     "dataprodukter": "git@github.com:navikt/helse-dataprodukter.git",
     "github-workflows": "git@github.com:navikt/sykepenger-github-workflows.git",
+    "gradle-plugins": "git@github.com:navikt/sykepenger-gradle-plugins.git",
     "helse": "git@github.com:navikt/helse.git",
+    "libs": "git@github.com:navikt/sykepenger-libs.git",
     "omrade-helse-etterlevelse-topic": "git@github.com:navikt/omrade-helse-etterlevelse-topic.git",
     "rapids-and-rivers-cli": "git@github.com:navikt/rapids-and-rivers-cli.git",
     "redteam": "git@github.com:navikt/helse-redteam.git",
     "risk-mock": "git@github.com:navikt/helse-risk-mock.git",
-    "sas-gradle-plugins": "git@github.com:navikt/helse-sas-gradle-plugins.git",
     "sp-forsikring": "git@github.com:navikt/helse-sp-forsikring.git",
     "sp-forsikring-statistikk": "git@github.com:navikt/helse-sp-forsikring-statistikk.git",
     "sp-vilkarsproving": "git@github.com:navikt/helse-sp-vilkarsproving.git",
@@ -59,10 +60,9 @@
     "sprute": "git@github.com:navikt/helse-sprute.git",
     "spurtedu": "git@github.com:navikt/helse-spurtedu.git",
     "spydig": "git@github.com:navikt/helse-spydig.git",
-    "sykepenger-libs": "git@github.com:navikt/sykepenger-libs.git",
-    "sykepenger-web": "git@github.com:navikt/helse-sykepenger-web.git",
     "tbd": "git@github.com:navikt/tbd.git",
     "tbd-libs": "git@github.com:navikt/tbd-libs.git",
-    "vedtaksfeed": "git@github.com:navikt/helse-vedtaksfeed.git"
+    "vedtaksfeed": "git@github.com:navikt/helse-vedtaksfeed.git",
+    "web": "git@github.com:navikt/helse-sykepenger-web.git"
   }
 }

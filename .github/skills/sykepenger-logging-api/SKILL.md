@@ -13,7 +13,7 @@ Kontroller at prosjektet allerede bruker `no.nav.sykepenger.libs:logging` eller 
 
 ## Bruk bibliotekets API
 
-Les [README for logging](../../../sykepenger-libs/logging/README.md) før du endrer kode. Bruk:
+Les [README for logging](../../../libs/logging/README.md) før du endrer kode. Bruk:
 
 - `loggError`, `loggWarn`, `loggInfo`, `loggDebug` og `loggTrace` fra `no.nav.sykepenger.libs.logging` i klasser og på objekter.
 - `navngittLogger(...)` og `NavngittLogger` der du trenger en navngitt logger, for eksempel i toppnivåfunksjoner.

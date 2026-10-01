@@ -10,12 +10,13 @@
 /bomlo-dbt
 /dataprodukter
 /github-workflows
+/gradle-plugins
 /helse
+/libs
 /omrade-helse-etterlevelse-topic
 /rapids-and-rivers-cli
 /redteam
 /risk-mock
-/sas-gradle-plugins
 /sp-forsikring
 /sp-forsikring-statistikk
 /sp-vilkarsproving
@@ -62,8 +63,7 @@
 /sprute
 /spurtedu
 /spydig
-/sykepenger-libs
-/sykepenger-web
 /tbd
 /tbd-libs
 /vedtaksfeed
+/web

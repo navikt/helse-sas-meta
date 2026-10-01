@@ -1,16 +1,16 @@
 ---
-name: sas-standardisering
-description: Convert a navikt/helse (tbd) Gradle project from an ad-hoc build and GitHub Actions setup to the standardized sas setup — the four sas-gradle-plugins (sas-root, sas-module, sas-kotlin, sas-deployable), standardized settings.gradle.kts, standard repo files, reusable workflows from sykepenger-github-workflows, and the new Nais deploy standard (plain manifests in .nais/ with per-environment mixins, deployed through deploy-v2.yml). Trigger on requests like "standardiser dette prosjektet", "konverter til sas-oppsettet", "ta i bruk sas-gradle-plugins", "bytt ut Dockerfile med jib", or "rydd opp i workflowene".
+name: sykepenger-standardisering
+description: Convert a navikt/helse (tbd) Gradle project from an ad-hoc build and GitHub Actions setup to the standardized sykepenger setup — the four sykepenger-gradle-plugins (no.nav.sykepenger.root, .module, .kotlin, .deployable), standardized settings.gradle.kts, standard repo files, reusable workflows from sykepenger-github-workflows, and the new Nais deploy standard (plain manifests in .nais/ with per-environment mixins, deployed through deploy-v2.yml). Trigger on requests like "standardiser dette prosjektet", "konverter til sas-oppsettet", "ta i bruk sykepenger-gradle-plugins", "bytt ut Dockerfile med jib", or "rydd opp i workflowene".
 license: MIT
 compatibility: navikt/helse (team tbd) Kotlin/Gradle repositories deployed on Nais
 metadata:
   domain: build-and-ci
-  tags: gradle sas-gradle-plugins github-actions nais nais-apply mixins deploy-v2 jib ktlint standardization tbd
+  tags: gradle sykepenger-gradle-plugins github-actions nais nais-apply mixins deploy-v2 jib ktlint standardization tbd
 ---
 
-# SAS Standardization Skill
+# Sykepenger Standardization Skill
 
-Converts a nonstandardized Gradle + GitHub Actions project into the standardized SAS setup,
+Converts a nonstandardized Gradle + GitHub Actions project into the standardized sykepenger setup,
 including the Nais deploy standard: plain manifests in `.nais/` with per-environment mixins,
 deployed with `nais apply` through `deploy-v2.yml`. The reference repos use this deploy standard,
 so a standardized project always gets it in the same pass.
@@ -26,14 +26,14 @@ Never guess — read these when in doubt. They are the source of truth, and they
 
 | Reference | Role |
 | --- | --- |
-| `navikt/helse-sas-gradle-plugins` | The four Gradle plugins. Read the plugin sources to know what they already provide. |
+| `navikt/sykepenger-gradle-plugins` | The four Gradle plugins. Read the plugin sources to know what they already provide. |
 | `navikt/sykepenger-github-workflows` | The reusable workflows and their inputs. |
 | `navikt/helse-sp-forsikring` | Authoritative example of a **multimodule** project. |
 | `navikt/sparkel-norg` | Authoritative example of a **single-module** project. |
 | `nais-apply-migrering` skill | Mixin semantics, base/mixin design, baseline rendering and diffing. |
 
 If the user has a local clone of the `navikt/helse-sas-meta` meta repo, these live as sibling
-directories in it (`sas-gradle-plugins/`, `github-workflows/`, `sp-forsikring/`, `sparkel-norg/`)
+directories in it (`gradle-plugins/`, `github-workflows/`, `sp-forsikring/`, `sparkel-norg/`)
 and should be read from disk. Otherwise fetch them with `gh`.
 
 ## Workflow
@@ -44,8 +44,7 @@ survey and asked the questions it raises.
 
 ### Phase 1 — Read the references
 
-1. Read all four plugin sources in `sas-gradle-plugins/src/main/kotlin/`.
-   `no.nav.helse.sas.sas-singlemodule-deployable` is deprecated — ignore it, never apply it.
+1. Read all four plugin sources in `gradle-plugins/src/main/kotlin/`.
 2. Read the reusable workflows in `github-workflows/.github/workflows/`, in particular
    `deploy-v2.yml`.
 3. Read `sp-forsikring` or `sparkel-norg` in full, depending on the shape of the target project,
@@ -85,7 +84,7 @@ Determine and write down:
 
 Confront the user about all of the following, in one batch, before editing:
 
-- **Dockerfile discrepancies.** Compare each Dockerfile against what `sas-deployable` generates
+- **Dockerfile discrepancies.** Compare each Dockerfile against what `no.nav.sykepenger.deployable` generates
   through jib (base image, `TZ`, `-XX:MaxRAMPercentage`, main class, anything else in the
   plugin's `jib { }` block).
   - A **JRE major version** difference is an expected upgrade — say nothing.
@@ -94,7 +93,7 @@ Confront the user about all of the following, in one batch, before editing:
     exposed ports, added packages, non-default workdir) must be raised **before** you delete the
     Dockerfile, and you must wait for an answer.
 - **Build logic not covered by the plugins.** For every custom construct found in Phase 2 that the
-  sas plugins do not already provide (e.g. JUnit parallelism system properties, custom source sets,
+  sykepenger plugins do not already provide (e.g. JUnit parallelism system properties, custom source sets,
   shadow/fat-jar packaging, extra repositories, custom `check` wiring), ask the user whether to keep
   it or drop it. Do not decide on your own. Fat-jar/manifest blocks are superseded by jib, but still
   mention that you are removing them.
@@ -114,14 +113,15 @@ Confront the user about all of the following, in one batch, before editing:
 
 | Project | Plugin |
 | --- | --- |
-| Multimodule root **without** sources/resources | `sas-root` |
-| Multimodule root **with** sources/resources | `sas-kotlin` (not `sas-root`) |
-| Intermediate aggregator ("subroot") with children but no sources/resources | `sas-module` |
-| Module with sources or resources (incl. test-only) that becomes an image | `sas-deployable` |
-| Module with sources or resources that does not become an image | `sas-kotlin` |
-| Single-module project that becomes an image | `sas-deployable` |
+| Multimodule root **without** sources/resources | `no.nav.sykepenger.root` |
+| Multimodule root **with** sources/resources | `no.nav.sykepenger.kotlin` (not `no.nav.sykepenger.root`) |
+| Intermediate aggregator ("subroot") with children but no sources/resources | `no.nav.sykepenger.module` |
+| Module with sources or resources (incl. test-only) that becomes an image | `no.nav.sykepenger.deployable` |
+| Module with sources or resources that does not become an image | `no.nav.sykepenger.kotlin` |
+| Single-module project that becomes an image | `no.nav.sykepenger.deployable` |
 
-`sas-deployable` implies `sas-kotlin` implies `sas-module`. Never apply two of them to the same project.
+`no.nav.sykepenger.deployable` implies `no.nav.sykepenger.kotlin` implies `no.nav.sykepenger.module`.
+Never apply two of them to the same project.
 
 #### Application style
 
@@ -130,9 +130,9 @@ Confront the user about all of the following, in one batch, before editing:
 ```kotlin
 // build.gradle.kts (root)
 plugins {
-    alias(libs.plugins.sas.root)
-    alias(libs.plugins.sas.kotlin) apply false
-    alias(libs.plugins.sas.deployable) apply false
+    alias(libs.plugins.sykepenger.root)
+    alias(libs.plugins.sykepenger.kotlin) apply false
+    alias(libs.plugins.sykepenger.deployable) apply false
 }
 
 allprojects {
@@ -143,7 +143,7 @@ allprojects {
 ```kotlin
 // <modul>/build.gradle.kts
 plugins {
-    id("no.nav.helse.sas.sas-kotlin")
+    id("no.nav.sykepenger.kotlin")
 }
 ```
 
@@ -155,17 +155,17 @@ Only declare `apply false` aliases for plugins that are actually used by submodu
 group = "no.nav.helse.<eksisterende-group>"
 
 plugins {
-    alias(libs.plugins.sas.deployable)
+    alias(libs.plugins.sykepenger.deployable)
 }
 
-sasDeployable {
+sykepengerDeployable {
     mainClass = "no.nav.helse.<...>.AppKt"
 }
 
 dependencies { /* ... */ }
 ```
 
-#### `sasDeployable` configuration
+#### `sykepengerDeployable` configuration
 
 - `mainClass` is required — take it from the existing Dockerfile/jar manifest/`application` block.
 - `imageName` defaults to `rootProject.name`. Derive the correct name from what the project builds
@@ -176,17 +176,17 @@ dependencies { /* ... */ }
 #### Version catalog
 
 `gradle/libs.versions.toml` is kept for the project's own dependencies. Remove only what the plugins
-now provide: the Kotlin/ktlint/jib plugin versions, JUnit, the BOMs listed in `sas-kotlin`, and
+now provide: the Kotlin/ktlint/jib plugin versions, JUnit, the BOMs listed in `no.nav.sykepenger.kotlin`, and
 toolchain settings. Add:
 
 ```toml
 [versions]
-sasGradlePlugins = "<version from the reference repo>"
+sykepengerGradlePlugins = "<version from the reference repo>"
 
 [plugins]
-sas-deployable = { id = "no.nav.helse.sas.sas-deployable", version.ref = "sasGradlePlugins" }
-sas-kotlin = { id = "no.nav.helse.sas.sas-kotlin", version.ref = "sasGradlePlugins" }
-sas-root = { id = "no.nav.helse.sas.sas-root", version.ref = "sasGradlePlugins" }
+sykepenger-deployable = { id = "no.nav.sykepenger.deployable", version.ref = "sykepengerGradlePlugins" }
+sykepenger-kotlin = { id = "no.nav.sykepenger.kotlin", version.ref = "sykepengerGradlePlugins" }
+sykepenger-root = { id = "no.nav.sykepenger.root", version.ref = "sykepengerGradlePlugins" }
 ```
 
 If the project inlines its dependency coordinates in `build.gradle.kts` (as sporbar does), move them
@@ -194,7 +194,7 @@ into the catalog. Only declare the plugin aliases the project actually uses.
 
 Also remove from the build files anything now supplied by the plugins: `kotlin("jvm")`,
 `jvmToolchain`, ktlint setup, `useJUnitPlatform()`, JUnit dependencies, the ktor/jackson/netty BOMs
-that `sas-kotlin` already applies, and jib/Docker packaging.
+that `no.nav.sykepenger.kotlin` already applies, and jib/Docker packaging.
 
 #### `settings.gradle.kts`
 
@@ -208,10 +208,10 @@ include(
 )
 
 // Sett opp repositories basert på om vi kjører i CI eller ikke
-// Jf. https://github.com/navikt/utvikling/blob/main/docs/teknisk/Konsumere%20biblioteker%20fra%20Github%20Package%20Registry.md
+// Jf. https://github.com/navikt/utvikling/blob/3eed71e1b493a6a81762c32f2d30521a1a3ccab4/docs/teknisk/Konsumere%20biblioteker%20fra%20Github%20Package%20Registry.md
 pluginManagement {
     repositories {
-        if (providers.environmentVariable("GITHUB_ACTIONS").orNull == "true") {
+        if (providers.environmentVariable("GITHUB_ACTIONS").orNull == "true" && providers.environmentVariable("AI_AGENT").orNull == null) {
             maven("https://maven.pkg.github.com/navikt/maven-release") {
                 credentials {
                     username = "token"
@@ -219,18 +219,19 @@ pluginManagement {
                 }
             }
         } else {
-            maven("https://repo.adeo.no/repository/github-package-registry-navikt/")
+            maven("https://github-package-registry-mirror.gc.nav.no/cached/maven-release/")
         }
         gradlePluginPortal()
         mavenCentral()
     }
 }
+
 dependencyResolutionManagement {
     // Bare tillat repositories-oppsett her i settings.gradle.kts
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 
     repositories {
-        if (providers.environmentVariable("GITHUB_ACTIONS").orNull == "true") {
+        if (providers.environmentVariable("GITHUB_ACTIONS").orNull == "true" && providers.environmentVariable("AI_AGENT").orNull == null) {
             maven("https://maven.pkg.github.com/navikt/maven-release") {
                 credentials {
                     username = "token"
@@ -238,7 +239,7 @@ dependencyResolutionManagement {
                 }
             }
         } else {
-            maven("https://repo.adeo.no/repository/github-package-registry-navikt/")
+            maven("https://github-package-registry-mirror.gc.nav.no/cached/maven-release/")
         }
         mavenCentral()
     }
@@ -430,7 +431,6 @@ Summarize:
 
 ### 🚫 Never
 
-- Apply `sas-singlemodule-deployable`.
 - Change `rootProject.name`, `group`, or the Gradle wrapper.
 - Keep a Dockerfile, a CodeQL workflow, or a superseded build/deploy workflow.
 - Use `deploy.yml`, or leave Handlebars syntax, `\{{` escapes or vars files behind.
