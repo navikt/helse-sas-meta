@@ -10,8 +10,6 @@
     "gradle-plugins": "git@github.com:navikt/sykepenger-gradle-plugins.git",
     "helse": "git@github.com:navikt/helse.git",
     "libs": "git@github.com:navikt/sykepenger-libs.git",
-    "omrade-helse-etterlevelse-topic": "git@github.com:navikt/omrade-helse-etterlevelse-topic.git",
-    "rapids-and-rivers-cli": "git@github.com:navikt/rapids-and-rivers-cli.git",
     "redteam": "git@github.com:navikt/helse-redteam.git",
     "risk-mock": "git@github.com:navikt/helse-risk-mock.git",
     "sp-forsikring": "git@github.com:navikt/helse-sp-forsikring.git",
