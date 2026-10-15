@@ -22,7 +22,15 @@ Prinsippet gjelder alle abstraksjonene under.
 
 **Avgjort per sykefraværstilfelle** betyr at avgjørelsen tas én gang og gjelder hele sykefraværstilfellet. Rettighetskategori og sykepengegrunnlag er eksempler.
 
-**Vurdert per dato** betyr at avgjørelsen kan gi ulikt resultat for ulike dager i samme sykefraværstilfelle. Opplysningene kan likevel være hentet på skjæringstidspunktet. Et eksempel er fødselsdatoen: Den endrer seg ikke, men personen kan fylle 67 eller 70 år midt i sykefraværstilfellet.
+**Vurdert per dato** betyr at avgjørelsen kan gi ulikt resultat for ulike dager i samme sykefraværstilfelle. Opplysningene kan likevel være hentet på skjæringstidspunktet. Et eksempel er fødselsdatoen: Den endrer seg ikke, men personen kan fylle 67 eller 70 år midt i sykefraværstilfellet. Vurderinger per dato gjøres for hver yrkesaktivitet, med mindre noe annet står.
+
+**Yrkesaktivitet** er en enhet med eget sykepengegrunnlag og egen dekning. Yrkesaktivitetene er:
+
+- arbeid for én arbeidsgiver (hver arbeidsgiver er én yrkesaktivitet)
+- selvstendig næringsvirksomhet
+- frilansvirksomhet (all frilansvirksomhet er én yrkesaktivitet)
+- Dagpenger
+- Inaktiv
 
 **Periodisert opplysning** er en opplysning som kan starte og slutte midt i et sykefraværstilfelle, for eksempel et fengselsopphold eller uføretrygd som innvilges.
 
@@ -33,18 +41,21 @@ Prinsippet gjelder alle abstraksjonene under.
 | Abstraksjon | Avgjør | Gjelder | Sentrale hjemler |
 |---|---|---|---|
 | Inntekt | Opplysninger om hva personen har tjent | Per sykefraværstilfelle | §§ 8-28, 8-29, 8-30, 8-35, 8-49 |
-| Rettighetskategori | Hvilke regelsett som gjelder for personen | Per sykefraværstilfelle | §§ 8-15, 8-34, 8-38, 8-40 til 8-47, 8-49, 8-55 |
+| Rettighetskategori | Hvilke regelsett som gjelder for personen | Per sykefraværstilfelle | §§ 8-15, 8-34, 8-38, 8-40 til 8-46, 8-55 |
+| Dagpenger | Om § 8-49 gjelder. Kombineres med rettighetskategorien | Per sykefraværstilfelle | § 8-49 |
+| Inaktiv | Om § 8-47 gjelder, og i så fall variant a eller b. Erstatter rettighetskategorien | Per sykefraværstilfelle | § 8-47 |
 | Andre ytelser | Uføretrygd og AFP i perioder | Periodisert | §§ 8-48, 8-50, 8-52 |
 | Institusjonsopphold | Opphold i helseinstitusjon og fengsel | Periodisert | §§ 8-53, 8-54 |
-| Sykepengegrunnlag | Inntektsgrunnlaget, fordelt på deler | Per sykefraværstilfelle | §§ 8-10, 8-28 til 8-30, 8-35, 8-38, 8-41, 8-43, 8-46, 8-47, 8-49 |
-| Inngangsvilkår | Om personen har rett til sykepenger i det hele tatt | Per sykefraværstilfelle | §§ 8-2, 8-3, 8-4 |
+| Sykepengegrunnlag | Inntektsgrunnlaget, fordelt på yrkesaktiviteter | Per sykefraværstilfelle | §§ 8-10, 8-28 til 8-30, 8-35, 8-38, 8-41, 8-43, 8-46, 8-47, 8-49 |
+| Inngangsvilkår | Om personen har rett til sykepenger i det hele tatt | Per sykefraværstilfelle | §§ 8-1, 8-2, 8-3, 8-4 |
+| Medlemskap (inngangsvilkår) | Om personen er medlem i folketrygden | Per sykefraværstilfelle | § 8-1 |
 | Minsteinntekt (inngangsvilkår) | Om grunnlaget er høyt nok | Per sykefraværstilfelle | §§ 8-3, 8-47 |
-| Arbeidsgiverperiode/ventetid | Perioden før trygden normalt dekker | På tvers av sykefraværstilfeller | §§ 8-19, 8-31, 8-34, 8-38, 8-46, 8-47, 8-54 |
-| Dekning | Dekningsgrad og fra-dag per grunnlagsdel | Per sykefraværstilfelle | §§ 8-16, 8-17, 8-20, 8-21, 8-34, 8-36, 8-38, 8-39, 8-41, 8-47 |
-| Løpende vilkår | Dager uten rett til sykepenger | Per dato | §§ 8-3, 8-5, 8-7, 8-8, 8-9, 8-15, 8-17, 8-31, 8-34, 8-38, 8-47, 8-51, 8-54 |
-| Utbetalingsgrad | Delvis utbetaling på grunn av gradering eller reduksjon | Per dato | §§ 8-6, 8-13, 8-53, 8-54 |
+| Arbeidsgiverperiode/ventetid | Perioden før trygden normalt dekker | Per yrkesaktivitet, på tvers av sykefraværstilfeller | §§ 8-19, 8-31, 8-34, 8-38, 8-46, 8-47, 8-49, 8-54 |
+| Dekning | Dekningsgrad og fra-dag per yrkesaktivitet | Per sykefraværstilfelle | §§ 8-16, 8-17, 8-20, 8-21, 8-34, 8-36, 8-38, 8-39, 8-41, 8-47 |
+| Løpende vilkår | Dager uten rett til sykepenger | Per dato per yrkesaktivitet | §§ 8-3, 8-5, 8-7, 8-8, 8-9, 8-15, 8-17, 8-31, 8-34, 8-38, 8-47, 8-49, 8-51, 8-54 |
+| Utbetalingsgrad | Delvis utbetaling på grunn av gradering eller reduksjon | Per dato per yrkesaktivitet | §§ 8-6, 8-13, 8-53, 8-54 |
 | Sykepengedager/maksdato | Datoen retten tar slutt | På tvers av sykefraværstilfeller | §§ 8-3, 8-11, 8-12, 8-51, 8-55 |
-| Reisetilskudd | Tilskudd til reise i stedet for sykepenger | Per dato | § 8-14 |
+| Reisetilskudd | Tilskudd til reise i stedet for sykepenger | Per dato per yrkesaktivitet | § 8-14 |
 
 ## Inntekt
 
@@ -63,7 +74,7 @@ Inntektstyper kapitlet bruker:
 
 ## Rettighetskategori
 
-Rettighetskategorien beskriver de egenskapene ved personen som avgjør hvilke regler som gjelder videre. Kategorien avgjøres per sykefraværstilfelle, ut fra forholdene på skjæringstidspunktet. Den består av én hovedkategori og null eller flere tilleggskategorier.
+Rettighetskategorien beskriver de egenskapene ved personen som avgjør hvilke regler som gjelder videre. Kategorien avgjøres per sykefraværstilfelle, ut fra forholdene på skjæringstidspunktet. Den består av én hovedkategori og null eller flere tilleggskategorier. Hovedkategorien kan være «Ingen» når personen ikke passer i noen av hovedkategoriene.
 
 ### Skillet mellom hovedkategori og tilleggskategori
 
@@ -79,13 +90,13 @@ En egenskap som kan begynne eller slutte midt i et sykefraværstilfelle, er inge
 | Selvstendig næringsdrivende | §§ 8-34 til 8-37 | |
 | Frilanser | §§ 8-38 og 8-39 | |
 | Arbeidstaker og frilanser | § 8-40 | Behandles etter reglene for arbeidstakere |
-| Arbeidstaker og selvstendig næringsdrivende | § 8-41 | Grunnlaget har en del for hver inntektstype, og hver del har egen dekning |
+| Arbeidstaker og selvstendig næringsdrivende | § 8-41 | Grunnlaget er fordelt på yrkesaktivitetene, og hver har egen dekning |
 | Selvstendig næringsdrivende og frilanser | § 8-42 | Behandles etter § 8-41 |
 | Arbeidstaker, selvstendig næringsdrivende og frilanser | § 8-43 | Behandles etter § 8-41 |
 | Vernepliktig | § 8-46 | Behandles etter reglene for arbeidstakere, uansett hva personen var før tjenesten |
-| Inaktiv | § 8-47 | Variant a (fortsatt ute av arbeid) eller b (i arbeid uten opptjeningstid). Gjelder bare når ingen annen bestemmelse gir rett |
-| Dagpengemottaker | § 8-49 første til tredje ledd | Omfatter også ventelønn og vartpenger |
-| Dagpengemottaker i deltidsarbeid | § 8-49 fjerde ledd | Sykepenger av både arbeidsinntekten og dagpengene |
+| Ingen | | Personen passer ikke i noen hovedkategori. Inaktiv vurderes hvis Dagpenger ikke gjelder |
+
+Vernepliktig kan senere bli en egen abstraksjon, slik Inaktiv og Dagpenger er. Da kan den få med mer logikk, for eksempel å fastsette tjenesteperioden og dimitteringsdatoen.
 
 ### Tilleggskategorier
 
@@ -97,6 +108,44 @@ En egenskap som kan begynne eller slutte midt i et sykefraværstilfelle, er inge
 
 Forsikring etter §§ 8-36 og 8-39 er ingen tilleggskategori. Den er en del av avgjørelsen om dekning.
 
+## Dagpenger
+
+Dagpenger avgjør om § 8-49 gjelder for personen. Paragrafen gjelder medlemmer som mottar dagpenger under arbeidsløshet, ventelønn eller vartpenger. Dagpenger er en egen abstraksjon og en egen yrkesaktivitet, ikke en hovedkategori.
+
+Dagpenger kombineres med rettighetskategorien. Den erstatter den ikke. En person med deltidsarbeid og dagpenger for samme tidsrom får sykepenger for begge (§ 8-49 fjerde ledd). Personen har da både en hovedkategori og Dagpenger. En person som bare mottar dagpenger, har hovedkategorien «Ingen». Inaktiv gjelder ikke når § 8-49 gir rett (§ 8-47 siste ledd).
+
+Virkninger i andre abstraksjoner:
+
+| Abstraksjon | Virkning | Hjemmel |
+|---|---|---|
+| Sykepengegrunnlag | Grunnlaget for yrkesaktiviteten er dagpengene per uke, ventelønnen eller vartpengene. En permittert person får grunnlaget fra før permitteringen fra den dagen arbeidet skulle vært tatt opp igjen | § 8-49 tredje ledd |
+| Arbeidsgiverperiode/ventetid | Sykepenger fra og med den dagen personen blir arbeidsufør. Ved etterlønn gjelder retten fra vartpengene eller ventelønnen skulle vært utbetalt | § 8-49 første og andre ledd |
+| Løpende vilkår | En arbeidsløs person regnes som arbeidsufør tidligst fra den dagen personen søker lege, med unntak hvis personen var forhindret | § 8-49 femte ledd |
+
+Ferietillegget i § 8-49 tredje ledd hører til feriepenger og er utenfor omfanget.
+
+## Inaktiv
+
+Inaktiv avgjør om § 8-47 gjelder for personen, og i så fall om det er variant a eller b. Inaktiv er en egen abstraksjon og en egen yrkesaktivitet, ikke en hovedkategori. Når § 8-47 gjelder, erstatter Inaktiv rettighetskategorien. Sykepengegrunnlag, Minsteinntekt, Arbeidsgiverperiode/ventetid og Dekning bruker da Inaktiv i stedet for rettighetskategorien.
+
+Inaktiv vurderes når hovedkategorien er «Ingen» og Dagpenger ikke gjelder, eller når opptjeningskravet i § 8-2 ikke er oppfylt. Paragrafen gjelder bare når ingen annen bestemmelse i kapitlet gir rett (§ 8-47 siste ledd).
+
+Vilkår:
+
+- Personen har midlertidig vært ute av inntektsgivende arbeid i mindre enn én måned før sykmeldingstidspunktet. Variant a gjelder når personen fortsatt er ute av arbeid. Variant b gjelder når personen er i arbeid, men ikke oppfyller opptjeningskravet i § 8-2 (§ 8-47 første ledd).
+- Mottak av visse ytelser regnes som arbeid. Det samme gjelder militærtjeneste, avspasering på skip, lovbestemt ferie og visse permisjoner (§ 8-47 andre og tredje ledd).
+- Fristen er seks måneder ved sluttvederlag eller etterlønn, og tolv måneder ved utdanningspermisjon når utdanningen må avbrytes på grunn av sykdom (§ 8-47 fjerde ledd).
+
+Virkninger i andre abstraksjoner:
+
+| Abstraksjon | Virkning | Hjemmel |
+|---|---|---|
+| Sykepengegrunnlag | Fastsettes etter pensjonsgivende inntekt, som for selvstendig næringsdrivende | § 8-47 sjette ledd, § 8-35 |
+| Minsteinntekt | Grensen er 1G, og personen må dokumentere inntektstap | § 8-47 femte ledd |
+| Arbeidsgiverperiode/ventetid | Sykepenger fra dag 15 etter sykmeldingstidspunktet | § 8-47 sjette ledd |
+| Dekning | 65 % i variant a og 100 % i variant b | § 8-47 sjette ledd |
+| Løpende vilkår | Ingen sykepenger før personen søkte lege | § 8-47 sjuende ledd |
+
 ## Andre ytelser
 
 Andre ytelser beskriver hvilke ytelser fra folketrygden personen har i hvilke perioder. Ytelsene kan innvilges midt i et sykefraværstilfelle, og derfor er dette en periodisert opplysning. Hver ytelse har sin egen hjemmel.
@@ -106,7 +155,7 @@ Andre ytelser beskriver hvilke ytelser fra folketrygden personen har i hvilke pe
 - Gradert AFP (§ 8-52 andre ledd) gir sykepenger bare av arbeidsinntekten personen har i tillegg til den graderte pensjonen.
 - Arbeidsavklaringspenger (§ 8-48 andre ledd): Personen skal bruke opp retten til sykepenger først. Hvis grunnlaget er under 2G, kan personen velge ytelse.
 
-Dagpenger er ikke med her. Dagpengemottaker er en hovedkategori, fordi dagpengene bestemmer hele grunnlaget.
+Dagpenger er ikke med her. Dagpenger er en egen abstraksjon og en egen yrkesaktivitet, fordi dagpengene er grunnlaget for sykepengene.
 
 ### Uavklart: Andre ytelser og sykepengegrunnlaget
 
@@ -133,14 +182,14 @@ Institusjonsopphold leverer perioder til Løpende vilkår (ingen rett), Utbetali
 
 ## Sykepengegrunnlag
 
-Sykepengegrunnlaget er inntektsgrunnlaget sykepengene beregnes ut fra. Det fastsettes per sykefraværstilfelle, ut fra rettighetskategorien og inntekten.
+Sykepengegrunnlaget er inntektsgrunnlaget sykepengene beregnes ut fra. Det fastsettes per sykefraværstilfelle, ut fra rettighetskategorien eller Inaktiv, Dagpenger og inntekten.
 
-Grunnlaget består av én eller flere grunnlagsdeler. Hver del har en inntektstype og egen dekning. Etter § 8-41 tredje ledd gjelder reglene for selvstendig næringsdrivende bare for differansen mellom pensjonsgivende inntekt og den aktuelle månedsinntekten. Etter § 8-49 fjerde ledd får dagpengemottakere i deltidsarbeid én del for arbeidsinntekten og én for dagpengene.
+Grunnlaget er fordelt på én eller flere yrkesaktiviteter, og hver yrkesaktivitet har egen dekning. Etter § 8-41 tredje ledd gjelder reglene for selvstendig næringsdrivende bare for differansen mellom pensjonsgivende inntekt og den aktuelle månedsinntekten. Etter § 8-49 fjerde ledd får en person med deltidsarbeid og dagpenger én yrkesaktivitet for arbeidet og én for dagpengene.
 
 Abstraksjonen omfatter:
 
 - Aktuell månedsinntekt for arbeidstakere og frilansere, omregnet til årsinntekt (§§ 8-28 til 8-30 og § 8-38 femte ledd).
-- Pensjonsgivende inntekt for selvstendig næringsdrivende og for kategorien Inaktiv. Inntekten G-reguleres, og bare en tredel av inntekten mellom 6G og 12G tas med (§ 8-35 andre ledd og § 8-47 sjette ledd).
+- Pensjonsgivende inntekt for selvstendig næringsdrivende og for Inaktiv. Inntekten G-reguleres, og bare en tredel av inntekten mellom 6G og 12G tas med (§ 8-35 andre ledd og § 8-47 sjette ledd).
 - Grunnlag av dagpenger, ventelønn eller vartpenger, og grunnlaget fra før en permittering (§ 8-49 tredje ledd).
 - Kombinerte inntekter (§§ 8-41 og 8-43).
 - Særregler for vernepliktige. Grunnlaget bygger på inntekten før tjenesten og skal minst være 2G hvis tjenesten varte, eller skulle vare, mer enn 28 dager (§ 8-46 bokstav b).
@@ -158,10 +207,17 @@ Aldersgrensen viser forskjellen. Er personen 70 år eller eldre på skjæringsti
 
 Vilkår som hører under fellesbetegnelsen:
 
+- Medlemskap, beskrevet under.
 - Opptjening (§ 8-2): Personen må ha vært i arbeid de fire siste ukene før arbeidsuførheten. Visse ytelser regnes som arbeid. Kravet faller bort for Arbeidstaker på skip (§ 8-44), Fisker på blad B (§ 8-45), Vernepliktig (§ 8-46) og ved Yrkesskade (§ 8-55 bokstav a).
 - Tap av pensjonsgivende inntekt og aldersgrensen på 70 år på skjæringstidspunktet (§ 8-3 første ledd).
 - Arbeidsuførhet som skyldes sykdom eller skade (§ 8-4).
 - Minsteinntekt, beskrevet under.
+
+### Medlemskap
+
+Medlemskap avgjør om personen er medlem i folketrygden. Kapitlet sier ikke dette som et eget vilkår, men det følger av at reglene gjelder for «medlemmer» (§ 8-1). Vi må derfor alltid avgjøre om personen er medlem. Reglene for selve medlemskapet står i folketrygdloven kapittel 2, utenfor kapittel 8.
+
+Medlemskap henger sammen med to andre regler i kapittel 8. Etter § 8-1 a kan EØS-avtalen og trygdeavtaler gjøre det nødvendig å fravike kapitlet. Personer som er medlemmer etter §§ 2-5, 2-6 eller 2-8, er unntatt fra oppholdskravet (§ 8-9 andre ledd bokstav a).
 
 Vernepliktige har rett uten hensyn til §§ 8-2 og 8-3 hvis arbeidsuførheten oppstår under tjenesten (§ 8-46 første ledd).
 
@@ -184,7 +240,7 @@ Abstraksjonen beskriver perioden i starten av et sykefravær der trygden normalt
 
 Vi må gi beskjed om at en dag er i arbeidsgiverperioden eller ventetiden, også når Nav likevel dekker dagen. Det skjer for eksempel ved forsikring etter § 8-36. Om dagen gir utbetaling, avgjøres i Dekning.
 
-Perioden kan gå på tvers av sykefraværstilfeller.
+Perioden beregnes per yrkesaktivitet og kan gå på tvers av sykefraværstilfeller.
 
 | Regel | Hjemmel |
 |---|---|
@@ -196,10 +252,11 @@ Perioden kan gå på tvers av sykefraværstilfeller.
 | Samme ventetid for frilansere | § 8-38 andre ledd |
 | Sykepenger fra dag 15 etter sykmeldingstidspunktet for Inaktiv | § 8-47 sjette ledd |
 | Sykepenger fra dagen etter dimittering for Vernepliktig | § 8-46 bokstav a |
+| Sykepenger fra og med første dag med arbeidsuførhet for Dagpenger. Ved etterlønn fra den dagen vartpengene eller ventelønnen skulle vært utbetalt | § 8-49 første og andre ledd |
 
 ## Dekning
 
-Dekning avgjør dekningsgraden (hvor mange prosent av grunnlaget som dekkes) og fra-dagen (fra hvilken dag dekningen gjelder). Dekning fastsettes per grunnlagsdel, ikke per person.
+Dekning avgjør dekningsgraden (hvor mange prosent av grunnlaget som dekkes) og fra-dagen (fra hvilken dag dekningen gjelder). Dekning fastsettes per yrkesaktivitet, ikke per person.
 
 | Dekning | Hjemmel |
 |---|---|
@@ -208,7 +265,7 @@ Dekning avgjør dekningsgraden (hvor mange prosent av grunnlaget som dekkes) og 
 | Selvstendig næringsdrivende med forsikring: 80 % fra første dag, 100 % fra dag 17 eller 100 % fra første dag | § 8-36 første ledd bokstav a, b og c |
 | Frilanser: 100 % etter ventetiden | § 8-38 første ledd |
 | Frilanser med forsikring: 100 % fra første dag | § 8-39 |
-| Differansedelen etter § 8-41 får dekningen til selvstendig næringsdrivende | § 8-41 tredje ledd |
+| Ved § 8-41 gjelder dekningen til selvstendig næringsdrivende bare differansen mellom pensjonsgivende inntekt og aktuell månedsinntekt | § 8-41 tredje ledd |
 | Inaktiv: 65 % (variant a) eller 100 % (variant b) | § 8-47 sjette ledd |
 
 Trygden dekker også dager i arbeidsgiverperioden i disse situasjonene:
@@ -220,9 +277,13 @@ Trygden dekker også dager i arbeidsgiverperioden i disse situasjonene:
 
 Forsikringene har en opptjeningstid på fire uker fra Nav mottok søknaden (§ 8-36 andre ledd og § 8-39 andre ledd). Den faller bort ved yrkesskade (§ 8-55 bokstav a). Forsikringen opphører etter § 8-37.
 
+### Uavklart: Dekningsgrad for Dagpenger
+
+§ 8-49 sier ikke hvilken dekningsgrad yrkesaktiviteten Dagpenger har. Første ledd sier bare at sykepenger ytes «etter bestemmelsene i kapitlet her» fra og med den dagen personen blir arbeidsufør. Vi har ikke avklart hvilken hjemmel dekningsgraden skal vise til.
+
 ## Løpende vilkår
 
-Løpende vilkår er perioder i et sykefraværstilfelle der personen ikke har rett til sykepenger. Abstraksjonen gir bare stans, ikke delvis utbetaling. Delvis utbetaling hører til Utbetalingsgrad.
+Løpende vilkår er perioder i et sykefraværstilfelle der personen ikke har rett til sykepenger. Vilkårene vurderes per dato per yrkesaktivitet. Abstraksjonen gir bare stans, ikke delvis utbetaling. Delvis utbetaling hører til Utbetalingsgrad.
 
 | Vilkår | Hjemmel |
 |---|---|
@@ -236,13 +297,14 @@ Løpende vilkår er perioder i et sykefraværstilfelle der personen ikke har ret
 | Lovbestemt ferie og permisjon | § 8-17 andre ledd |
 | Arbeidsuførheten oppsto etter at streik eller lockout startet | § 8-31 andre ledd |
 | Ingen sykepenger før personen søkte lege, for selvstendig næringsdrivende, frilansere og Inaktiv | § 8-34 fjerde ledd, § 8-38 fjerde ledd og § 8-47 sjuende ledd |
+| En arbeidsløs person regnes som arbeidsufør tidligst fra den dagen personen søker lege, for Dagpenger | § 8-49 femte ledd |
 | Friskmelding til arbeidsformidling i mer enn 12 uker | § 8-5 |
 | Varetekt, soning eller formue under forvaltning, fra Institusjonsopphold | § 8-54 første ledd |
 | Ugradert AFP, fra Andre ytelser | § 8-52 første ledd |
 
 ## Utbetalingsgrad
 
-Utbetalingsgrad avgjør hvor stor del av dagsatsen som utbetales en gitt dag. Den vurderes per dato.
+Utbetalingsgrad avgjør hvor stor del av dagsatsen som utbetales en gitt dag. Den vurderes per dato per yrkesaktivitet.
 
 - Gradert sykmelding: Personen kan delvis gjøre arbeidet sitt. Arbeidsevnen må være redusert med minst 20 % (§§ 8-6 og 8-13).
 - Reduksjon på 50 % under opphold i helseinstitusjon, med en nedre grense på 0,5G (§ 8-53 tredje og fjerde ledd).
