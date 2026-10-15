@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spleis: å trekke ut konsepter</title>
+<style>
+  :root {
+    --bg: #f7f7f8; --fg: #1f2328; --muted: #59636e; --card: #fff; --line: #d0d7de;
+    --spleis: #e8f0fe; --spleis-b: #3b6fd4;
+    --sat: #e6f6ea; --sat-b: #2e8b57;
+    --part: #eef6ff; --part-b: #5b8fd9;
+    --todo: #fff4e0; --todo-b: #c27c0e;
+    --next: #fde8f3; --next-b: #b8327a;
+    --legacy: #f1f1f1; --legacy-b: #8c959f;
+    --ext: #f4ecfb; --ext-b: #8250df;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--fg); }
+  main { max-width: 1150px; margin: 0 auto; padding: 24px 20px 80px; }
+  h1 { font-size: 1.8rem; margin: 0 0 4px; }
+  h2 { font-size: 1.35rem; margin: 44px 0 8px; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
+  h3 { font-size: 1.05rem; margin: 0 0 6px; }
+  p.lead { color: var(--muted); margin-top: 0; }
+  code { font: 0.86em ui-monospace, SFMono-Regular, Menlo, monospace; background: #eef0f2; padding: 1px 4px; border-radius: 4px; }
+  .hint { color: var(--muted); font-size: .9rem; }
+  .rule { background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--next-b); border-radius: 10px; padding: 10px 16px; margin: 10px 0; }
+
+  [role=tablist] { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0; }
+  [role=tab] { border: 1px solid var(--line); background: var(--card); padding: 8px 14px; border-radius: 999px; cursor: pointer; font: inherit; }
+  [role=tab][aria-selected=true] { background: var(--fg); color: #fff; border-color: var(--fg); }
+  [role=tab]:focus-visible, .box:focus-visible, summary:focus-visible, .msg button:focus-visible { outline: 3px solid #f0b400; outline-offset: 2px; }
+
+  .box { text-align: left; font: inherit; border: 2px solid; border-radius: 10px; padding: 8px 12px; cursor: pointer; background: var(--card); width: 100%; }
+  .box small { display: block; color: var(--muted); font-size: .8rem; }
+  .box[aria-expanded=true] { box-shadow: 0 0 0 3px #f0b40088; }
+  .spleis { background: var(--spleis); border-color: var(--spleis-b); }
+  .sat { background: var(--sat); border-color: var(--sat-b); }
+  .part { background: var(--part); border-color: var(--part-b); border-style: dashed; }
+  .todo { background: var(--todo); border-color: var(--todo-b); border-style: dashed; }
+  .next { background: var(--next); border-color: var(--next-b); border-width: 3px; }
+  .plan { background: #fdf3f8; border-color: var(--next-b); border-style: dashed; }
+  .legacy { background: var(--legacy); border-color: var(--legacy-b); border-style: dotted; color: #57606a; }
+  .ext { background: var(--ext); border-color: var(--ext-b); }
+  .tag { float: right; font-size: .7rem; font-weight: 700; padding: 1px 7px; border-radius: 999px; background: var(--next-b); color: #fff; margin-left: 6px; }
+
+  .panel { margin-top: 12px; background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--fg); border-radius: 10px; padding: 14px 18px; }
+  .panel[hidden] { display: none; }
+  .panel ul { margin: 6px 0; padding-left: 20px; }
+  .panel dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 8px 0; }
+  .panel dt { font-weight: 600; color: var(--muted); }
+  .panel dd { margin: 0; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: .85rem; margin-top: 10px; color: var(--muted); }
+  .legend span::before { content: ""; display: inline-block; width: 14px; height: 14px; border: 2px solid; border-radius: 4px; vertical-align: -2px; margin-right: 6px; }
+  .legend .spleis::before { background: var(--spleis); border-color: var(--spleis-b); }
+  .legend .sat::before { background: var(--sat); border-color: var(--sat-b); }
+  .legend .part::before { background: var(--part); border-color: var(--part-b); border-style: dashed; }
+  .legend .todo::before { background: var(--todo); border-color: var(--todo-b); border-style: dashed; }
+  .legend .next::before { background: var(--next); border-color: var(--next-b); }
+  .legend .plan::before { background: #fdf3f8; border-color: var(--next-b); border-style: dashed; }
+  .legend .legacy::before { background: var(--legacy); border-color: var(--legacy-b); border-style: dotted; }
+  .legend .ext::before { background: var(--ext); border-color: var(--ext-b); }
+  .legend span { background: none !important; border: none !important; }
+
+  /* Byggeklosser */
+  .blocks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .blockcol { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .blockcol h3 { font-size: .85rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0; }
+  .blockcol p { font-size: .8rem; color: var(--muted); margin: 0 0 4px; }
+
+  /* Koblinger */
+  .model { display: grid; grid-template-columns: 1.1fr 40px 1.1fr; gap: 0; align-items: start; }
+  .entity { background: var(--card); border: 2px solid var(--fg); border-radius: 12px; overflow: hidden; }
+  .entity > header { background: var(--fg); color: #fff; padding: 8px 12px; font-weight: 600; }
+  .entity > header small { display: block; font-weight: 400; opacity: .8; font-size: .8rem; }
+  .entity .fields { display: flex; flex-direction: column; gap: 6px; padding: 10px; }
+  .entity.vg { border-color: var(--next-b); }
+  .entity.vg > header { background: var(--next-b); }
+  .entity.other { border-color: var(--todo-b); margin-top: 14px; }
+  .entity.other > header { background: var(--todo-b); }
+  .link { align-self: stretch; display: flex; align-items: center; justify-content: center; font-size: 22px; color: var(--muted); }
+  .box.ref::before { content: "→ "; color: var(--muted); }
+  .box.inline::before { content: "■ "; color: var(--muted); }
+
+  /* Apper */
+  .diagram { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 14px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+  .col { display: flex; flex-direction: column; gap: 8px; }
+  .col-title { font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  .spleis-core { border: 2px solid var(--spleis-b); border-radius: 12px; padding: 10px; background: #f5f8ff; display: flex; flex-direction: column; gap: 8px; }
+  .spleis-core > .col-title { color: var(--spleis-b); font-weight: 600; }
+  .contract { font-size: .82rem; background: #fff; border: 1px dashed var(--spleis-b); border-radius: 8px; padding: 6px 8px; }
+  .arrow { font-size: .8rem; color: var(--muted); text-align: center; }
+
+  /* Sekvens */
+  .seq { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; overflow-x: auto; }
+  .seq-grid { display: grid; grid-template-columns: repeat(4, minmax(150px, 1fr)); min-width: 680px; }
+  .actor { text-align: center; font-weight: 600; padding: 8px; border-radius: 8px; margin: 0 8px 8px; border: 2px solid; }
+  .lifelines { grid-column: 1 / -1; position: relative; }
+  .lifelines::before { content: ""; position: absolute; inset: 0; background:
+      linear-gradient(var(--line), var(--line)) 12.5% 0 / 2px 100% no-repeat,
+      linear-gradient(var(--line), var(--line)) 37.5% 0 / 2px 100% no-repeat,
+      linear-gradient(var(--line), var(--line)) 62.5% 0 / 2px 100% no-repeat,
+      linear-gradient(var(--line), var(--line)) 87.5% 0 / 2px 100% no-repeat; }
+  .phase { position: relative; margin: 12px 0 2px; font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); background: var(--card); display: inline-block; padding: 0 6px; left: 4px; }
+  .msg { position: relative; height: 44px; }
+  .msg button { position: absolute; top: 5px; font: inherit; font-size: .82rem; border: none; background: transparent; cursor: pointer; padding: 0; height: 34px; }
+  .msg button .lbl { position: relative; z-index: 1; background: var(--card); padding: 0 6px; border-radius: 4px; }
+  .msg button::after { content: ""; position: absolute; left: 0; right: 0; bottom: 4px; border-bottom: 2px solid #444; }
+  .msg button.ret::after { border-bottom-style: dashed; }
+  .msg button.plan::after { border-bottom-color: var(--next-b); }
+  .msg button.plan .lbl { color: var(--next-b); }
+  .msg button.r::before, .msg button.l::before { position: absolute; bottom: -4px; font-size: 14px; color: #444; }
+  .msg button.r::before { content: "▶"; right: -4px; }
+  .msg button.l::before { content: "◀"; left: -4px; }
+  .msg button[aria-expanded=true] .lbl { background: #fff3c4; }
+
+  ol.steps { list-style: none; padding: 0; display: grid; gap: 8px; }
+  details { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 0 14px; }
+  details[open] { padding-bottom: 12px; }
+  summary { cursor: pointer; padding: 10px 0; font-weight: 600; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  summary::before { content: "▸"; display: inline-block; width: 1.1em; transition: transform .15s; }
+  details[open] > summary::before { transform: rotate(90deg); }
+  .stepno { display: inline-grid; place-items: center; width: 1.6em; height: 1.6em; border-radius: 50%; background: var(--fg); color: #fff; font-size: .8rem; margin-right: 6px; }
+  .stepno.hl { background: var(--next-b); }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+  .badge { font-size: .75rem; padding: 2px 8px; border-radius: 999px; font-weight: 600; margin-left: 6px; white-space: nowrap; }
+  .b-done { background: var(--sat); color: #1c6b3f; border: 1px solid var(--sat-b); }
+  .b-part { background: var(--part); color: #1d4f9e; border: 1px solid var(--part-b); }
+  .b-todo { background: var(--todo); color: #7a4b00; border: 1px solid var(--todo-b); }
+  .b-next { background: var(--next-b); color: #fff; }
+
+  @media (max-width: 900px) { .blocks { grid-template-columns: 1fr 1fr; } .model { grid-template-columns: 1fr; } .link { transform: rotate(90deg); height: 30px; } .diagram { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Spleis: å trekke ut konsepter</h1>
+<p class="lead">Hvordan vi gjør Spleis mer fleksibel ved å flytte regler Spleis ikke trenger å eie ut i egne abstraksjoner, og hvordan vi går fram. Klikk på bokser, piler og overskrifter for å se detaljer. Abstraksjonene bygger på <code>docs/abstraksjoner-kap8.md</code>.</p>
+
+<details open>
+  <summary>Hvorfor gjør vi dette?</summary>
+  <p>Vi vil iterere raskere. Når vi skal støtte flere kategorier enn arbeidstaker og selvstendig, og kombinasjoner av dem, kan ikke Spleis ha et konkret forhold til alle variasjonene i hver kategori.</p>
+  <p>Mange konsepter er for Spleis et <em>spørsmål med et lite svar</em>:</p>
+  <ul>
+    <li><strong>Arbeidsgiverperiode og ventetid:</strong> hvilke dager er før Nav normalt dekker?</li>
+    <li><strong>Opptjening:</strong> er vilkåret oppfylt?</li>
+    <li><strong>Dekning:</strong> hvilken prosentsats, og fra hvilken dag, per grunnlagsdel?</li>
+  </ul>
+  <p>Reglene bak svaret, datakildene og saksbehandlerens overstyring kan isoleres, enten i en egen tjeneste eller i en egen modul i Spleis med et rent API. Da kan vi endre dem uten å røre tilstandsmaskinen og domenemodellen i Spleis.</p>
+  <p><strong>Hjemmelen bevares.</strong> Hver avgjørelse lagrer hvilke paragrafer den bygger på. Vi slår aldri sammen to tolkninger av loven, selv om de gir samme resultat.</p>
+</details>
+
+<div class="rule">
+  <strong>Vi starter med rettighetskategori og medlemskap, parallelt.</strong>
+  <ul>
+    <li><strong>Rettighetskategorien</strong> (én hovedkategori og null eller flere tilleggskategorier) avgjør hvilke regelsett som gjelder for resten av sykefraværstilfellet. Den avklares <em>før</em> alt annet og er ikke et inngangsvilkår. I dag er den implisitt: Spleis leser <code>arbeidssituasjon</code> fra søknaden, og vi støtter ikke kombinerte kategorier.</li>
+    <li><strong>Medlemskap i folketrygden</strong> er et inngangsvilkår. Det trekkes ut i en egen tjeneste samtidig med rettighetskategorien.</li>
+  </ul>
+  Deretter følger <strong>inntekt</strong> og <strong>sykepengegrunnlag</strong>. Begge skal isoleres og kunne overstyres.
+</div>
+
+<!-- ============ BYGGEKLOSSENE ============ -->
+<h2>Byggeklossene: abstraksjonene i kapittel 8</h2>
+<p>Gruppert etter hvor lenge en avgjørelse gjelder. Det bestemmer hvor koblingen til avgjørelsen skal bo.</p>
+<section data-host="blocks-panel">
+  <div class="blocks" id="blocks"></div>
+</section>
+<div class="panel" id="blocks-panel" hidden></div>
+<div class="legend">
+  <span class="next">Start her</span>
+  <span class="plan">Planlagt uttrekk</span>
+  <span class="sat">Trukket ut</span>
+  <span class="part">Delvis trukket ut</span>
+  <span class="todo">Bor i Spleis i dag</span>
+</div>
+
+<!-- ============ KOBLINGER ============ -->
+<h2>Hvor koblingene bor: vilkårsgrunnlag og beregning</h2>
+<div class="rule">
+  <strong>Tommelfingerregel.</strong> Gjelder avgjørelsen hele sykefraværstilfellet (fra skjæringstidspunktet)? Da peker <strong>vilkårsgrunnlaget</strong> på den. Ellers peker <strong>beregningen</strong> (endringen i en behandling) direkte på den. Beregningen peker alltid på vilkårsgrunnlaget og på alle andre fakta den trenger. Da kan vi gjenskape og forklare hver beregning.
+</div>
+<div role="tablist" aria-label="Velg tidspunkt for koblinger" data-tabs="model">
+  <button role="tab" aria-selected="true" data-view="idag">I dag</button>
+  <button role="tab" aria-selected="false" data-view="onsket">Ønsket</button>
+</div>
+<p class="hint" id="model-desc"></p>
+<section data-host="model-panel"><div id="model"></div></section>
+<div class="panel" id="model-panel" hidden></div>
+<div class="legend">
+  <span class="next">Ny kobling, start her</span>
+  <span class="plan">Planlagt kobling</span>
+  <span class="sat">Kobling til egen app</span>
+  <span class="todo">Beregnet i Spleis</span>
+  <span class="legacy">Rest, ikke i bruk</span>
+  <span class="spleis">Spleis-data</span>
+</div>
+
+<!-- ============ TJENESTE ELLER MODUL ============ -->
+<h2>Egen tjeneste eller modul i Spleis?</h2>
+<p>Vi har ikke bestemt at hver abstraksjon skal bli en egen tjeneste. Det viktige er at abstraksjonen er <strong>isolert</strong> og har et <strong>rent API</strong> mot vilkårsgrunnlaget og beregningen. Kontrakten er den samme i begge tilfeller: id inn på vilkårsgrunnlaget eller beregningen, et minimalt svar, og beskjed når vurderingen endres.</p>
+<div class="cards">
+  <details open><summary>Egen tjeneste</summary>
+    <p>Som sp-vilkarsproving og sp-forsikring. Kommunikasjon med behov og løsninger på rapid, og REST mot Speil.</p>
+    <ul>
+      <li><strong>Gir:</strong> egen database, eget deploy-løp og egne datakilder. Teamet kan endre reglene uten å deploye Spleis. Grensen kan ikke brytes ved et uhell.</li>
+      <li><strong>Koster:</strong> asynkron flyt, flere behov og flere ting som kan feile. Krever outbox, idempotens og håndtering av svar som kommer sent.</li>
+      <li><strong>Passer når:</strong> abstraksjonen har egne datakilder, egen saksbehandlerflyt eller endrer seg i et annet tempo enn Spleis. Eksempler: forsikring og opptjening (finnes), medlemskap (planlagt).</li>
+    </ul>
+  </details>
+  <details open><summary>Modul i Spleis</summary>
+    <p>Egen Gradle-modul med et rent Kotlin-API. Vilkårsgrunnlaget og beregningen kjenner bare API-et, ikke innsiden av modulen.</p>
+    <ul>
+      <li><strong>Gir:</strong> synkrone kall, én transaksjon og enklere testing. Ingen ekstra infrastruktur.</li>
+      <li><strong>Koster:</strong> grensen må holdes med disiplin (avhengighetsregler mellom moduler). Endringer deployes sammen med Spleis.</li>
+      <li><strong>Passer når:</strong> abstraksjonen er tett knyttet til data Spleis allerede har, for eksempel sykdomstidslinjen. Mulig eksempel, ikke bestemt: arbeidsgiverperiode/ventetid.</li>
+    </ul>
+  </details>
+</div>
+<p class="hint">En modul med rent API kan flyttes ut til en tjeneste senere, hvis behovet oppstår. Derfor er kontrakten viktigere enn hvor koden kjører.</p>
+
+<!-- ============ APPER ============ -->
+<h2>Hvor abstraksjonene bor: før, i dag og ønsket</h2>
+<div role="tablist" aria-label="Velg tidspunkt for apper" data-tabs="apps">
+  <button role="tab" aria-selected="false" data-view="for">Før</button>
+  <button role="tab" aria-selected="true" data-view="idag">I dag</button>
+  <button role="tab" aria-selected="false" data-view="onsket">Ønsket</button>
+</div>
+<p class="hint" id="apps-desc"></p>
+<section data-host="apps-panel"><div id="apps"></div></section>
+<div class="panel" id="apps-panel" hidden></div>
+
+<!-- ============ SEKVENS ============ -->
+<h2>Mønsteret: slik snakker Spleis med en vurdering</h2>
+<p>Opptjening og forsikring bruker denne flyten i dag, som egne tjenester på rapid. For en modul i Spleis blir pilene kall i et Kotlin-API, men stegene og koblingene er de samme. Rosa piler er planlagt (skisse). Klikk på en pil.</p>
+<div class="seq">
+  <div class="seq-grid">
+    <div class="actor spleis">Spleis</div>
+    <div class="actor sat">Vurdering<br><small>egen tjeneste eller modul i Spleis</small></div>
+    <div class="actor ext">Kilder<br><small>søknad, Aa-reg, Infotrygd, inntekt</small></div>
+    <div class="actor ext">Speil<br><small>saksbehandler</small></div>
+    <div class="lifelines" id="seq"></div>
+  </div>
+</div>
+<div class="panel" id="seq-panel" hidden></div>
+
+<!-- ============ FREMGANGSMÅTE ============ -->
+<h2>Fremgangsmåte for en ny abstraksjon</h2>
+<ol class="steps">
+  <li><details><summary><span class="stepno">1</span>Finn spørsmålet Spleis egentlig stiller</summary>
+    <p>Spør: hva gjør Spleis med svaret? Ofte er det et tall, en dato, en dagtype eller en ja/nei. Alt annet (regelverk, datakilder, typer, unntak) er kandidat for å flyttes ut.</p>
+    <ul>
+      <li>Rettighetskategori: hovedkategori og tilleggskategorier, med hjemmel</li>
+      <li>Opptjening: <code>ok</code></li>
+      <li>AGP/ventetid: hvilke dager er i perioden (også når Nav likevel dekker dem)</li>
+      <li>Dekning: dekningsgrad og fra-dag per grunnlagsdel</li>
+    </ul>
+  </details></li>
+  <li><details><summary><span class="stepno">2</span>Bestem hva abstraksjonen er avhengig av</summary>
+    <p>De fleste abstraksjonene avhenger av rettighetskategorien. Kategorien avgjør hvilke regler for opptjening, sykepengegrunnlag, AGP/ventetid, dekning og maksdato som gjelder. Derfor kommer den først.</p>
+    <p>Abstraksjonen skal ta imot rettighetskategorien, ikke utlede den på nytt fra søknadstype eller <code>arbeidssituasjon</code>.</p>
+  </details></li>
+  <li><details><summary><span class="stepno">3</span>Bestem hvor koblingen bor</summary>
+    <ul>
+      <li><strong>Per sykefraværstilfelle:</strong> koblingen bor på vilkårsgrunnlaget (rettighetskategori, medlemskap, inntekt, sykepengegrunnlag, andre inngangsvilkår, dekning).</li>
+      <li><strong>Periodisert, per dato eller på tvers av sykefraværstilfeller:</strong> beregningen peker direkte på den (AGP/ventetid, andre ytelser, institusjonsopphold, løpende vilkår, maksdato).</li>
+    </ul>
+    <p>Koblingen er en id til én bestemt versjon av avgjørelsen. En ny vurdering gir ny id, aldri endring av en gammel.</p>
+  </details></li>
+  <li><details><summary><span class="stepno">4</span>Definer en liten kontrakt</summary>
+    <ul>
+      <li><code>&lt;X&gt;vurdering</code>: abstraksjonen svarer med en <strong>id</strong>, som Spleis lagrer der koblingen skal bo.</li>
+      <li><code>&lt;X&gt;vurderingResultat</code> i beregning-steget: abstraksjonen svarer med det minimale svaret.</li>
+      <li><code>endret_&lt;x&gt;vurdering</code>: vurderingen er endret, for eksempel ved overstyring. Ny id, og Spleis reberegner.</li>
+    </ul>
+    <p>For en tjeneste er dette behov og events på rapid. For en modul i Spleis er det et Kotlin-API med samme form. Kontrakten er viktigere enn hvor koden kjører.</p>
+    <p class="hint">Navnene følger <code>spleis/sykepenger-mediators/.../Behov.kt</code> og <code>EndretVurderingPåSkjæringstidspunktMessage.Vurderingsformat</code>.</p>
+  </details></li>
+  <li><details><summary><span class="stepno">5</span>Velg tjeneste eller modul, og bygg abstraksjonen</summary>
+    <p>Se seksjonen «Egen tjeneste eller modul i Spleis?». Uansett valg skal abstraksjonen:</p>
+    <ul>
+      <li>eie sine regler, datakilder og hjemler</li>
+      <li>lagre grunnlag, resultat, kilde og tidspunkt, versjonert</li>
+      <li>støtte overstyring, som gir ny versjon og ny id (gjelder særlig medlemskap, inntekt og sykepengegrunnlag)</li>
+      <li>gi beskjed når vurderingen endres (for tjenester via outbox, se <code>OutboxPubliseringsjobb</code> i sp-vilkarsproving)</li>
+    </ul>
+  </details></li>
+  <li><details><summary><span class="stepno">6</span>Koble Spleis på, uten å fjerne det gamle</summary>
+    <p>Legg til behovene i rivers (<code>VilkårsgrunnlagRiver</code>, <code>YtelserRiver</code>) og la Spleis bruke det nye svaret. Den gamle beregningen kan ligge igjen en periode, så vi kan sammenligne og rulle tilbake.</p>
+  </details></li>
+  <li><details><summary><span class="stepno">7</span>Rydd opp i Spleis</summary>
+    <p>Når den nye flyten er i bruk overalt, fjern gammel beregning, gamle felter i serde og tester. For opptjening gjenstår dette: <code>Opptjening.kt</code>, <code>ArbeidsgiverOpptjeningsgrunnlag</code> og feltet <code>opptjening</code> i <code>Grunnlagsdata</code>.</p>
+  </details></li>
+</ol>
+
+<!-- ============ REKKEFØLGE ============ -->
+<h2>Rekkefølge og status</h2>
+<div class="cards" id="cards"></div>
+
+<p class="hint" style="margin-top:32px">Kilder i koden: <code>spleis/sykepenger-model/.../person/Behandlinger.kt</code> (<code>Endring</code>, <code>Arbeidssituasjon</code>), <code>VilkårsgrunnlagHistorikk.kt</code> (<code>Grunnlagsdata</code>), <code>Yrkesaktivitet.kt</code>, <code>Arbeidsgiverperiodeberegner.kt</code>, <code>Ventetidberegner.kt</code>, <code>ArbeidstakerUtbetalingstidslinjeBuilder.kt</code>, <code>SelvstendigUtbetalingstidslinjeBuilder.kt</code>, <code>spleis/sykepenger-mediators/.../Behov.kt</code>, <code>sp-vilkarsproving/</code>, <code>sp-forsikring/</code>. Alt merket «ønsket» eller «skisse» er forslag, ikke vedtatte løsninger.</p>
+
+</main>
+
+<script>
+/* ---------- Detaljer ---------- */
+const D = {
+  /* Abstraksjoner */
+  "a-rettighetskategori": { title: "Rettighetskategori", html: `
+    <dl><dt>Avgjør</dt><dd>Hvilke regelsett som gjelder for personen</dd>
+    <dt>Gjelder</dt><dd>Per sykefraværstilfelle, ut fra forholdene på skjæringstidspunktet</dd>
+    <dt>Hjemler</dt><dd>§§ 8-15, 8-34, 8-38, 8-40 til 8-47, 8-49, 8-55</dd>
+    <dt>Kobling</dt><dd>Vilkårsgrunnlaget</dd></dl>
+    <p>Består av én <strong>hovedkategori</strong> (arbeidstaker, selvstendig næringsdrivende, frilanser, kombinasjonene i §§ 8-40 til 8-43, vernepliktig, inaktiv, dagpengemottaker, dagpengemottaker i deltidsarbeid) og null eller flere <strong>tilleggskategorier</strong> (arbeidstaker på skip, fisker på blad B, yrkesskade).</p>
+    <p>Rettighetskategorien er en <em>avklaring som skjer først</em>, ikke et inngangsvilkår. Den bestemmer hvilke regler de andre abstraksjonene bruker.</p>
+    <p><strong>I dag:</strong> implisitt. Spleis leser <code>arbeidssituasjon</code> fra søknaden (<code>Endring.Arbeidssituasjon</code>: <code>ARBEIDSTAKER</code>, <code>SELVSTENDIG_NÆRINGSDRIVENDE</code>, <code>FRILANSER</code>, <code>JORDBRUKER</code>, <code>FISKER</code>, …) og velger yrkesaktivitet ut fra søknadstypen. Kombinerte kategorier støttes ikke.</p>` },
+  "a-inntekt": { title: "Inntekt", html: `
+    <dl><dt>Avgjør</dt><dd>Rå opplysninger om hva personen har tjent, ingen beregninger</dd>
+    <dt>Gjelder</dt><dd>Per sykefraværstilfelle</dd><dt>Hjemler</dt><dd>§§ 8-28, 8-29, 8-30, 8-35, 8-49</dd><dt>Kobling</dt><dd>Vilkårsgrunnlaget</dd></dl>
+    <p><strong>I dag:</strong> Spleis henter inntekter (<code>InntekterForSykepengegrunnlag</code>, inntektsmelding, pensjonsgivende inntekt) og lagrer dem sammen med beregningene i <code>inntektsgrunnlag</code>. Saksbehandler overstyrer inntekt via Spleis.</p>
+    <p><strong>Planlagt:</strong> trekkes ut og isoleres. Må kunne overstyres i abstraksjonen, og en overstyring gir ny versjon og ny kobling.</p>` },
+  "a-sykepengegrunnlag": { title: "Sykepengegrunnlag", html: `
+    <dl><dt>Avgjør</dt><dd>Inntektsgrunnlaget, fordelt på grunnlagsdeler</dd><dt>Gjelder</dt><dd>Per sykefraværstilfelle</dd>
+    <dt>Hjemler</dt><dd>§§ 8-10, 8-28 til 8-30, 8-35, 8-38, 8-41, 8-43, 8-46, 8-47, 8-49</dd><dt>Kobling</dt><dd>Vilkårsgrunnlaget</dd></dl>
+    <p>G-regulering, 6G-tak, avviksvurdering, skjønn og dagsats. Hver grunnlagsdel har en inntektstype og egen dekning (§ 8-41, § 8-49 fjerde ledd).</p>
+    <p><strong>I dag:</strong> i Spleis, sammen med inntekten i <code>inntektsgrunnlag</code>. Skjønnsfastsettelse gjøres via Spleis.</p>
+    <p><strong>Planlagt:</strong> trekkes ut og isoleres fra inntekten. Må kunne overstyres, for eksempel ved skjønnsfastsettelse.</p>
+    <p><strong>Hva beregningen trenger:</strong> totalen er ikke nok. <code>Økonomi.betal</code> får bare <code>sykepengegrunnlagBegrenset6G</code>, og den setter taket for hva Nav dekker. Men dagsbeløpene bygges per yrkesaktivitet med <code>fastsattÅrsinntekt</code> som <code>aktuellDagsinntekt</code>. Den vekter total sykdomsgrad, 20 %-grensen og fordelingen mellom arbeidsgivere.</p>
+    <ul>
+      <li>Fra sykepengegrunnlaget: total begrenset til 6G, fastsatt inntekt per yrkesaktivitet (etter korrigering og skjønn), og minsteinntektsresultat eller nok til at Spleis vurderer det</li>
+      <li>Fra andre kilder: refusjon per dag, inntektsjusteringer per dag og dekningsgrad</li>
+      <li>Rå faktaavklart inntekt brukes ikke direkte i beregningen og kan bli i Inntekt-abstraksjonen</li>
+    </ul>
+    <p class="hint"><code>sykepenger-økonomi/.../Økonomi.kt</code> (betal, totalGrad), <code>ArbeidstakerUtbetalingstidslinjeBuilder.kt</code> (medInntekt), <code>ArbeidsgiverInntektsopplysning.kt</code> (fastsattÅrsinntekt).</p>` },
+  "a-inngangsvilkar": { title: "Inngangsvilkår", html: `
+    <dl><dt>Avgjør</dt><dd>Om personen har rett til sykepenger i det hele tatt</dd><dt>Gjelder</dt><dd>Per sykefraværstilfelle</dd>
+    <dt>Hjemler</dt><dd>§§ 8-2, 8-3, 8-4</dd><dt>Kobling</dt><dd>Vilkårsgrunnlaget, én kobling per vilkår</dd></dl>
+    <p>Hvert vilkår er en egen abstraksjon. Vilkårene slås ikke sammen.</p>
+    <ul><li><strong>Opptjening (§ 8-2):</strong> trukket ut til sp-vilkarsproving. Faller bort for skip, blad B, vernepliktig og yrkesskade, altså avhengig av rettighetskategorien.</li>
+    <li><strong>Medlemskap i folketrygden:</strong> se egen boks. Planlagt uttrekk.</li>
+    <li>Tap av inntekt og 70-årsgrensen på skjæringstidspunktet (§ 8-3 første ledd): i Spleis.</li>
+    <li>Arbeidsuførhet (§ 8-4): i Spleis.</li>
+    <li>Minsteinntekt: se egen boks.</li></ul>` },
+  "a-medlemskap": { title: "Medlemskap i folketrygden (inngangsvilkår)", html: `
+    <dl><dt>Avgjør</dt><dd>Om personen er medlem i folketrygden</dd><dt>Gjelder</dt><dd>Per sykefraværstilfelle</dd><dt>Hjemler</dt><dd>Folketrygdloven kapittel 2</dd><dt>Kobling</dt><dd>Vilkårsgrunnlaget</dd></dl>
+    <p>Står ikke i oversikten i <code>abstraksjoner-kap8.md</code>, fordi reglene ligger i kapittel 2, men er et inngangsvilkår for sykepenger.</p>
+    <p><strong>I dag:</strong> Spleis sender behovet <code>Medlemskap</code>, som <code>sparkel-medlemskap</code> svarer på. Spleis lagrer bare verdien <code>medlemskapstatus</code> (<code>Ja</code>, <code>Nei</code>, <code>VetIkke</code>, <code>UavklartMedBrukerspørsmål</code>) i vilkårsgrunnlaget, uten kobling til selve vurderingen.</p>
+    <p><strong>Planlagt:</strong> trekkes ut i en egen tjeneste, parallelt med rettighetskategori. Vilkårsgrunnlaget får en kobling (id) til vurderingen, slik som for opptjening.</p>` },
+  "a-minsteinntekt": { title: "Minsteinntekt (inngangsvilkår)", html: `
+    <dl><dt>Avgjør</dt><dd>Om grunnlaget er høyt nok</dd><dt>Gjelder</dt><dd>Per sykefraværstilfelle</dd><dt>Hjemler</dt><dd>§§ 8-3, 8-47</dd><dt>Kobling</dt><dd>Vilkårsgrunnlaget</dd></dl>
+    <p>0,5G som hovedregel, 1G for inaktiv. Grensen avhenger av rettighetskategorien. <strong>I dag:</strong> i Spleis.</p>` },
+  "a-dekning": { title: "Dekning", html: `
+    <dl><dt>Avgjør</dt><dd>Dekningsgrad og fra-dag, per grunnlagsdel</dd><dt>Gjelder</dt><dd>Per sykefraværstilfelle</dd>
+    <dt>Hjemler</dt><dd>§§ 8-16, 8-17, 8-20, 8-21, 8-34, 8-36, 8-38, 8-39, 8-41, 8-47</dd><dt>Kobling</dt><dd>Vilkårsgrunnlaget</dd></dl>
+    <p>Arbeidstaker 100 %, selvstendig 80 % etter ventetiden, frilanser 100 % etter ventetiden, inaktiv 65 % eller 100 %. Forsikring (§§ 8-36, 8-39) er en del av dekningen, ikke en tilleggskategori. Dekning avgjør også om Nav dekker dager i arbeidsgiverperioden (§§ 8-17, 8-20, 8-21).</p>
+    <p><strong>I dag:</strong> forsikring for selvstendig er trukket ut til sp-forsikring (<code>dekning.grad</code>, <code>dekning.iVentetid</code>). Resten er hardkodet i <code>ArbeidstakerUtbetalingstidslinjeBuilder</code> (100 %) og <code>SelvstendigUtbetalingstidslinjeBuilder</code> (80 %).</p>` },
+  "a-andreytelser": { title: "Andre ytelser", html: `
+    <dl><dt>Avgjør</dt><dd>Uføretrygd og AFP i perioder</dd><dt>Gjelder</dt><dd>Periodisert</dd><dt>Hjemler</dt><dd>§§ 8-48, 8-50, 8-52</dd><dt>Kobling</dt><dd>Beregningen</dd></dl>
+    <p>Kan innvilges midt i et sykefraværstilfelle, og hører derfor ikke hjemme i vilkårsgrunnlaget. Dagpenger er ikke med her, fordi dagpengemottaker er en hovedkategori.</p>
+    <p class="hint">Uavklart: hva skjer med sykepengegrunnlaget når uføretrygd eller gradert AFP innvilges midt i tilfellet?</p>
+    <p><strong>I dag:</strong> Spleis henter ytelser i Ytelser-steget (<code>Foreldrepenger</code>, <code>Pleiepenger</code>, <code>DagpengerV2</code>, <code>ArbeidsavklaringspengerV2</code>, …) uten å lagre en kobling.</p>` },
+  "a-institusjon": { title: "Institusjonsopphold", html: `
+    <dl><dt>Avgjør</dt><dd>Opphold i helseinstitusjon og fengsel</dd><dt>Gjelder</dt><dd>Periodisert</dd><dt>Hjemler</dt><dd>§§ 8-53, 8-54</dd><dt>Kobling</dt><dd>Beregningen</dd></dl>
+    <p>Leverer perioder til løpende vilkår (ingen rett), utbetalingsgrad (reduksjon) og AGP/ventetid (ingen arbeidsgiverperiode).</p>
+    <p><strong>I dag:</strong> behovet <code>Institusjonsopphold</code> i Ytelser-steget.</p>` },
+  "a-lopende": { title: "Løpende vilkår", html: `
+    <dl><dt>Avgjør</dt><dd>Dager uten rett til sykepenger (bare stans, ikke delvis)</dd><dt>Gjelder</dt><dd>Per dato</dd><dt>Hjemler</dt><dd>§§ 8-3, 8-5, 8-7, 8-8, 8-9, 8-15, 8-17, 8-31, 8-34, 8-38, 8-47, 8-51, 8-54</dd><dt>Kobling</dt><dd>Beregningen</dd></dl>
+    <p><strong>I dag:</strong> i Spleis, som <code>avslagstidslinje</code> på endringen.</p>` },
+  "a-utbetalingsgrad": { title: "Utbetalingsgrad", html: `
+    <dl><dt>Avgjør</dt><dd>Hvor stor del av dagsatsen som utbetales</dd><dt>Gjelder</dt><dd>Per dato</dd><dt>Hjemler</dt><dd>§§ 8-6, 8-13, 8-53, 8-54</dd><dt>Kobling</dt><dd>Beregningen</dd></dl>
+    <p>Gradert sykmelding (minst 20 %) og reduksjon under institusjonsopphold. <strong>I dag:</strong> i Spleis, ut fra sykdomstidslinjen.</p>` },
+  "a-reisetilskudd": { title: "Reisetilskudd", html: `
+    <dl><dt>Avgjør</dt><dd>Tilskudd til reise i stedet for sykepenger</dd><dt>Gjelder</dt><dd>Per dato</dd><dt>Hjemler</dt><dd>§ 8-14</dd><dt>Kobling</dt><dd>Beregningen</dd></dl>
+    <p><strong>I dag:</strong> ikke modellert i Spleis.</p>` },
+  "a-agp": { title: "Arbeidsgiverperiode/ventetid", html: `
+    <dl><dt>Avgjør</dt><dd>Perioden før trygden normalt dekker</dd><dt>Gjelder</dt><dd>På tvers av sykefraværstilfeller</dd><dt>Hjemler</dt><dd>§§ 8-19, 8-31, 8-34, 8-38, 8-46, 8-47, 8-54</dd><dt>Kobling</dt><dd>Beregningen (kan ikke bo i vilkårsgrunnlaget, fordi perioden går på tvers av tilfeller)</dd></dl>
+    <p>Én abstraksjon for både arbeidsgiverperiode og ventetid: det har ingen betydning hvem som betaler, så lenge det ikke er Nav. Abstraksjonen sier at en dag er i perioden, også når Nav likevel dekker dagen (for eksempel ved forsikring). Om dagen gir utbetaling, avgjøres i Dekning.</p>
+    <p><strong>I dag:</strong> to beregnere i Spleis, <code>Arbeidsgiverperiodeberegner</code> og <code>Ventetidberegner</code>, valgt i <code>Yrkesaktivitet.beregnPerioderUtenNavAnsvar()</code>. Resultatet ligger som <code>dagerUtenNavAnsvar</code> på endringen. Omtrent 116 filer i <code>spleis/</code> nevner arbeidsgiverperiode.</p>` },
+  "a-maksdato": { title: "Sykepengedager/maksdato", html: `
+    <dl><dt>Avgjør</dt><dd>Datoen retten tar slutt</dd><dt>Gjelder</dt><dd>På tvers av sykefraværstilfeller</dd><dt>Hjemler</dt><dd>§§ 8-3, 8-11, 8-12, 8-51, 8-55</dd><dt>Kobling</dt><dd>Beregningen</dd></dl>
+    <p>Antall dager (248, 250 eller 260) avhenger av hovedkategorien og av om trygden dekker de første 16 dagene.</p>
+    <p><strong>I dag:</strong> i Spleis, som <code>maksdatoresultat</code> på endringen.</p>` },
+
+  /* Koblinger i dag */
+  "m-endring": { title: "Endring (i dag)", html: `<p><code>Behandlinger.Behandling.Endring</code> er én beregning i en behandling. I dag ligger mange avgjørelser <em>inne i</em> endringen som ferdig beregnede verdier, ikke som koblinger. Da kan ikke reglene endres uten å endre Spleis.</p>` },
+  "m-arbeidssituasjon": { title: "arbeidssituasjon", html: `<p>Kommer fra søknaden. Fungerer i dag som implisitt rettighetskategori: Spleis forgrener på søknadstype og arbeidssituasjon (for eksempel <code>JORDBRUKER</code> i <code>Vedtaksperiode</code>).</p><p>Ligger på endringen, men gjelder egentlig hele sykefraværstilfellet. Ønsket: erstattes av en kobling til rettighetskategori på vilkårsgrunnlaget.</p>` },
+  "m-grunnlagsdata": { title: "grunnlagsdata → vilkårsgrunnlag", html: `<p>Endringen peker allerede på vilkårsgrunnlaget (<code>VilkårsgrunnlagElement</code>). Det er riktig, og vi bygger videre på det.</p>` },
+  "m-dagerUtenNavAnsvar": { title: "dagerUtenNavAnsvar", html: `<p>Resultatet av AGP- eller ventetidsberegningen, beregnet i Spleis. Ønsket: en kobling til en AGP/ventetid-avklaring som eies utenfor Spleis.</p>` },
+  "m-maksdato": { title: "maksdatoresultat", html: `<p>Beregnet i Spleis. Går på tvers av sykefraværstilfeller, og hører derfor til beregningen, ikke vilkårsgrunnlaget.</p>` },
+  "m-avslag": { title: "avslagstidslinje", html: `<p>Løpende vilkår per dato, beregnet i Spleis.</p>` },
+  "m-utbtl": { title: "utbetalingstidslinje", html: `<p>Selve resultatet av beregningen. Dekningsgraden settes her, hardkodet per builder (100 % arbeidstaker, 80 % selvstendig med overstyring fra forsikring).</p>` },
+  "m-ytelser": { title: "Ytelser hentet ved beregning", html: `<p>I Ytelser-steget henter Spleis <code>Foreldrepenger</code>, <code>Pleiepenger</code>, <code>Omsorgspenger</code>, <code>Opplæringspenger</code>, <code>Institusjonsopphold</code>, <code>DagpengerV2</code>, <code>ArbeidsavklaringspengerV2</code>, <code>OpptjeningsvurderingResultat</code> og <code>ForsikringsvurderingResultat</code>.</p><p>Svarene brukes i beregningen, men endringen lagrer ikke en kobling til akkurat de faktaene som ble brukt.</p>` },
+  "m-vg": { title: "Vilkårsgrunnlag (i dag)", html: `<p><code>VilkårsgrunnlagHistorikk.Grunnlagsdata</code>, per skjæringstidspunkt. Inneholder allerede to koblinger til egne apper. Dette er riktig sted for alt som gjelder hele sykefraværstilfellet.</p>` },
+  "m-inntektsgrunnlag": { title: "inntektsgrunnlag", html: `<p>Inntekt og sykepengegrunnlag ligger sammen og beregnes i Spleis. Abstraksjonene skiller rå inntekt fra grunnlaget.</p>` },
+  "m-opptjeningId": { title: "opptjeningsvurderingId", html: `<p>Kobling til sp-vilkarsproving. Satt fra <code>@løsning.Opptjeningsvurdering.id</code> i <code>VilkårsgrunnlagRiver</code>. Ferdig eksempel på mønsteret.</p>` },
+  "m-forsikringId": { title: "forsikringsvurderingId", html: `<p>Kobling til sp-forsikring. Svaret (<code>dekning.grad</code>, <code>dekning.iVentetid</code>) hentes i beregning-steget med <code>ForsikringsvurderingResultat</code>.</p>` },
+  "m-medlemskap": { title: "medlemskapstatus", html: `<p>Lagret som verdi i vilkårsgrunnlaget, hentet med behovet <code>Medlemskap</code> fra <code>sparkel-medlemskap</code>. Ingen kobling til vurderingen, og ingen hjemmel lagret. Planlagt: erstattes av en kobling til en egen medlemskapstjeneste.</p>` },
+  "m-opptjeningRest": { title: "opptjening (rest)", html: `<p><code>ArbeidstakerOpptjening</code> fra den gamle beregningen i Spleis. Ikke i bruk, men serialiseres fortsatt. Skal ryddes bort.</p>` },
+
+  /* Koblinger ønsket */
+  "o-endring": { title: "Beregning / endring (ønsket)", html: `<p>Beregningen peker på alt den trenger for å bli riktig: vilkårsgrunnlaget, og alle fakta som ikke gjelder hele sykefraværstilfellet. Hver kobling er en id til én bestemt versjon. Da kan vi gjenskape beregningen, forklare den med hjemmel, og se hva som har endret seg mellom to beregninger.</p>` },
+  "o-vgref": { title: "vilkårsgrunnlagId", html: `<p>Som i dag. Via vilkårsgrunnlaget får beregningen rettighetskategori, sykepengegrunnlag, inngangsvilkår og dekning.</p>` },
+  "o-agp": { title: "AGP/ventetid-avklaring", html: `<p>Går på tvers av sykefraværstilfeller, så koblingen må ligge på beregningen. Erstatter <code>dagerUtenNavAnsvar</code> beregnet i Spleis.</p>` },
+  "o-perioder": { title: "Periodiserte opplysninger", html: `<p>Andre ytelser og institusjonsopphold. Kan starte og slutte midt i et sykefraværstilfelle. Beregningen peker på versjonen den brukte, i stedet for å hente ferske svar uten å lagre hva som ble brukt.</p>` },
+  "o-lopende": { title: "Løpende vilkår og utbetalingsgrad", html: `<p>Vurderes per dato. Kan være koblinger eller beregnes i Spleis ut fra koblede fakta. Uavklart.</p>` },
+  "o-maksdato": { title: "Sykepengedager/maksdato", html: `<p>Går på tvers av sykefraværstilfeller. Om dette skal være en kobling eller bli i Spleis, er uavklart. Antall dager avhenger av hovedkategorien.</p>` },
+  "o-vg": { title: "Vilkårsgrunnlag (ønsket)", html: `<p>Én per sykefraværstilfelle (skjæringstidspunkt). Peker på alt som avgjøres én gang for hele tilfellet. Rettighetskategorien kommer først, fordi de andre avgjørelsene bruker den.</p>` },
+  "o-rk": { title: "rettighetskategoriId", html: D_RK() },
+  "o-inntekt": { title: "Inntekt", html: `<p>Rå opplysninger, egne typede felter per inntektstype. Ingen beregninger. Skal kunne overstyres. En overstyring gir ny versjon og nytt vilkårsgrunnlag.</p>` },
+  "o-spg": { title: "Sykepengegrunnlag", html: `<p>Grunnlagsdeler med inntektstype. Bygger på rettighetskategori og inntekt. Skal kunne overstyres, for eksempel ved skjønnsfastsettelse.</p><p><strong>Minimalt svar til beregningen:</strong> total begrenset til 6G og fastsatt inntekt per yrkesaktivitet. Totalen alene er ikke nok, fordi grad og fordeling vektes med inntekt per yrkesaktivitet. Faktaavklart inntekt er input til grunnlaget, ikke til beregningen.</p>` },
+  "o-medlemskap": { title: "medlemskapsvurderingId", html: `<p>Planlagt kobling til en egen medlemskapstjeneste. Utvikles parallelt med rettighetskategori. Erstatter verdien <code>medlemskapstatus</code>.</p>` },
+  "o-inngang": { title: "Inngangsvilkår", html: `<p>Én kobling per vilkår: <code>opptjeningsvurderingId</code> (finnes), minsteinntekt, § 8-3, § 8-4. Hvilke vilkår som gjelder, avhenger av rettighetskategorien.</p>` },
+  "o-dekning": { title: "Dekning per grunnlagsdel", html: `<p>Dekningsgrad og fra-dag per grunnlagsdel. <code>forsikringsvurderingId</code> blir en del av dette. Erstatter hardkodet 100 % og 80 % i utbetalingstidslinje-builderne.</p>` },
+  "o-utbtl": { title: "utbetalingstidslinje", html: `<p>Resultatet av beregningen. Spleis setter sammen dager, grad og beløp ut fra koblingene, uten å vite hvilke kategoriregler som ligger bak.</p>` },
+
+  /* Apper */
+  spleis: { title: "Spleis", html: `<p>Kjernen: sykdomstidslinje, vedtaksperioder og tilstandsmaskin, behandlinger og utbetaling. Målet er at Spleis kjenner svarene den trenger for å beregne utbetaling, ikke reglene bak dem.</p>` },
+  "app-rk-idag": { title: "Rettighetskategori i Spleis (i dag)", html: `<p>Implisitt: <code>arbeidssituasjon</code> fra søknaden og yrkesaktivitet ut fra søknadstype. Ingen hjemmel lagres, og kombinerte kategorier støttes ikke.</p>` },
+  "app-rk": { title: "Rettighetskategori (skisse)", html: `<p>Avklares først for hvert sykefraværstilfelle. Om det blir en egen tjeneste eller en modul i Spleis, er ikke bestemt.</p>` },
+  "app-medlemskap": { title: "Medlemskap (planlagt tjeneste)", html: `<p>Inngangsvilkår, trekkes ut i en egen tjeneste parallelt med rettighetskategori. Eier vurderingen, hjemmelen og overstyringen. I dag svarer <code>sparkel-medlemskap</code> på behovet, og Spleis lagrer bare statusen.</p>` },
+  "app-inntekt": { title: "Inntekt og sykepengegrunnlag (planlagt)", html: `<p>Skal isoleres og kunne overstyres. Egen tjeneste eller modul i Spleis er ikke bestemt.</p>` },
+  "opptjening-legacy": { title: "Opptjening beregnet i Spleis (før)", html: `<p><code>Opptjening.kt</code> og <code>ArbeidsgiverOpptjeningsgrunnlag</code> regnet ut opptjening selv, med <code>ArbeidsforholdV2</code> og 28-dagersregelen.</p>` },
+  "opptjening-rester": { title: "Rester av opptjening i Spleis", html: `<p>Ikke i bruk, men ikke ryddet bort: <code>Opptjening.kt</code>, <code>ArbeidstakerOpptjening</code> og feltet <code>opptjening</code> i <code>Grunnlagsdata</code>.</p>` },
+  "sp-vilkarsproving": { title: "sp-vilkarsproving", html: `<ul>
+      <li><strong>Inn:</strong> behov <code>Opptjeningsvurdering</code> med <code>skjæringstidspunkt</code> og <code>arbeidssituasjon</code>. Appen ber selv om <code>ArbeidsforholdV2</code>.</li>
+      <li><strong>Ut:</strong> <code>@løsning.Opptjeningsvurdering.id</code>, senere <code>ok</code> på <code>OpptjeningsvurderingResultat</code>.</li>
+      <li><strong>Lagring:</strong> <code>vilkarsproving</code> og <code>vilkarsvurdering</code>.</li>
+      <li><strong>REST:</strong> vurderinger, historikk og overstyring for Speil.</li>
+      <li><strong>Endring:</strong> <code>endret_opptjeningsvurdering</code> via outbox.</li></ul>
+      <p class="hint">Når rettighetskategori er på plass, bør behovet få rettighetskategorien i stedet for <code>arbeidssituasjon</code>.</p>` },
+  "sp-forsikring": { title: "sp-forsikring", html: `<ul>
+      <li><strong>Inn:</strong> behov <code>Forsikringsvurdering</code> med <code>yrkesaktivitetstype</code>, <code>spesielleYrkesgrupper</code> og <code>skjæringstidspunkt</code>.</li>
+      <li><strong>Regler:</strong> Infotrygd-type 1–5 blir til <code>ÅTTI_PROSENT_FRA_DAG_1</code>, <code>HUNDRE_PROSENT_FRA_DAG_17</code> eller <code>HUNDRE_PROSENT_FRA_DAG_1</code>.</li>
+      <li><strong>Ut:</strong> <code>forsikringsvurderingId</code>, senere <code>dekning.grad</code> og <code>dekning.iVentetid</code> på <code>ForsikringsvurderingResultat</code>.</li>
+      <li><strong>Endring:</strong> <code>endret_forsikringsvurdering</code>.</li></ul>
+      <p>Forsikring er en del av abstraksjonen Dekning.</p>` },
+  "agp-idag": { title: "AGP og ventetid i Spleis", html: `<p><code>Arbeidsgiverperiodeberegner</code> og <code>Ventetidberegner</code> går gjennom sykdomstidslinjen dag for dag. Dypt vevd inn i tilstandsmaskinen, inntektsmeldingshåndteringen og forkasting.</p>` },
+  "dekning-idag": { title: "Dekning i Spleis", html: `<p>Hardkodet per utbetalingstidslinje-builder: 100 % arbeidstaker, 80 % selvstendig, overstyrt av forsikring.</p>` },
+  "app-agp": { title: "AGP/ventetid (skisse)", html: `<p>Én abstraksjon for arbeidsgiverperiode og ventetid. Største og vanskeligste uttrekket, fordi grensesnittet mot sykdomstidslinjen må avklares. Kan like gjerne bli en modul i Spleis som en egen tjeneste.</p>` },
+  "app-dekning": { title: "Dekning (skisse)", html: `<p>Dekningsgrad og fra-dag per grunnlagsdel. sp-forsikring leverer allerede en del av dette for selvstendig.</p>` },
+  kilder: { title: "Kilder", html: `<ul><li>Søknad (i dag kilde til implisitt kategori)</li><li>Aa-reg via <code>ArbeidsforholdV2</code></li><li>Inntekter via sparkel-apper</li><li>Infotrygd-replika (forsikring)</li><li>Inntektsmelding</li></ul>` },
+  speil: { title: "Speil og Spesialist", html: `<p>Speil henter opptjeningsvurderingen direkte fra sp-vilkarsproving (<code>useOpptjeningsvurdering.ts</code>). Overstyring går til vurderingsappen, ikke til Spleis.</p>` },
+};
+function D_RK() { return `<p>Ny kobling, og første steg. Gjelder hele sykefraværstilfellet. Hovedkategori og tilleggskategorier, med hjemmel. Erstatter <code>arbeidssituasjon</code> på endringen som implisitt kategori, og gjør det mulig å støtte kombinerte kategorier (§§ 8-40 til 8-43).</p>`; }
+
+/* ---------- Felles panel ---------- */
+const CLS = { next: "--next-b", plan: "--next-b", sat: "--sat-b", part: "--part-b", todo: "--todo-b", legacy: "--legacy-b", spleis: "--spleis-b", ext: "--ext-b" };
+function b(id, title, sub, cls, extra = "") {
+  const tag = cls === "next" ? `<span class="tag">Start her</span>` : "";
+  return `<button type="button" class="box ${cls} ${extra}" data-id="${id}" aria-expanded="false">${tag}${title}${sub ? `<small>${sub}</small>` : ""}</button>`;
+}
+document.querySelectorAll("[data-host]").forEach(host => {
+  const panel = document.getElementById(host.dataset.host);
+  host.addEventListener("click", e => {
+    const btn = e.target.closest(".box[data-id]"); if (!btn) return;
+    const open = btn.getAttribute("aria-expanded") === "true";
+    host.querySelectorAll(".box").forEach(x => x.setAttribute("aria-expanded", "false"));
+    if (open) { panel.hidden = true; return; }
+    const d = D[btn.dataset.id];
+    const c = [...btn.classList].find(k => CLS[k]);
+    panel.style.borderLeftColor = `var(${CLS[c] || "--fg"})`;
+    panel.innerHTML = `<h3>${d.title}</h3>${d.html}`;
+    panel.hidden = false; btn.setAttribute("aria-expanded", "true");
+  });
+});
+function tabs(name, render) {
+  const list = [...document.querySelectorAll(`[data-tabs="${name}"] [role=tab]`)];
+  const select = t => { list.forEach(x => { x.setAttribute("aria-selected", x === t); x.tabIndex = x === t ? 0 : -1; }); render(t.dataset.view); document.getElementById(name + "-panel").hidden = true; };
+  list.forEach((t, i) => {
+    t.addEventListener("click", () => select(t));
+    t.addEventListener("keydown", e => { const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0; if (d) { const n = list[(i + d + list.length) % list.length]; n.focus(); select(n); } });
+  });
+  select(list.find(t => t.getAttribute("aria-selected") === "true"));
+}
+
+/* ---------- Byggeklosser ---------- */
+const BLOCKS = [
+  ["Per sykefraværstilfelle", "Avgjøres én gang fra skjæringstidspunktet. Kobling på vilkårsgrunnlaget.", [
+    ["a-rettighetskategori", "Rettighetskategori", "avklares først, ikke et inngangsvilkår", "next"],
+    ["a-medlemskap", "Medlemskap", "inngangsvilkår, egen tjeneste parallelt", "next"],
+    ["a-inntekt", "Inntekt", "planlagt uttrekk, overstyrbar", "plan"],
+    ["a-sykepengegrunnlag", "Sykepengegrunnlag", "planlagt uttrekk, overstyrbar", "plan"],
+    ["a-inngangsvilkar", "Inngangsvilkår", "opptjening ✓ i sp-vilkarsproving", "part"],
+    ["a-minsteinntekt", "Minsteinntekt", "inngangsvilkår", "todo"],
+    ["a-dekning", "Dekning", "forsikring ✓ i sp-forsikring", "part"]]],
+  ["Periodisert", "Kan starte og slutte midt i tilfellet. Kobling på beregningen.", [
+    ["a-andreytelser", "Andre ytelser", "uføretrygd, AFP", "todo"],
+    ["a-institusjon", "Institusjonsopphold", "helseinstitusjon, fengsel", "todo"]]],
+  ["Per dato", "Kan gi ulikt svar for ulike dager. Kobling på beregningen.", [
+    ["a-lopende", "Løpende vilkår", "dager uten rett", "todo"],
+    ["a-utbetalingsgrad", "Utbetalingsgrad", "gradering, reduksjon", "todo"],
+    ["a-reisetilskudd", "Reisetilskudd", "ikke modellert", "todo"]]],
+  ["På tvers av tilfeller", "Avhenger av tidligere sykefravær. Kobling på beregningen.", [
+    ["a-agp", "Arbeidsgiverperiode/ventetid", "én abstraksjon for begge", "todo"],
+    ["a-maksdato", "Sykepengedager/maksdato", "248, 250 eller 260 dager", "todo"]]],
+];
+document.getElementById("blocks").innerHTML = BLOCKS.map(([t, p, items]) =>
+  `<div class="blockcol"><h3>${t}</h3><p>${p}</p>${items.map(i => b(...i)).join("")}</div>`).join("");
+
+/* ---------- Koblinger ---------- */
+const MODEL = {
+  idag: {
+    desc: "I dag: endringen peker på vilkårsgrunnlaget, men mange avgjørelser ligger som ferdig beregnede verdier inne i endringen. Kategorien er implisitt fra søknaden.",
+    endring: ["m-endring", "Behandling → Endring", "én beregning", [
+      ["m-arbeidssituasjon", "arbeidssituasjon", "fra søknaden, implisitt kategori", "todo", "inline"],
+      ["m-grunnlagsdata", "grunnlagsdata", "peker på vilkårsgrunnlaget", "spleis", "ref"],
+      ["m-dagerUtenNavAnsvar", "dagerUtenNavAnsvar", "AGP/ventetid beregnet i Spleis", "todo", "inline"],
+      ["m-avslag", "avslagstidslinje", "løpende vilkår", "todo", "inline"],
+      ["m-maksdato", "maksdatoresultat", "beregnet i Spleis", "todo", "inline"],
+      ["m-utbtl", "utbetalingstidslinje", "dekningsgrad hardkodet", "todo", "inline"]]],
+    vg: ["m-vg", "Vilkårsgrunnlag (Grunnlagsdata)", "per skjæringstidspunkt", [
+      ["m-inntektsgrunnlag", "inntektsgrunnlag", "inntekt + sykepengegrunnlag sammen", "todo", "inline"],
+      ["m-opptjeningId", "opptjeningsvurderingId", "→ sp-vilkarsproving", "sat", "ref"],
+      ["m-forsikringId", "forsikringsvurderingId", "→ sp-forsikring", "sat", "ref"],
+      ["m-medlemskap", "medlemskapstatus", "verdi uten kobling", "todo", "inline"],
+      ["m-opptjeningRest", "opptjening", "rest, ikke i bruk", "legacy", "inline"]]],
+    other: ["m-ytelser", "Hentes ved beregning, uten kobling", "ytelser, institusjonsopphold, vurderingsresultater", []],
+  },
+  onsket: {
+    desc: "Ønsket (skisse): vilkårsgrunnlaget peker på alt som gjelder hele tilfellet, med rettighetskategori først. Beregningen peker på vilkårsgrunnlaget og på alle andre fakta den trenger.",
+    endring: ["o-endring", "Behandling → Endring (beregning)", "peker på alt den trenger", [
+      ["o-vgref", "vilkårsgrunnlagId", "per sykefraværstilfelle", "spleis", "ref"],
+      ["o-agp", "AGP/ventetid-avklaring", "på tvers av tilfeller", "todo", "ref"],
+      ["o-perioder", "Andre ytelser, institusjonsopphold", "periodisert, versjonert", "todo", "ref"],
+      ["o-lopende", "Løpende vilkår, utbetalingsgrad", "per dato (uavklart form)", "todo", "ref"],
+      ["o-maksdato", "Sykepengedager/maksdato", "på tvers (uavklart form)", "todo", "ref"],
+      ["o-utbtl", "utbetalingstidslinje", "resultatet", "spleis", "inline"]]],
+    vg: ["o-vg", "Vilkårsgrunnlag", "per sykefraværstilfelle", [
+      ["o-rk", "rettighetskategoriId", "hovedkategori + tilleggskategorier", "next", "ref"],
+      ["o-medlemskap", "medlemskapsvurderingId", "inngangsvilkår, parallelt", "next", "ref"],
+      ["o-inntekt", "Inntekt", "overstyrbar", "plan", "ref"],
+      ["o-spg", "Sykepengegrunnlag", "grunnlagsdeler, overstyrbar", "plan", "ref"],
+      ["o-inngang", "Andre inngangsvilkår", "opptjeningsvurderingId ✓, minsteinntekt, …", "part", "ref"],
+      ["o-dekning", "Dekning per grunnlagsdel", "forsikringsvurderingId ✓ inngår", "part", "ref"]]],
+    other: null,
+  },
+};
+function entity(cls, [id, title, sub, fields]) {
+  return `<div class="entity ${cls}"><header>${title}<small>${sub}</small></header><div class="fields">
+    ${b(id, "Om denne", "klikk for forklaring", "spleis")}${fields.map(f => b(...f)).join("")}</div></div>`;
+}
+tabs("model", v => {
+  const m = MODEL[v];
+  document.getElementById("model-desc").textContent = m.desc;
+  document.getElementById("model").innerHTML = `<div class="model">
+    <div>${entity("", m.endring)}</div>
+    <div class="link" aria-hidden="true">→</div>
+    <div>${entity("vg", m.vg)}${m.other ? entity("other", m.other) : ""}</div></div>`;
+});
+
+/* ---------- Apper ---------- */
+const APPS = {
+  for: { desc: "Før: Spleis eide reglene selv, og kategorien var implisitt fra søknaden.",
+    core: [["app-rk-idag", "Kategori", "implisitt fra søknad", "spleis"], ["opptjening-legacy", "Opptjening", "Opptjening.kt", "spleis"], ["agp-idag", "AGP og ventetid", "to beregnere", "spleis"], ["dekning-idag", "Dekning", "hardkodet", "spleis"]],
+    contract: null, right: [["speil", "Speil / Spesialist", "leser alt fra Spleis", "ext"]] },
+  idag: { desc: "I dag: opptjening og forsikring er trukket ut. Kategori, AGP/ventetid og resten av dekning bor i Spleis.",
+    core: [["app-rk-idag", "Kategori", "implisitt fra søknad", "todo"], ["m-medlemskap", "Medlemskap", "status fra sparkel-medlemskap", "todo"], ["agp-idag", "AGP og ventetid", "to beregnere", "todo"], ["dekning-idag", "Dekning", "100 % / 80 % hardkodet", "todo"], ["opptjening-rester", "Rester av opptjening", "ikke i bruk", "legacy"]],
+    contract: "Koblinger i vilkårsgrunnlaget: <code>opptjeningsvurderingId</code>, <code>forsikringsvurderingId</code>",
+    right: [["sp-vilkarsproving", "sp-vilkarsproving", "opptjening ✓", "sat"], ["sp-forsikring", "sp-forsikring", "forsikring (del av dekning) ✓", "sat"], ["speil", "Speil / Spesialist", "leser vurderinger fra appene", "ext"]] },
+  onsket: { desc: "Ønsket (skisse): Spleis kjenner svarene, ikke reglene. Rettighetskategori og medlemskap kommer først. Hver abstraksjon blir en egen tjeneste eller en isolert modul i Spleis. Det er bare bestemt for medlemskap.",
+    core: [["app-inntekt", "Inntekt og sykepengegrunnlag", "tjeneste eller modul, overstyrbar", "plan"], ["app-agp", "AGP/ventetid", "tjeneste eller modul", "todo"]],
+    contract: "Vilkårsgrunnlaget peker på rettighetskategori, medlemskap, inntekt, sykepengegrunnlag, inngangsvilkår og dekning. Beregningen peker på vilkårsgrunnlaget, AGP/ventetid og periodiserte fakta. Modulene har rene API-er, slik tjenestene har kontrakter.",
+    right: [["app-rk", "Rettighetskategori", "avklares først", "next"], ["app-medlemskap", "Medlemskap", "egen tjeneste", "next"], ["sp-vilkarsproving", "sp-vilkarsproving", "opptjening ✓", "sat"], ["sp-forsikring", "sp-forsikring", "forsikring ✓", "sat"], ["app-dekning", "Dekning", "skisse", "todo"], ["speil", "Speil / Spesialist", "leser og overstyrer i abstraksjonene", "ext"]] },
+};
+tabs("apps", v => {
+  const a = APPS[v];
+  document.getElementById("apps-desc").textContent = a.desc;
+  document.getElementById("apps").innerHTML = `<div class="diagram">
+    <div class="col"><div class="col-title">Kilder</div>${b("kilder", "Kilder", "søknad, Aa-reg, inntekt, Infotrygd, IM", "ext")}<div class="arrow">data inn →</div></div>
+    <div class="col"><div class="spleis-core"><div class="col-title">Spleis</div>
+      ${b("spleis", "Kjernen", "sykdomstidslinje, behandlinger, utbetaling", "spleis")}
+      ${a.core.map(c => b(...c)).join("")}${a.contract ? `<div class="contract">${a.contract}</div>` : ""}</div></div>
+    <div class="col"><div class="col-title">${v === "for" ? "Konsumenter" : "Vurderinger og konsumenter"}</div>
+      ${v !== "for" ? `<div class="arrow">← behov / svar / endret_*</div>` : ""}${a.right.map(c => b(...c)).join("")}</div></div>`;
+});
+
+/* ---------- Sekvens ---------- */
+const SEQ = [
+  ["0. Avklaring av rettighetskategori (skisse)"],
+  [0, 1, "avklar rettighetskategori", false, true, `<p>Planlagt første steg. Når Spleis får et nytt sykefraværstilfelle, avklares rettighetskategorien før noe annet. I dag gjøres dette implisitt ut fra <code>arbeidssituasjon</code> i søknaden.</p>`],
+  [1, 2, "søknad, registre", false, true, `<p>Avklaringen bygger på opplysninger fra søknaden og registre, for eksempel arbeidsforhold, næring, dagpenger og verneplikt.</p>`],
+  [1, 0, "rettighetskategoriId", true, true, `<p>Spleis lagrer id-en på vilkårsgrunnlaget. Alle senere behov sender med rettighetskategorien i stedet for <code>arbeidssituasjon</code>, så vurderingsappene slipper å utlede kategorien selv.</p>`],
+  ["1. Vilkårsgrunnlag"],
+  [0, 1, "behov <X>vurdering", false, false, `<p>Sendes når Spleis bygger vilkårsgrunnlag for et skjæringstidspunkt. Eksempler i dag: <code>Opptjeningsvurdering</code> og <code>Forsikringsvurdering</code>. Planlagt: medlemskap, parallelt med rettighetskategori. Spleis sender bare det abstraksjonen trenger for å identifisere saken, ikke grunnlagsdata.</p>`],
+  [1, 2, "henter egne data", false, false, `<p>sp-vilkarsproving sender <code>ArbeidsforholdV2</code>. sp-forsikring leser Infotrygd-replika. Spleis vet ikke hvilke kilder som brukes.</p>`],
+  [1, 0, "id → vilkårsgrunnlaget", true, false, `<p>Appen svarer med en id. Avgjørelsen gjelder hele sykefraværstilfellet, så Spleis lagrer id-en på vilkårsgrunnlaget.</p>`],
+  ["2. Beregning (endring i behandling)"],
+  [0, 1, "behov <X>vurderingResultat", false, false, `<p>Sendes sammen med Ytelser når Spleis skal beregne. <code>YtelserRiver</code> krever <code>OpptjeningsvurderingResultat</code> og tar imot <code>ForsikringsvurderingResultat</code>.</p>`],
+  [1, 0, "minimalt svar", true, false, `<p><code>ok</code> for opptjening, <code>dekning.grad</code> og <code>dekning.iVentetid</code> for forsikring.</p>`],
+  ["3. Overstyring og endring"],
+  [3, 1, "vis / overstyr", false, false, `<p>Speil henter vurderingen direkte fra abstraksjonen og viser grunnlaget. Saksbehandler overstyrer i abstraksjonen, ikke i Spleis sin beregning. Dette gjelder også inntekt og sykepengegrunnlag når de er isolert.</p>`],
+  [1, 0, "event endret_<x>vurdering", true, false, `<p><code>endret_opptjeningsvurdering</code> eller <code>endret_forsikringsvurdering</code> med <code>fødselsnummer</code>, <code>skjæringstidspunkt</code> og ny id. Spleis bytter id i <code>EndretVurderingPåSkjæringstidspunktRiver</code> og reberegner. Den nye beregningen peker på den nye id-en, den gamle beregningen beholder den gamle.</p>`],
+];
+const seq = document.getElementById("seq"), seqPanel = document.getElementById("seq-panel");
+const esc = s => s.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+seq.innerHTML = SEQ.map((m, i) => {
+  if (m.length === 1) return `<div><span class="phase">${m[0]}</span></div>`;
+  const [a, z, t, ret, plan] = m, lo = Math.min(a, z), hi = Math.max(a, z);
+  return `<div class="msg"><button type="button" data-i="${i}" aria-expanded="false" aria-controls="seq-panel"
+    class="${a < z ? "r" : "l"} ${ret ? "ret" : ""} ${plan ? "plan" : ""}" style="left:${lo * 25 + 12.5}%;width:${(hi - lo) * 25}%"><span class="lbl">${esc(t)}</span></button></div>`;
+}).join("");
+seq.addEventListener("click", e => {
+  const btn = e.target.closest("button"); if (!btn) return;
+  const open = btn.getAttribute("aria-expanded") === "true";
+  seq.querySelectorAll("button").forEach(x => x.setAttribute("aria-expanded", "false"));
+  if (open) { seqPanel.hidden = true; return; }
+  const m = SEQ[btn.dataset.i];
+  seqPanel.style.borderLeftColor = m[4] ? "var(--next-b)" : "var(--fg)";
+  seqPanel.innerHTML = `<h3>${esc(m[2])}</h3>${m[5]}`;
+  seqPanel.hidden = false; btn.setAttribute("aria-expanded", "true");
+});
+
+/* ---------- Rekkefølge ---------- */
+const CARDS = [
+  ["1a. Rettighetskategori", "b-next", "Start her", `<p>Gjør den implisitte kategorien eksplisitt: hovedkategori og tilleggskategorier, med hjemmel, avklart én gang per sykefraværstilfelle og koblet fra vilkårsgrunnlaget.</p><p>Gir grunnlag for å støtte kombinerte kategorier, og for at de andre abstraksjonene kan ta imot kategorien i stedet for <code>arbeidssituasjon</code>. Tjeneste eller modul er ikke bestemt.</p>`],
+  ["1b. Medlemskap", "b-next", "Start her, parallelt", `<p>Inngangsvilkår som trekkes ut i en egen tjeneste. Vilkårsgrunnlaget får en kobling i stedet for verdien <code>medlemskapstatus</code>. Tjenesten eier vurdering, hjemmel og overstyring.</p>`],
+  ["2. Inntekt og sykepengegrunnlag", "b-todo", "Planlagt", `<p>Skal isoleres og kunne overstyres. Rå inntekt skilles fra grunnlaget (G-regulering, 6G, avvik, skjønn, grunnlagsdeler). Begge kobles fra vilkårsgrunnlaget. Tjeneste eller modul er ikke bestemt.</p>`],
+  ["Opptjening", "b-done", "Ferdig (rester gjenstår)", `<p>sp-vilkarsproving eier regler, Aa-reg-oppslag, lagring, visning og overstyring. Spleis har <code>opptjeningsvurderingId</code> på vilkårsgrunnlaget og får <code>ok</code>.</p><p><strong>Gjenstår:</strong> rydde bort restene i Spleis, og la behovet bruke rettighetskategori.</p>`],
+  ["Dekning", "b-part", "Delvis", `<p>Forsikring for selvstendig er trukket ut til sp-forsikring. Resten (100 % arbeidstaker, 80 % selvstendig, frilanser, inaktiv, AGP dekket av Nav) er hardkodet i Spleis. Dekning skal gjelde per grunnlagsdel.</p>`],
+  ["Arbeidsgiverperiode/ventetid", "b-todo", "Kandidat", `<p>Én abstraksjon for begge. Går på tvers av sykefraværstilfeller, så koblingen bor på beregningen. Største uttrekket, fordi AGP er vevd inn i tilstandsmaskinen og inntektsmeldingshåndteringen.</p>`],
+  ["Andre abstraksjoner", "b-todo", "Senere", `<p>Minsteinntekt, andre ytelser, institusjonsopphold, løpende vilkår, utbetalingsgrad, maksdato og reisetilskudd. Rekkefølgen er ikke bestemt.</p>`],
+];
+document.getElementById("cards").innerHTML = CARDS.map(([t, bc, s, html]) =>
+  `<details${bc === "b-next" ? " open" : ""}><summary>${t} <span class="badge ${bc}">${s}</span></summary>${html}</details>`).join("");
+</script>
+</body>
+</html>
