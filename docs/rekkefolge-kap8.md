@@ -23,15 +23,18 @@ flowchart TB
         SFT["Inndeling i sykefraværstilfeller<br/>(begrep, gir skjæringstidspunkt)"]
         AY["Andre ytelser<br/>(periodisert)"]
         IO["Institusjonsopphold<br/>(periodisert)"]
+        FORS["Forsikring<br/>(periodisert)"]
         AGP["Arbeidsgiverperiode/ventetid<br/>(per yrkesaktivitet)"]
         MAX["Sykepengedager/maksdato"]
     end
+
+    AU["Arbeidsuførhet<br/>(plassering uavklart)"]
 
     subgraph TILFELLE["Per sykefraværstilfelle"]
         direction TB
         INN["Inntekt"]
         MED["Medlemskap<br/>(inngangsvilkår)"]
-        OVR["Øvrige inngangsvilkår<br/>§§ 8-3 og 8-4"]
+        OVR["Øvrige inngangsvilkår<br/>§ 8-3"]
         RK["Rettighetskategori"]
         DP["Dagpenger"]
         OPP["Opptjening<br/>(inngangsvilkår)"]
@@ -55,6 +58,7 @@ flowchart TB
     START --> SFT
     START --> AY
     START --> IO
+    START --> FORS
 
     SFT --> INN
     SFT --> MED
@@ -85,11 +89,19 @@ flowchart TB
     DP -.->|uavklart| DEK
     INA --> DEK
     SPG --> DEK
+    RK --> FORS
+    FORS --> DEK
 
     RK --> AGP
     DP --> AGP
     INA --> AGP
     IO --> AGP
+
+    RK --> AU
+    DP --> AU
+    INA --> AU
+    AU -.->|uavklart| SFT
+    AU -.->|uavklart| LV
 
     MED --> GATE
     OVR --> GATE
@@ -107,13 +119,16 @@ flowchart TB
     IO --> UG
     AY --> LV
     SPG --> LV
-    DP --> LV
+    MED --> LV
+    RK --> LV
 
     LV --> MAXD
     MAX --> MAXD
     RK --> MAX
     DEK --> MAX
     AGP --> MAX
+    FORS --> MAX
+    AY --> MAX
 
     UG --> RT
     MAXD --> RT
@@ -124,6 +139,7 @@ flowchart TB
     RT --> RES
 
     MAXD -.->|forbrukte dager| MAX
+    MAXD -.->|opphør etter § 8-37 d| FORS
     AGP -.->|arbeidsgiverperiode/ventetid<br/>til neste sykefraværstilfelle| AGP
 ```
 
@@ -134,17 +150,19 @@ flowchart TB
 Behandlingen starter når Nav mottar en søknad. Disse kan da vurderes parallelt, og før noe annet:
 
 - Inndeling i sykefraværstilfeller. Én frisk dag starter et nytt sykefraværstilfelle. Inndelingen gir skjæringstidspunktet for hvert sykefraværstilfelle.
-- Andre ytelser og Institusjonsopphold. Begge er periodiserte og uavhengige av sykefraværstilfellene.
+- Andre ytelser, Institusjonsopphold og Forsikring. Alle er periodiserte og uavhengige av sykefraværstilfellene. Forsikring bruker likevel tilleggskategorien Yrkesskade fra Rettighetskategori (§ 8-55 bokstav a) og opphører når retten faller bort etter § 8-12 (§ 8-37 bokstav d).
+
+Arbeidsuførhet avgjør hvilke dager som er arbeidsuførhet. Vi har ikke avklart om den skal vurderes før inndelingen i sykefraværstilfeller eller sammen med Løpende vilkår. Flere av reglene gjelder bare for en bestemt rettighetskategori, Inaktiv eller Dagpenger, og disse avgjøres ut fra skjæringstidspunktet. Vurderes Arbeidsuførhet før inndelingen, blir avhengigheten sirkulær.
 
 ### 2. Per sykefraværstilfelle
 
-Inntekt, Medlemskap og de øvrige inngangsvilkårene (§§ 8-3 og 8-4) kan vurderes parallelt, så snart skjæringstidspunktet er kjent. Deretter går rekkefølgen slik:
+Inntekt, Medlemskap og de øvrige inngangsvilkårene (§ 8-3) kan vurderes parallelt, så snart skjæringstidspunktet er kjent. Deretter går rekkefølgen slik:
 
 1. Rettighetskategori og Dagpenger, som begge bruker Inntekt og kan vurderes parallelt. Tilleggskategoriene avgjør om kravet om opptjening faller bort.
 2. Opptjening, som bruker Rettighetskategori og Dagpenger. Tid med dagpenger er likestilt med arbeid (§ 8-2 andre ledd).
 3. Inaktiv, som bruker Rettighetskategori, Dagpenger, Opptjening og Inntekt. Inaktiv vurderes når hovedkategorien er «Ingen» og Dagpenger ikke gjelder, eller når opptjeningen ikke er oppfylt. Når § 8-47 gjelder, erstatter Inaktiv rettighetskategorien i stegene etterpå.
 4. Sykepengegrunnlag, som bruker Inntekt, Rettighetskategori eller Inaktiv, Dagpenger og Institusjonsopphold (§ 8-54 tredje ledd). Grunnlaget fordeles på yrkesaktivitetene. Hvordan Andre ytelser påvirker grunnlaget, er ikke avklart.
-5. Minsteinntekt og Dekning, som begge bruker Sykepengegrunnlag og kan vurderes parallelt. Dekning fastsettes per yrkesaktivitet. Dekningsgraden for Dagpenger er ikke avklart.
+5. Minsteinntekt og Dekning, som begge bruker Sykepengegrunnlag og kan vurderes parallelt. Dekning fastsettes per yrkesaktivitet og bruker Forsikring. Dekningsgraden for Dagpenger er ikke avklart.
 6. Inngangsvilkårene samlet. Er ett av dem ikke oppfylt, får personen avslag for hele sykefraværstilfellet. Opptjening som ikke er oppfylt, gir likevel ikke avslag hvis Inaktiv gjelder.
 
 ### 3. Arbeidsgiverperiode/ventetid
@@ -186,7 +204,15 @@ Datoene må vurderes i kronologisk rekkefølge, fordi hver utbetalt dag flytter 
 | Dagpenger | Dekning | Ikke avklart | § 8-49 |
 | Rettighetskategori eller Inaktiv | Arbeidsgiverperiode/ventetid | Arbeidsgiverperiode eller ventetid, og fra-dag | §§ 8-19, 8-34, 8-38, 8-46, 8-47 |
 | Dagpenger | Arbeidsgiverperiode/ventetid | Sykepenger fra og med første dag med arbeidsuførhet | § 8-49 første og andre ledd |
-| Dagpenger | Løpende vilkår | Arbeidsufør tidligst fra den dagen personen søker lege | § 8-49 femte ledd |
+| Rettighetskategori, Inaktiv og Dagpenger | Arbeidsuførhet | Reglene om «arbeidsufør tidligst fra» gjelder for bestemte kategorier | §§ 8-34, 8-38, 8-44, 8-47, 8-49 |
+| Arbeidsuførhet | Inndeling i sykefraværstilfeller eller Løpende vilkår | Ikke avklart | §§ 8-4, 8-7 |
+| Rettighetskategori | Forsikring | Ingen opptjeningstid for forsikringen ved yrkesskade | § 8-55 bokstav a |
+| Forsikring | Dekning | Dekningsgrad og fra-dag ved forsikring | §§ 8-36, 8-39 |
+| Forsikring | Sykepengedager/maksdato | 260 dager når forsikringen dekker de første 16 dagene | § 8-12 første ledd |
+| Telling av sykepengedager | Forsikring | Forsikringen opphører når retten faller bort etter § 8-12 | § 8-37 bokstav d |
+| Medlemskap | Løpende vilkår | Medlemmer etter §§ 2-5, 2-6 og 2-8 er unntatt fra oppholdskravet | § 8-9 andre ledd bokstav a |
+| Rettighetskategori | Løpende vilkår | Oppholdskravet gjelder ikke ved yrkesskade | § 8-55 bokstav d |
+| Andre ytelser | Sykepengedager/maksdato | Ny rett for mottakere av uføretrygd | § 8-12 tredje ledd |
 | Institusjonsopphold | Arbeidsgiverperiode/ventetid | Ingen arbeidsgiverperiode under arbeid utenfor fengselet | § 8-54 andre ledd |
 | Institusjonsopphold | Løpende vilkår | Ingen rett under varetekt og soning | § 8-54 første ledd |
 | Institusjonsopphold | Utbetalingsgrad | Reduksjon på 50 % | §§ 8-53, 8-54 |
@@ -199,6 +225,7 @@ Datoene må vurderes i kronologisk rekkefølge, fordi hver utbetalt dag flytter 
 
 ## Ikke avklart
 
-- Hvordan Andre ytelser påvirker Sykepengegrunnlag. Se [abstraksjoner-kap8.md](abstraksjoner-kap8.md#uavklart-andre-ytelser-og-sykepengegrunnlaget).
+- Hvordan Andre ytelser og opphør av naturalytelser påvirker Sykepengegrunnlag. Se [abstraksjoner-kap8.md](abstraksjoner-kap8.md#uavklart-sykepengegrunnlag-som-endrer-seg-i-et-sykefraværstilfelle).
 - Om en gradert dag teller som en hel sykepengedag. Diagrammet viser derfor ingen pil fra Utbetalingsgrad til tellingen av sykepengedager.
 - Hvilken dekningsgrad Dagpenger har. Se [abstraksjoner-kap8.md](abstraksjoner-kap8.md#uavklart-dekningsgrad-for-dagpenger).
+- Hvor Arbeidsuførhet ligger i rekkefølgen. Se [abstraksjoner-kap8.md](abstraksjoner-kap8.md#uavklart-hvor-arbeidsuførhet-ligger-i-rekkefølgen).

@@ -44,15 +44,17 @@ Prinsippet gjelder alle abstraksjonene under.
 | Rettighetskategori | Hvilke regelsett som gjelder for personen | Per sykefraværstilfelle | §§ 8-15, 8-34, 8-38, 8-40 til 8-46, 8-55 |
 | Dagpenger | Om § 8-49 gjelder. Kombineres med rettighetskategorien | Per sykefraværstilfelle | § 8-49 |
 | Inaktiv | Om § 8-47 gjelder, og i så fall variant a eller b. Erstatter rettighetskategorien | Per sykefraværstilfelle | § 8-47 |
-| Andre ytelser | Uføretrygd og AFP i perioder | Periodisert | §§ 8-48, 8-50, 8-52 |
+| Andre ytelser | Andre ytelser personen har i perioder, i og utenfor kapittel 8 | Periodisert | §§ 8-48, 8-50, 8-52 og hjemler utenfor kapittel 8 |
+| Forsikring | Om personen har forsikring for tillegg til sykepenger, og hvilken | Periodisert | §§ 8-36, 8-37, 8-39, 8-55 |
+| Arbeidsuførhet | Hvilke dager personen regnes som arbeidsufør | Uavklart | §§ 8-4, 8-7, 8-34, 8-38, 8-44, 8-47, 8-49 |
 | Institusjonsopphold | Opphold i helseinstitusjon og fengsel | Periodisert | §§ 8-53, 8-54 |
 | Sykepengegrunnlag | Inntektsgrunnlaget, fordelt på yrkesaktiviteter | Per sykefraværstilfelle | §§ 8-10, 8-28 til 8-30, 8-35, 8-38, 8-41, 8-43, 8-46, 8-47, 8-49 |
-| Inngangsvilkår | Om personen har rett til sykepenger i det hele tatt | Per sykefraværstilfelle | §§ 8-1, 8-2, 8-3, 8-4 |
+| Inngangsvilkår | Om personen har rett til sykepenger i det hele tatt | Per sykefraværstilfelle | §§ 8-1, 8-2, 8-3 |
 | Medlemskap (inngangsvilkår) | Om personen er medlem i folketrygden | Per sykefraværstilfelle | § 8-1 |
 | Minsteinntekt (inngangsvilkår) | Om grunnlaget er høyt nok | Per sykefraværstilfelle | §§ 8-3, 8-47 |
 | Arbeidsgiverperiode/ventetid | Perioden før trygden normalt dekker | Per yrkesaktivitet, på tvers av sykefraværstilfeller | §§ 8-19, 8-31, 8-34, 8-38, 8-46, 8-47, 8-49, 8-54 |
 | Dekning | Dekningsgrad og fra-dag per yrkesaktivitet | Per sykefraværstilfelle | §§ 8-16, 8-17, 8-20, 8-21, 8-34, 8-36, 8-38, 8-39, 8-41, 8-47 |
-| Løpende vilkår | Dager uten rett til sykepenger | Per dato per yrkesaktivitet | §§ 8-3, 8-5, 8-7, 8-8, 8-9, 8-15, 8-17, 8-31, 8-34, 8-38, 8-47, 8-49, 8-51, 8-54 |
+| Løpende vilkår | Dager uten rett til sykepenger | Per dato per yrkesaktivitet | §§ 8-3, 8-5, 8-7, 8-8, 8-9, 8-15, 8-17, 8-31, 8-51, 8-52, 8-54, 8-55 |
 | Utbetalingsgrad | Delvis utbetaling på grunn av gradering eller reduksjon | Per dato per yrkesaktivitet | §§ 8-6, 8-13, 8-53, 8-54 |
 | Sykepengedager/maksdato | Datoen retten tar slutt | På tvers av sykefraværstilfeller | §§ 8-3, 8-11, 8-12, 8-51, 8-55 |
 | Reisetilskudd | Tilskudd til reise i stedet for sykepenger | Per dato per yrkesaktivitet | § 8-14 |
@@ -106,7 +108,7 @@ Vernepliktig kan senere bli en egen abstraksjon, slik Inaktiv og Dagpenger er. D
 | Fisker på blad B | § 8-45 | Ingen opptjeningstid etter § 8-2 |
 | Yrkesskade | § 8-55 | Ingen opptjeningstid. Grunnlaget skal minst svare til grunnlaget på skadetidspunktet. Oppholdskravet i § 8-9 gjelder ikke. Egne regler for antall sykepengedager |
 
-Forsikring etter §§ 8-36 og 8-39 er ingen tilleggskategori. Den er en del av avgjørelsen om dekning.
+Forsikring etter §§ 8-36 og 8-39 er ingen tilleggskategori. Den er en egen abstraksjon, se Forsikring.
 
 ## Dagpenger
 
@@ -120,7 +122,7 @@ Virkninger i andre abstraksjoner:
 |---|---|---|
 | Sykepengegrunnlag | Grunnlaget for yrkesaktiviteten er dagpengene per uke, ventelønnen eller vartpengene. En permittert person får grunnlaget fra før permitteringen fra den dagen arbeidet skulle vært tatt opp igjen | § 8-49 tredje ledd |
 | Arbeidsgiverperiode/ventetid | Sykepenger fra og med den dagen personen blir arbeidsufør. Ved etterlønn gjelder retten fra vartpengene eller ventelønnen skulle vært utbetalt | § 8-49 første og andre ledd |
-| Løpende vilkår | En arbeidsløs person regnes som arbeidsufør tidligst fra den dagen personen søker lege, med unntak hvis personen var forhindret | § 8-49 femte ledd |
+| Arbeidsuførhet | En arbeidsløs person regnes som arbeidsufør tidligst fra den dagen personen søker lege, med unntak hvis personen var forhindret | § 8-49 femte ledd |
 
 Ferietillegget i § 8-49 tredje ledd hører til feriepenger og er utenfor omfanget.
 
@@ -144,22 +146,26 @@ Virkninger i andre abstraksjoner:
 | Minsteinntekt | Grensen er 1G, og personen må dokumentere inntektstap | § 8-47 femte ledd |
 | Arbeidsgiverperiode/ventetid | Sykepenger fra dag 15 etter sykmeldingstidspunktet | § 8-47 sjette ledd |
 | Dekning | 65 % i variant a og 100 % i variant b | § 8-47 sjette ledd |
-| Løpende vilkår | Ingen sykepenger før personen søkte lege | § 8-47 sjuende ledd |
+| Arbeidsuførhet | Personen regnes som arbeidsufør tidligst fra den dagen personen søkte lege | § 8-47 sjuende ledd |
 
 ## Andre ytelser
 
-Andre ytelser beskriver hvilke ytelser fra folketrygden personen har i hvilke perioder. Ytelsene kan innvilges midt i et sykefraværstilfelle, og derfor er dette en periodisert opplysning. Hver ytelse har sin egen hjemmel.
+Andre ytelser beskriver hvilke andre ytelser personen har i hvilke perioder. Ytelsene kan innvilges midt i et sykefraværstilfelle, og derfor er dette en periodisert opplysning. Hver ytelse har sin egen hjemmel.
+
+Ytelsene i kapittel 8:
 
 - Uføretrygd (§ 8-50) gir sykepenger bare av arbeidsinntekten personen har i tillegg til uføretrygden. Uføretrygd påvirker også når personen får ny rett etter § 8-12 tredje ledd.
 - Ugradert AFP gir ingen sykepenger (§ 8-52 første ledd første punktum). Unntaket er AFP med statstilskudd, AFP fra Statens pensjonskasse og kommunal AFP for personer over 65 år i privat sektor. Disse gir sykepenger etter § 8-51.
 - Gradert AFP (§ 8-52 andre ledd) gir sykepenger bare av arbeidsinntekten personen har i tillegg til den graderte pensjonen.
 - Arbeidsavklaringspenger (§ 8-48 andre ledd): Personen skal bruke opp retten til sykepenger først. Hvis grunnlaget er under 2G, kan personen velge ytelse.
 
+Abstraksjonen omfatter også ytelser utenfor kapittel 8 som personen mottar i samme periode som sykepengene, for eksempel foreldrepenger og pleiepenger. Reglene for disse står utenfor kapittel 8. Vi har ikke kartlagt hjemlene, eller hvordan ytelsene påvirker de andre abstraksjonene.
+
 Dagpenger er ikke med her. Dagpenger er en egen abstraksjon og en egen yrkesaktivitet, fordi dagpengene er grunnlaget for sykepengene.
 
-### Uavklart: Andre ytelser og sykepengegrunnlaget
+### Uavklart: Sykepengegrunnlag som endrer seg i et sykefraværstilfelle
 
-Sykepengegrunnlaget fastsettes per sykefraværstilfelle. Etter § 8-50 og § 8-52 andre ledd skal grunnlaget likevel bare bygge på arbeidsinntekten ved siden av ytelsen. Vi har ikke avklart hva som skjer med grunnlaget når uføretrygd eller gradert AFP innvilges midt i et sykefraværstilfelle. Ett alternativ er at grunnlaget får perioder. Et annet er at grunnlaget står fast, mens ytelsen påvirker utbetalingen per dato.
+Sykepengegrunnlaget fastsettes per sykefraværstilfelle. Etter § 8-50 og § 8-52 andre ledd skal grunnlaget likevel bare bygge på arbeidsinntekten ved siden av ytelsen. Vi har ikke avklart hva som skjer med grunnlaget når uføretrygd eller gradert AFP innvilges midt i et sykefraværstilfelle. Det samme spørsmålet gjelder naturalytelser som arbeidstakeren slutter å motta under sykefraværet (§ 8-29 femte ledd). Ett alternativ er at grunnlaget får perioder. Et annet er at grunnlaget står fast, mens ytelsen påvirker utbetalingen per dato.
 
 ## Institusjonsopphold
 
@@ -189,6 +195,7 @@ Grunnlaget er fordelt på én eller flere yrkesaktiviteter, og hver yrkesaktivit
 Abstraksjonen omfatter:
 
 - Aktuell månedsinntekt for arbeidstakere og frilansere, omregnet til årsinntekt (§§ 8-28 til 8-30 og § 8-38 femte ledd).
+- Naturalytelser som arbeidstakeren ikke lenger mottar, tas med fra det tidspunktet ytelsene stopper (§ 8-29 femte ledd). Se det uavklarte spørsmålet under Andre ytelser.
 - Pensjonsgivende inntekt for selvstendig næringsdrivende og for Inaktiv. Inntekten G-reguleres, og bare en tredel av inntekten mellom 6G og 12G tas med (§ 8-35 andre ledd og § 8-47 sjette ledd).
 - Grunnlag av dagpenger, ventelønn eller vartpenger, og grunnlaget fra før en permittering (§ 8-49 tredje ledd).
 - Kombinerte inntekter (§§ 8-41 og 8-43).
@@ -210,8 +217,9 @@ Vilkår som hører under fellesbetegnelsen:
 - Medlemskap, beskrevet under.
 - Opptjening (§ 8-2): Personen må ha vært i arbeid de fire siste ukene før arbeidsuførheten. Visse ytelser regnes som arbeid. Kravet faller bort for Arbeidstaker på skip (§ 8-44), Fisker på blad B (§ 8-45), Vernepliktig (§ 8-46) og ved Yrkesskade (§ 8-55 bokstav a).
 - Tap av pensjonsgivende inntekt og aldersgrensen på 70 år på skjæringstidspunktet (§ 8-3 første ledd).
-- Arbeidsuførhet som skyldes sykdom eller skade (§ 8-4).
 - Minsteinntekt, beskrevet under.
+
+Kravet om arbeidsuførhet (§ 8-4) står under Arbeidsuførhet.
 
 ### Medlemskap
 
@@ -234,6 +242,32 @@ Grensen gjelder ikke for sykepenger i arbeidsgiverperioden (§ 8-3 andre ledd an
 
 Kravet om inntekt over 2G for personer mellom 67 og 70 år (§ 8-51 andre ledd) er ikke et inngangsvilkår. Det er et løpende vilkår som gjelder fra og med 67-årsdagen, og står under Løpende vilkår.
 
+## Arbeidsuførhet
+
+Arbeidsuførhet avgjør hvilke dager personen regnes som arbeidsufør. Abstraksjonen samler kravet om arbeidsuførhet i § 8-4 og reglene om at personen regnes som arbeidsufør tidligst fra et bestemt tidspunkt.
+
+| Regel | Hjemmel |
+|---|---|
+| Arbeidsuførheten må klart skyldes sykdom eller skade. Sosiale eller økonomiske problemer gir ikke rett | § 8-4 første ledd |
+| Sykepenger ytes også når personen må være borte fra arbeidet i visse situasjoner, blant annet ved innleggelse, behandling, arbeidsrettet tiltak og donasjon | § 8-4 andre ledd bokstav a til j |
+| Kosmetiske inngrep gir bare rett når inngrepet er medisinsk begrunnet | § 8-4 tredje ledd |
+| Legeerklæring godtas ikke for tiden før personen ble undersøkt av lege, med unntak hvis personen var forhindret (tilbakedatering) | § 8-7 andre ledd |
+| Selvstendig næringsdrivende regnes som arbeidsufør tidligst fra melding til Nav eller legebesøk | § 8-34 tredje ledd |
+| Selvstendig næringsdrivende får sykepenger tidligst fra legebesøket | § 8-34 fjerde ledd |
+| Frilansere regnes som arbeidsufør tidligst fra melding til Nav eller legebesøk | § 8-38 tredje ledd |
+| Frilansere får sykepenger tidligst fra legebesøket | § 8-38 fjerde ledd |
+| Arbeidstaker på skip kan få sykepenger selv om personen bare er arbeidsufør som arbeidstaker på skip | § 8-44 bokstav a |
+| Inaktiv regnes som arbeidsufør tidligst fra legebesøket | § 8-47 sjuende ledd |
+| Dagpenger: En arbeidsløs person regnes som arbeidsufør tidligst fra legebesøket | § 8-49 femte ledd |
+
+### Uavklart: Hvor Arbeidsuførhet ligger i rekkefølgen
+
+Reglene avgjør hvilke dager som er arbeidsuførhet. Da kan de flytte skjæringstidspunktet og endre hvordan dagene deles inn i sykefraværstilfeller. Flere av reglene gjelder bare for en bestemt rettighetskategori, Inaktiv eller Dagpenger, og de avgjøres ut fra skjæringstidspunktet. Vi har ikke avklart om Arbeidsuførhet skal vurderes før inndelingen i sykefraværstilfeller, eller etter, slik at dagene før bare gir ingen rett.
+
+### Uavklart: Enkeltstående behandlingsdager
+
+Enkeltstående behandlingsdager (§ 8-4 andre ledd bokstav b) vurderes per dato. Vi har ikke avklart om de hører til Arbeidsuførhet, Utbetalingsgrad eller en annen abstraksjon.
+
 ## Arbeidsgiverperiode/ventetid
 
 Abstraksjonen beskriver perioden i starten av et sykefravær der trygden normalt ikke dekker sykepenger. For arbeidstakere er perioden arbeidsgiverperioden. For selvstendig næringsdrivende og frilansere er den ventetiden. Vi modellerer begge med samme abstraksjon, fordi det ikke har betydning hvem som betaler så lenge det ikke er Nav.
@@ -253,6 +287,20 @@ Perioden beregnes per yrkesaktivitet og kan gå på tvers av sykefraværstilfell
 | Sykepenger fra dag 15 etter sykmeldingstidspunktet for Inaktiv | § 8-47 sjette ledd |
 | Sykepenger fra dagen etter dimittering for Vernepliktig | § 8-46 bokstav a |
 | Sykepenger fra og med første dag med arbeidsuførhet for Dagpenger. Ved etterlønn fra den dagen vartpengene eller ventelønnen skulle vært utbetalt | § 8-49 første og andre ledd |
+
+## Forsikring
+
+Forsikring avgjør om personen har forsikring for tillegg til sykepenger, hvilken forsikring det er, og i hvilke perioder den gjelder. Forsikringen kan begynne å gjelde og opphøre uavhengig av sykefraværstilfellene, og derfor er dette en periodisert opplysning.
+
+| Regel | Hjemmel |
+|---|---|
+| Selvstendig næringsdrivende kan tegne forsikring for 80 % fra første dag, 100 % fra dag 17 eller 100 % fra første dag | § 8-36 første ledd bokstav a, b og c |
+| Frilansere kan tegne forsikring for 100 % fra første dag | § 8-39 |
+| Forsikringen gir ingen rett for arbeidsuførhet de første fire ukene etter at Nav mottok søknaden (opptjeningstid) | § 8-36 andre ledd og § 8-39 andre ledd |
+| Opptjeningstiden gjelder ikke ved yrkesskade | § 8-55 bokstav a |
+| Forsikringen opphører ved oppsigelse, når premien ikke blir betalt, når næringsvirksomheten opphører, eller når retten til sykepenger faller bort etter § 8-12 | § 8-37 og § 8-39 femte ledd |
+
+Forsikring leverer resultatet til Dekning (dekningsgrad og fra-dag) og til Sykepengedager/maksdato (260 dager når trygden dekker de første 16 dagene). Forsikring bruker selv resultatet fra Sykepengedager/maksdato, fordi forsikringen opphører når retten faller bort etter § 8-12 (§ 8-37 bokstav d).
 
 ## Dekning
 
@@ -275,7 +323,7 @@ Trygden dekker også dager i arbeidsgiverperioden i disse situasjonene:
 - Nav har innvilget søknad om dekning av arbeidsgiverperioden på grunn av kronisk eller svangerskapsrelatert sykdom (§ 8-20).
 - Arbeidsgiveren har forsikring mot ansvar for sykepenger i arbeidsgiverperioden. Forsikringen dekker fravær utover tre kalenderdager (§ 8-21).
 
-Forsikringene har en opptjeningstid på fire uker fra Nav mottok søknaden (§ 8-36 andre ledd og § 8-39 andre ledd). Den faller bort ved yrkesskade (§ 8-55 bokstav a). Forsikringen opphører etter § 8-37.
+Dekningsgraden og fra-dagen ved forsikring for selvstendig næringsdrivende og frilansere bygger på resultatet fra Forsikring.
 
 ### Uavklart: Dekningsgrad for Dagpenger
 
@@ -296,8 +344,6 @@ Løpende vilkår er perioder i et sykefraværstilfelle der personen ikke har ret
 | Arbeidsforholdet er avbrutt i mer enn 14 dager | § 8-15 andre ledd |
 | Lovbestemt ferie og permisjon | § 8-17 andre ledd |
 | Arbeidsuførheten oppsto etter at streik eller lockout startet | § 8-31 andre ledd |
-| Ingen sykepenger før personen søkte lege, for selvstendig næringsdrivende, frilansere og Inaktiv | § 8-34 fjerde ledd, § 8-38 fjerde ledd og § 8-47 sjuende ledd |
-| En arbeidsløs person regnes som arbeidsufør tidligst fra den dagen personen søker lege, for Dagpenger | § 8-49 femte ledd |
 | Friskmelding til arbeidsformidling i mer enn 12 uker | § 8-5 |
 | Varetekt, soning eller formue under forvaltning, fra Institusjonsopphold | § 8-54 første ledd |
 | Ugradert AFP, fra Andre ytelser | § 8-52 første ledd |
@@ -340,3 +386,4 @@ Reisetilskudd gis i stedet for sykepenger når personen ikke kan reise til og fr
 - Egenmelding og egenerklæring overfor arbeidsgiver (§§ 8-23 til 8-27). Egenmeldingsdager er likevel med når vi fastsetter skjæringstidspunktet.
 - Oppfølging, dialogmøter og tilretteleggingstilskudd (§ 8-7 a).
 - Tilbakekreving fra arbeidsgiver som ikke betaler (§ 8-22).
+- Kronisk syke og gravide (§ 8-20) og refusjonskrav fra arbeidsgivere. Et annet team har ansvaret for disse sakene.
