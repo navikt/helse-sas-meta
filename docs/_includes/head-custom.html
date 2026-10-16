@@ -1,0 +1,21 @@
+<!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+  // Jekyll/kramdown gjør ```mermaid om til kodeblokker, så vi bytter dem ut med elementer mermaid kan tegne.
+  const blokker = document.querySelectorAll("code.language-mermaid");
+  blokker.forEach((code) => {
+    const diagram = document.createElement("pre");
+    diagram.className = "mermaid";
+    diagram.textContent = code.textContent;
+    (code.closest("div.highlighter-rouge") ?? code.closest("pre") ?? code).replaceWith(diagram);
+  });
+
+  if (blokker.length > 0) {
+    mermaid.initialize({ startOnLoad: false, securityLevel: "strict" });
+    await mermaid.run({ querySelector: "pre.mermaid" });
+  }
+</script>
+
+<!-- end custom head snippets -->
