@@ -310,6 +310,66 @@ Vi lar Spleis bestemme om den skal spørre om inntekt, fordi avgjørelsen skjer 
 
 [Forespørsel til arbeidsgiver utenfor Spleis](arbeidsgiverforesporsel-utenfor-spleis.md) beskriver alternativet, der en egen tjeneste eier hele protokollen og sp-sykepengegrunnlag avgjør om vi skal spørre om inntekt.
 
+### Ventetilstandene for inntekt, refusjon og arbeidsgiverperiode
+
+Vi kan ikke slå de tre ventetilstandene sammen til én `AVKLAR_SYKEPENGEGRUNNLAG` uten å knekke noe. Bare én av dem venter på noe som hører til sykepengegrunnlaget. De to andre venter på refusjon og arbeidsgiverperiode, og dem eier Spleis. En felles ventetilstand er mulig, men da må den dekke alle tre manglene, og hver mangel må ha en eier.
+
+#### Slik er de tre tilstandene i dag
+
+| Tilstand | Venter på | Hører til | Hva den stopper |
+|---|---|---|---|
+| `AvventerInntektsmelding` | Inntektsmeldingen for egen periode. Går videre når `harInntektOgRefusjon()` er sann, når perioden er innenfor arbeidsgiverperioden, eller etter 90 dager | Inntekt hører til tjenesten. Refusjon og arbeidsgiverperiode hører til Spleis | Egen periode |
+| `AvventerInntektsopplysningerForAnnenArbeidsgiver` | En annen arbeidsgiver på samme skjæringstidspunkt som ikke har avklart inntekt. Gjelder bare før skjæringstidspunktet er vilkårsprøvd | Sykepengegrunnlaget | Vilkårsprøvingen |
+| `AvventerRefusjonsopplysningerAnnenPeriode` | En tidligere periode som skal med i beregningen og står i `AvventerInntektsmelding`. Gjelder også etter vilkårsprøving | Refusjon | Beregningen |
+
+#### Hvorfor refusjon og arbeidsgiverperiode ikke hører hjemme i grunnlaget
+
+- Arbeidsgiverperioden avgjør om perioden skal behandles i Speil (`skalArbeidstakerBehandlesISpeil`). Er perioden innenfor arbeidsgiverperioden, går den til `AvventerAvsluttetUtenUtbetaling` og trenger ikke noe grunnlag. Spleis må altså avklare arbeidsgiverperioden før den vet om den skal be om grunnlag. Dagene fra inntektsmeldingen håndteres i `AvventerInntektsmelding` (`dager.skalHåndteresAv`).
+- Refusjon trengs for å fordele utbetalingen mellom arbeidsgiver og person, ikke for å fastsette grunnlaget. `bekreftAtPeriodenSkalBehandlesISpeilOgHarNokInformasjon` krever en refusjonstidslinje før perioden går videre. En periode som venter på refusjon etter vilkårsprøving, ville stått i `AVKLAR_SYKEPENGEGRUNNLAG` med et ferdig grunnlag.
+- De første arbeidsgiveropplysningene for perioden (`håndterArbeidsgiveropplysninger`) og inntekt fra lagret inntektsmelding tas bare imot i `AvventerInntektsmelding`. Tilstanden er porten for hele inntektsmeldingen, ikke bare inntekten.
+- 90-dagersfristen avgjør inntekt og refusjon samtidig. Spleis bruker A-ordningen og setter refusjonen til 0 kr der den mangler.
+
+#### Dette knekker hvis vi slår tilstandene sammen
+
+- `harAvklartArbeidstakerinntekt()` i `ArbeidstakerAvklartInntekt.kt` leser om inntekten er avklart ut fra tilstanden. En periode som er «forbi» `AvventerInntektsmelding`, regnes som avklart, også når Spleis ga opp og bruker A-ordningen. `førstePeriodeSomVenterPåInntektAnnenArbeidsgiver()` og `skalEtterspørreInntekt` bygger på dette.
+- `førstePeriodeSomVenterPåRefusjonsopplysninger()` finner perioden det ventes på, ved å se etter `AvventerInntektsmelding`.
+- `venter()` lager `vedtaksperiode_venter`. Den skiller mellom å vente på seg selv (`AvventerInntektsmelding`) og å vente på en annen periode (de to andre tilstandene). Begge gir `Venteårsak.INNTEKTSMELDING`.
+- `igangsettOverstyring` tar en ekstra runde for de to tilstandene som venter på andre perioder, fordi de leser tilstanden til andre perioder.
+- Tilstandsnavnene brukes utenfor Spleis:
+  - spock påminner de to tilstandene som venter på andre perioder etter 2–3 døgn, og `AVVENTER_INNTEKTSMELDING` etter 5–7 døgn
+  - Speil-builderen i `sykepenger-api` viser `AvventerInntektsopplysninger` for egen periode og `VenterPåAnnenPeriode` for de to andre
+  - spetakkel, spoiler, spanner og sporing
+  - bomlo-dbt-modellene `er__vedtaksperioder_som_avventer_inntektsmelding` og `antall_forkastede_soknader_med_sen_inntektsmelding`
+- Lagrede personer har tilstanden i JSON (`PersonData`). En ny tilstand krever en migrering i Spleis.
+
+#### Hva en felles ventetilstand krever
+
+En felles tilstand i Spleis, for eksempel `AVVENTER_OPPLYSNINGER`, med et sett mangler i stedet for tre tilstander. Hver mangel har en eier:
+
+| Mangel | Eier | Hva løser den |
+|---|---|---|
+| Arbeidsgiverperiode for egen periode | Spleis | Inntektsmeldingen eller saksbehandler |
+| Refusjon for egen periode | Spleis | Inntektsmeldingen, saksbehandler eller 90-dagersfristen (0 kr) |
+| Refusjon for en tidligere periode i beregningen | Spleis | Den andre perioden |
+| Inntekt for egen arbeidsgiver | sp-sykepengegrunnlag | Prøvingen i tjenesten, med kilde |
+| Inntekt for en annen arbeidsgiver på skjæringstidspunktet | sp-sykepengegrunnlag | Prøvingen i tjenesten |
+
+For at dette skal virke, må vi:
+
+1. Lagre manglene som data på behandlingen i stedet for å lese dem ut av tilstanden. `harAvklartArbeidstakerinntekt()` og de to `førstePeriodeSomVenterPå*`-funksjonene må lese manglene.
+2. La tjenesten svare for inntektsmanglene. Spleis må da sende behovet `Sykepengegrunnlag` når perioden går inn i ventetilstanden, ikke først ved vilkårsprøving. Tjenesten svarer med en prøving som venter, med årsak per yrkesaktivitet, og sender en hendelse når prøvingen blir komplett. Dette er den ekstra ventetilstanden vi valgte bort for `skalEtterspørreInntekt` over, så vi må ta den beslutningen på nytt.
+3. Fortsatt dele inntektsmeldingen i Spleis: dager, arbeidsgiverperiode og refusjon til Spleis, inntekten til tjenesten.
+4. Gi `vedtaksperiode_venter` en årsak per mangel, slik at Speil og spock fortsatt ser hva perioden venter på, og om den venter på seg selv eller på en annen periode.
+5. Migrere lagrede tilstander og oppdatere konsumentene av tilstandsnavnene.
+
+#### Anbefaling
+
+- `AvventerInntektsopplysningerForAnnenArbeidsgiver` er den eneste tilstanden som venter på sykepengegrunnlaget. Vi kan erstatte den med at Spleis venter på tjenestens prøving når tjenesten eier inntektsavklaringen.
+- `AvventerInntektsmelding` blir værende, fordi den eier forespørselsprotokollen og hele inntektsmeldingen for vedtaksperioden.
+- `AvventerRefusjonsopplysningerAnnenPeriode` blir i Spleis.
+
+En felles tilstand med mangler er et eget Spleis-arbeid. Vi trenger det ikke for å flytte grunnlaget ut, og bør vurdere det tidligst etter trinn 4.
+
 ### Kontrakten mot Spesialist
 
 - Spesialist sender skjønn, korrigert inntekt og endring av arbeidsforhold til tjenesten med REST, med begrunnelsen. Tjenesten svarer med den nye `sykepengegrunnlagId`, og Spesialist knytter den til totrinnsvurderingen.
@@ -486,7 +546,7 @@ Tiltak: Resultatet for en ID endres aldri, og Spleis lagrer det. Bare en hendels
 
 Spleis venter i dag i `AvventerInntektsmelding`, `AvventerVilkårsprøving` og `AvventerInntektsopplysningerForAnnenArbeidsgiver`. Når tjenesten avgjør om opplysningene er komplette, kan Spleis og tjenesten bli uenige om hva som mangler. Da blir saker liggende.
 
-Tiltak: Spleis eier fortsatt avgjørelsen om å vente på inntektsmelding i trinn 3 og 4. Tjenesten svarer med en prøving som venter, og en tydelig årsak, hvis den mangler noe. Vi overvåker prøvinger som har ventet lenge.
+Tiltak: Spleis eier fortsatt avgjørelsen om å vente på inntektsmelding i trinn 3 og 4. Tjenesten svarer med en prøving som venter, og en tydelig årsak, hvis den mangler noe. Vi overvåker prøvinger som har ventet lenge. Vi slår ikke ventetilstandene sammen til én tilstand for sykepengegrunnlaget, fordi refusjon og arbeidsgiverperiode også venter i dem. Se [Ventetilstandene for inntekt, refusjon og arbeidsgiverperiode](#ventetilstandene-for-inntekt-refusjon-og-arbeidsgiverperiode).
 
 ### Behovsakkumulatoren og tidsavbrudd
 
@@ -524,6 +584,7 @@ Tiltak: Samme tilgangsmodell som sp-vilkarsproving (`PersonPseudoId`, `Tilgang.S
 - Skal tjenesten hente pensjonsgivende inntekt fra Sigrun selv?
 - Skal spinnvill avvikles, eller bli et bibliotek tjenesten bruker?
 - Hvordan endres grunnlaget når uføretrygd eller gradert AFP innvilges midt i et sykefraværstilfelle? Se [abstraksjoner-kap8.md](abstraksjoner-kap8.md#uavklart-sykepengegrunnlag-som-endrer-seg-i-et-sykefraværstilfelle). Svaret avgjør om en fastsettelse kan ha perioder.
+- Skal Spleis få én ventetilstand med mangler per eier i stedet for `AvventerInntektsmelding`, `AvventerInntektsopplysningerForAnnenArbeidsgiver` og `AvventerRefusjonsopplysningerAnnenPeriode`? Da må Spleis be tjenesten om grunnlaget før vilkårsprøving.
 - Skal sp-sykepengegrunnlag være en egen app, eller en ny del av sp-vilkarsproving? Egen app gir tydelig eierskap og egen database. Samme app gir felles rammeverk og én avstemmingsjobb.
 
 ## Referanser i koden
