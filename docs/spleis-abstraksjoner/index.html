@@ -139,16 +139,20 @@
 <main>
 
 <h1>Spleis: å trekke ut konsepter</h1>
-<p class="lead">Hvordan vi gjør Spleis mer fleksibel ved å flytte regler Spleis ikke trenger å eie ut i egne abstraksjoner, og hvordan vi går fram. Klikk på bokser, piler og overskrifter for å se detaljer. Abstraksjonene bygger på <code>docs/abstraksjoner-kap8.md</code>.</p>
+<p class="lead">Hvordan vi gjør Spleis mer fleksibel ved å flytte regler Spleis ikke trenger å eie ut i egne abstraksjoner, og hvordan vi går fram. Klikk på bokser, piler og overskrifter for å se detaljer. Abstraksjonene bygger på <code>docs/abstraksjoner-kap8.md</code>, rekkefølgen på <code>docs/rekkefolge-kap8.md</code> og trinnene på <code>docs/funksjonskart-kap8.md</code>.</p>
 
 <details open>
   <summary>Hvorfor gjør vi dette?</summary>
-  <p>Vi vil iterere raskere. Når vi skal støtte flere kategorier enn arbeidstaker og selvstendig, og kombinasjoner av dem, kan ikke Spleis ha et konkret forhold til alle variasjonene i hver kategori.</p>
+    <p>En liten erkjennelse: vi har brukt <strong>mye</strong> tid på å løse arbeidstakerkategorien. Skal vi kunne håndtere resterende omfang innen utgangen av 2027, må vi gjøre noe annerledes.</p>
+
+        <p>Vi ser allerede god effekt av å ha slått sammen teamene, men vi har behov for enda mer fart og å kunne parallelisere arbeidet vårt ytterligere. Da kan vi ikke lenger fokusere på neste lille bestanddel, vi må løfte blikket og se mer av helheten.</p>
+
+      <p>Når vi skal støtte flere kategorier enn arbeidstaker og selvstendig, og kombinasjoner av dem, kan ikke Spleis lenger ha et eksplisitt forhold til alle variasjonene i hver kategori.</p>
   <p>Mange konsepter er for Spleis et <em>spørsmål med et lite svar</em>:</p>
   <ul>
     <li><strong>Arbeidsgiverperiode og ventetid:</strong> hvilke dager er før Nav normalt dekker?</li>
     <li><strong>Opptjening:</strong> er vilkåret oppfylt?</li>
-    <li><strong>Dekning:</strong> hvilken prosentsats, og fra hvilken dag, per grunnlagsdel?</li>
+    <li><strong>Dekning:</strong> hvilken prosentsats, og fra hvilken dag, per yrkesaktivitet?</li>
   </ul>
   <p>Reglene bak svaret, datakildene og saksbehandlerens overstyring kan isoleres, enten i en egen tjeneste eller i en egen modul i Spleis med et rent API. Da kan vi endre dem uten å røre tilstandsmaskinen og domenemodellen i Spleis.</p>
   <p><strong>Hjemmelen bevares.</strong> Hver avgjørelse lagrer hvilke paragrafer den bygger på. Vi slår aldri sammen to tolkninger av loven, selv om de gir samme resultat.</p>
@@ -157,10 +161,11 @@
 <div class="rule">
   <strong>Vi starter med rettighetskategori og medlemskap, parallelt.</strong>
   <ul>
-    <li><strong>Rettighetskategorien</strong> (én hovedkategori og null eller flere tilleggskategorier) avgjør hvilke regelsett som gjelder for resten av sykefraværstilfellet. Den avklares <em>før</em> alt annet og er ikke et inngangsvilkår. I dag er den implisitt: Spleis leser <code>arbeidssituasjon</code> fra søknaden, og vi støtter ikke kombinerte kategorier.</li>
+    <li><strong>Rettighetskategorien</strong> (én hovedkategori og null eller flere tilleggskategorier) avgjør hvilke regelsett som gjelder for resten av sykefraværstilfellet. Den er en avklaring, ikke et inngangsvilkår. I dag er den implisitt: Spleis leser <code>arbeidssituasjon</code> fra søknaden, og vi støtter ikke kombinerte kategorier.</li>
     <li><strong>Medlemskap i folketrygden</strong> er et inngangsvilkår. Det trekkes ut i en egen tjeneste samtidig med rettighetskategorien.</li>
   </ul>
-  Deretter følger <strong>inntekt</strong> og <strong>sykepengegrunnlag</strong>. Begge skal isoleres og kunne overstyres.
+  <p>Rettighetskategorien bygger på <strong>inntekten</strong>: yrkesaktivitetene på skjæringstidspunktet avgjør hovedkategorien. Funksjonskartet plasserer derfor Inntekt og Medlemskap i trinn 1 og Rettighetskategori i trinn 2. Vi kan likevel starte med rettighetskategorien, fordi den kan bruke inntekten Spleis har i dag. Den kan bare ikke bruke en overstyrt inntekt før Inntekt er en abstraksjon.</p>
+  Deretter følger <strong>inntekt</strong> og <strong>sykepengegrunnlag</strong>. Begge skal isoleres og kunne overstyres. <strong>Dagpenger</strong> og <strong>Inaktiv</strong> er hovedkategorier i rettighetskategorien. Dagpenger kan kombineres med arbeidstaker, selvstendig og frilanser. Inaktiv kan ikke kombineres, fordi den er siste mulighet når ingen andre hovedkategorier passer.
 </div>
 
 <!-- ============ BYGGEKLOSSENE ============ -->
@@ -193,7 +198,7 @@
 <div class="legend">
   <span class="next">Ny kobling, start her</span>
   <span class="plan">Planlagt kobling</span>
-  <span class="sat">Kobling til egen app</span>
+  <span class="sat">Kobling til egen tjeneste</span>
   <span class="todo">Beregnet i Spleis</span>
   <span class="legacy">Rest, ikke i bruk</span>
   <span class="spleis">Spleis-data</span>
@@ -247,6 +252,44 @@
 </div>
 <div class="panel" id="seq-panel" hidden></div>
 
+<!-- ============ TOTRINN OG HISTORIKK ============ -->
+<h2>Totrinnskontroll og historikk</h2>
+<p>Når saksbehandler vurderer eller overstyrer i en abstraksjon i stedet for i Spleis, må totrinnskontrollen og historikken fortsatt henge sammen i Spesialist. Opptjening i sp-vilkarsproving viser mønsteret. Abstraksjonen eier vurderingen og detaljene. Spesialist eier totrinnskontrollen og listen over handlinger. Spleis vet ikke om noen av delene.</p>
+<div class="cards">
+  <details open><summary>I dag: opptjening i sp-vilkarsproving <span class="badge b-done">Verifisert i kode</span></summary>
+    <ol>
+      <li><strong>Saksbehandler vurderer i sp-vilkarsproving.</strong> Vurderingen lagres som en ny, uforanderlig versjon med saksbehandlerident, begrunnelse og tidspunkt. Tidligere versjoner blir liggende.</li>
+      <li><strong>To meldinger i samme transaksjon (outbox).</strong> <code>saksbehandlerhandling</code> har <code>handlingId</code> (vurderings-id-en), <code>handlingType</code> <code>MANUELT_VURDERT_OPPTJENING</code>, <code>saksbehandlerIdent</code>, <code>tidspunkt</code> og <code>kreverTotrinnsvurdering: true</code>. <code>endret_opptjeningsvurdering</code> har den nye id-en.</li>
+      <li><strong>Spesialist knytter handlingen til totrinnskontroll.</strong> <code>SaksbehandlerhandlingRiver</code> finner den aktive totrinnsvurderingen for personen, eller oppretter en, og lagrer handlingen med kobling til den.</li>
+      <li><strong>Spleis bytter id og revurderer.</strong> <code>EndretVurderingPåSkjæringstidspunktRiver</code> setter ny id på vilkårsgrunnlaget. Godkjenningsbehovet som kommer etterpå, treffer den aktive totrinnsvurderingen.</li>
+      <li><strong>Spesialist styrer totrinnsløpet.</strong> Saksbehandler sender til godkjenning, og beslutter sender i retur eller godkjenner. Beslutter må ha beslutterrollen og være en annen person enn saksbehandleren.</li>
+      <li><strong>Historikk.</strong> Spesialist lister saksbehandlerhandlingene med type, ident, tidspunkt og om de er del av en aktiv totrinnsvurdering. Detaljene hentes fra abstraksjonen: <code>GET /api/personer/{personId}/saksbehandlerhandlinger/{handlingId}/visning</code> gir generiske felter (<code>TEKST</code>, <code>LISTE</code>), så Spesialist og Speil ikke trenger å kjenne domenet.</li>
+    </ol>
+    <p class="hint"><code>sp-vilkarsproving/.../PostManuellVilkårsvurderingBehandler.kt</code>, <code>spesialist/spesialist-kafka/.../SaksbehandlerhandlingRiver.kt</code>, <code>spesialist/.../Totrinnsvurdering.kt</code>, <code>spesialist/.../GetSaksbehandlerhandlingerForPersonBehandler.kt</code>.</p>
+  </details>
+  <details open><summary>I dag: overstyringer i Spleis <span class="badge b-todo">Gammelt mønster</span></summary>
+    <p>Inntekt, refusjon, tidslinje og arbeidsforhold overstyres via Spesialist, som legger overstyringen rett inn i <code>Totrinnsvurdering.overstyringer</code> og sender den videre til Spleis. Når inntekt, sykepengegrunnlag og AGP/ventetid blir abstraksjoner, må disse overstyringene over på mønsteret med <code>saksbehandlerhandling</code>.</p>
+    <p><strong>sp-forsikring</strong> sender ikke <code>saksbehandlerhandling</code> i dag. Den sender bare <code>endret_forsikringsvurdering</code>, og den gir derfor verken totrinnskontroll eller et innslag i historikken.</p>
+  </details>
+  <details open><summary>Ønsket: samme mønster for alle abstraksjoner <span class="badge b-next">Skisse</span></summary>
+    <ul>
+      <li><strong>Abstraksjonen</strong> eier vurderingen, versjonene og hvem, hva og hvorfor. Den har ingen totrinnslogikk selv.</li>
+      <li>Ved en saksbehandlerhandling sender abstraksjonen <code>saksbehandlerhandling</code> (med <code>kreverTotrinnsvurdering</code>) og <code>endret_&lt;x&gt;</code> i samme transaksjon.</li>
+      <li>Abstraksjonen tilbyr et <code>visning</code>-endepunkt for handlingen, med generiske felter.</li>
+      <li><strong>Spesialist</strong> eier totrinnskontrollen og historikklisten på tvers av alle abstraksjoner.</li>
+      <li><strong>Spleis</strong> bytter id og revurderer. Gamle beregninger peker fortsatt på gamle id-er, så det er sporbart hvilken versjon hver beregning brukte.</li>
+      <li>For en <strong>modul i Spleis</strong> gjelder samme kontrakt. Modulen sender <code>saksbehandlerhandling</code> og tilbyr visning, akkurat som en tjeneste.</li>
+    </ul>
+    <p class="hint">Åpne spørsmål:</p>
+    <ul class="hint">
+      <li>Vurderingen gjelder med en gang, og Spleis revurderer før beslutter har sett den. Vi fant ingen utkaststatus eller lås i sp-vilkarsproving. Er beslutter uenig, må saksbehandler gjøre en ny vurdering. Er det godt nok?</li>
+      <li>Totrinnsvurderingen er knyttet til personen, ikke til perioden. Hva skjer når én handling, for eksempel en AGP-overstyring, påvirker flere sykefraværstilfeller?</li>
+      <li>Hvilke handlinger krever totrinnskontroll? I dag avgjør abstraksjonen det selv med <code>kreverTotrinnsvurdering</code>.</li>
+      <li>Vi har ikke sjekket hvordan Speil kaller <code>visning</code>-endepunktet.</li>
+    </ul>
+  </details>
+</div>
+
 <!-- ============ FREMGANGSMÅTE ============ -->
 <h2>Fremgangsmåte for en ny abstraksjon</h2>
 <ol class="steps">
@@ -256,17 +299,18 @@
       <li>Rettighetskategori: hovedkategori og tilleggskategorier, med hjemmel</li>
       <li>Opptjening: <code>ok</code></li>
       <li>AGP/ventetid: hvilke dager er i perioden (også når Nav likevel dekker dem)</li>
-      <li>Dekning: dekningsgrad og fra-dag per grunnlagsdel</li>
+      <li>Dekning: dekningsgrad og fra-dag per yrkesaktivitet</li>
+      <li>Sykepengegrunnlag: total begrenset til 6G og fastsatt inntekt per yrkesaktivitet</li>
     </ul>
   </details></li>
   <li><details><summary><span class="stepno">2</span>Bestem hva abstraksjonen er avhengig av</summary>
-    <p>De fleste abstraksjonene avhenger av rettighetskategorien. Kategorien avgjør hvilke regler for opptjening, sykepengegrunnlag, AGP/ventetid, dekning og maksdato som gjelder. Derfor kommer den først.</p>
-    <p>Abstraksjonen skal ta imot rettighetskategorien, ikke utlede den på nytt fra søknadstype eller <code>arbeidssituasjon</code>.</p>
+    <p>Slå opp abstraksjonen i <code>rekkefolge-kap8.md</code>. De fleste avhenger av rettighetskategorien. Hovedkategorien, også Dagpenger og Inaktiv, avgjør hvilke regler for opptjening, sykepengegrunnlag, AGP/ventetid, dekning og maksdato som gjelder.</p>
+    <p>Abstraksjonen skal ta imot rettighetskategorien, ikke utlede den på nytt fra søknadstype eller <code>arbeidssituasjon</code>. Er en forgjenger ikke laget som abstraksjon ennå, kan abstraksjonen bruke resultatet fra logikken i Spleis. Den kan ikke bruke en overstyrt verdi fra forgjengeren før forgjengeren er en abstraksjon.</p>
   </details></li>
   <li><details><summary><span class="stepno">3</span>Bestem hvor koblingen bor</summary>
     <ul>
-      <li><strong>Per sykefraværstilfelle:</strong> koblingen bor på vilkårsgrunnlaget (rettighetskategori, medlemskap, inntekt, sykepengegrunnlag, andre inngangsvilkår, dekning).</li>
-      <li><strong>Periodisert, per dato eller på tvers av sykefraværstilfeller:</strong> beregningen peker direkte på den (AGP/ventetid, andre ytelser, institusjonsopphold, løpende vilkår, maksdato).</li>
+      <li><strong>Per sykefraværstilfelle:</strong> koblingen bor på vilkårsgrunnlaget (medlemskap, rettighetskategori, inngangsvilkår, sykepengegrunnlag, dekning). Vilkårsgrunnlaget har bare pekere, ikke dataene. Inntekt har ingen kobling fra Spleis, fordi den bare brukes av abstraksjonene.</li>
+      <li><strong>Periodisert, per dato eller på tvers av sykefraværstilfeller:</strong> beregningen peker direkte på den (andre ytelser, institusjonsopphold, forsikring, AGP/ventetid, løpende vilkår, utbetalingsgrad, maksdato).</li>
     </ul>
     <p>Koblingen er en id til én bestemt versjon av avgjørelsen. En ny vurdering gir ny id, aldri endring av en gammel.</p>
   </details></li>
@@ -284,8 +328,9 @@
     <ul>
       <li>eie sine regler, datakilder og hjemler</li>
       <li>lagre grunnlag, resultat, kilde og tidspunkt, versjonert</li>
-      <li>støtte overstyring, som gir ny versjon og ny id (gjelder særlig medlemskap, inntekt og sykepengegrunnlag)</li>
+      <li>støtte overstyring, som gir ny versjon og ny id (gjelder særlig medlemskap, inntekt, sykepengegrunnlag og AGP/ventetid)</li>
       <li>gi beskjed når vurderingen endres (for tjenester via outbox, se <code>OutboxPubliseringsjobb</code> i sp-vilkarsproving)</li>
+      <li>sende <code>saksbehandlerhandling</code> til Spesialist ved manuell vurdering eller overstyring, og tilby et <code>visning</code>-endepunkt for historikken (se «Totrinnskontroll og historikk»)</li>
     </ul>
   </details></li>
   <li><details><summary><span class="stepno">6</span>Koble Spleis på, uten å fjerne det gamle</summary>
@@ -298,7 +343,9 @@
 
 <!-- ============ REKKEFØLGE ============ -->
 <h2>Rekkefølge og status</h2>
+<p>Trinnene fra <code>funksjonskart-kap8.md</code>. Abstraksjonene i samme trinn er uavhengige og kan lages parallelt. Hvert kort viser hvilke funksjoner som kan leveres når trinnet er ferdig.</p>
 <div class="cards" id="cards"></div>
+<p class="hint">Utenfor omfanget: kronisk syke og gravide (§ 8-20), og refusjonskrav ved forsikring og lignende.</p>
 
 <p class="hint" style="margin-top:32px">Kilder i koden: <code>spleis/sykepenger-model/.../person/Behandlinger.kt</code> (<code>Endring</code>, <code>Arbeidssituasjon</code>), <code>VilkårsgrunnlagHistorikk.kt</code> (<code>Grunnlagsdata</code>), <code>Yrkesaktivitet.kt</code>, <code>Arbeidsgiverperiodeberegner.kt</code>, <code>Ventetidberegner.kt</code>, <code>ArbeidstakerUtbetalingstidslinjeBuilder.kt</code>, <code>SelvstendigUtbetalingstidslinjeBuilder.kt</code>, <code>spleis/sykepenger-mediators/.../Behov.kt</code>, <code>sp-vilkarsproving/</code>, <code>sp-forsikring/</code>. Alt merket «ønsket» eller «skisse» er forslag, ikke vedtatte løsninger.</p>
 
@@ -312,19 +359,29 @@ const D = {
     <dl><dt>Avgjør</dt><dd>Hvilke regelsett som gjelder for personen</dd>
     <dt>Gjelder</dt><dd>Per sykefraværstilfelle, ut fra forholdene på skjæringstidspunktet</dd>
     <dt>Hjemler</dt><dd>§§ 8-15, 8-34, 8-38, 8-40 til 8-47, 8-49, 8-55</dd>
+    <dt>Bygger på</dt><dd>Inntekt (yrkesaktivitetene på skjæringstidspunktet), og Opptjening for Inaktiv</dd>
     <dt>Kobling</dt><dd>Vilkårsgrunnlaget</dd></dl>
-    <p>Består av én <strong>hovedkategori</strong> (arbeidstaker, selvstendig næringsdrivende, frilanser, kombinasjonene i §§ 8-40 til 8-43, vernepliktig, inaktiv, dagpengemottaker, dagpengemottaker i deltidsarbeid) og null eller flere <strong>tilleggskategorier</strong> (arbeidstaker på skip, fisker på blad B, yrkesskade).</p>
-    <p>Rettighetskategorien er en <em>avklaring som skjer først</em>, ikke et inngangsvilkår. Den bestemmer hvilke regler de andre abstraksjonene bruker.</p>
+    <p>Består av én <strong>hovedkategori</strong> og null eller flere <strong>tilleggskategorier</strong> (arbeidstaker på skip, fisker på blad B, yrkesskade). Forsikring er ingen tilleggskategori.</p>
+    <ul>
+      <li><strong>Arbeidstaker, selvstendig næringsdrivende, frilanser</strong> og kombinasjonene i §§ 8-40 til 8-43</li>
+      <li><strong>Vernepliktig</strong> (§ 8-46)</li>
+      <li><strong>Dagpenger</strong> (§ 8-49): kan kombineres med arbeidstaker, selvstendig og frilanser. Deltidsarbeid og dagpenger gir sykepenger for begge, med en egen yrkesaktivitet for dagpengene. Grunnlaget er dagpengene per uke, ventelønn eller vartpenger, og det gis sykepenger fra første dag.</li>
+      <li><strong>Inaktiv</strong> (§ 8-47, variant a eller b): kan ikke kombineres. Den er siste mulighet når ingen andre hovedkategorier passer, eller når opptjeningen ikke er oppfylt. Gir 1G som minsteinntekt, sykepenger fra dag 15 og dekning på 65 % eller 100 %.</li>
+    </ul>
+    <p class="hint">Fordi Inaktiv også gjelder personer i arbeid uten opptjening (variant b), må Inaktiv avklares etter Opptjening. Opptjening bygger igjen på rettighetskategorien. <code>abstraksjoner-kap8.md</code> og <code>rekkefolge-kap8.md</code> beskriver i dag Dagpenger og Inaktiv som egne abstraksjoner, ikke hovedkategorier.</p>
+    <p class="hint">Uavklart: hvilken dekningsgrad Dagpenger har.</p>
+    <p>Rettighetskategorien er en <em>avklaring</em>, ikke et inngangsvilkår. Den bestemmer hvilke regler de andre abstraksjonene bruker.</p>
     <p><strong>I dag:</strong> implisitt. Spleis leser <code>arbeidssituasjon</code> fra søknaden (<code>Endring.Arbeidssituasjon</code>: <code>ARBEIDSTAKER</code>, <code>SELVSTENDIG_NÆRINGSDRIVENDE</code>, <code>FRILANSER</code>, <code>JORDBRUKER</code>, <code>FISKER</code>, …) og velger yrkesaktivitet ut fra søknadstypen. Kombinerte kategorier støttes ikke.</p>` },
   "a-inntekt": { title: "Inntekt", html: `
     <dl><dt>Avgjør</dt><dd>Rå opplysninger om hva personen har tjent, ingen beregninger</dd>
-    <dt>Gjelder</dt><dd>Per sykefraværstilfelle</dd><dt>Hjemler</dt><dd>§§ 8-28, 8-29, 8-30, 8-35, 8-49</dd><dt>Kobling</dt><dd>Vilkårsgrunnlaget</dd></dl>
+    <dt>Gjelder</dt><dd>Per sykefraværstilfelle</dd><dt>Hjemler</dt><dd>§§ 8-28, 8-29, 8-30, 8-35, 8-49</dd><dt>Kobling</dt><dd>Ingen fra Spleis. Sykepengegrunnlag og Rettighetskategori peker på inntektene</dd></dl>
     <p><strong>I dag:</strong> Spleis henter inntekter (<code>InntekterForSykepengegrunnlag</code>, inntektsmelding, pensjonsgivende inntekt) og lagrer dem sammen med beregningene i <code>inntektsgrunnlag</code>. Saksbehandler overstyrer inntekt via Spleis.</p>
-    <p><strong>Planlagt:</strong> trekkes ut og isoleres. Må kunne overstyres i abstraksjonen, og en overstyring gir ny versjon og ny kobling.</p>` },
+    <p><strong>Planlagt:</strong> trekkes ut og isoleres. Spleis trenger sannsynligvis ikke kjenne inntektene, bare sykepengegrunnlaget. Det er Sykepengegrunnlag som har forholdet til inntektene. En overstyrt inntekt gir ny versjon av inntekten, og dermed et nytt sykepengegrunnlag og en ny <code>sykepengegrunnlagId</code> i vilkårsgrunnlaget.</p>` },
   "a-sykepengegrunnlag": { title: "Sykepengegrunnlag", html: `
-    <dl><dt>Avgjør</dt><dd>Inntektsgrunnlaget, fordelt på grunnlagsdeler</dd><dt>Gjelder</dt><dd>Per sykefraværstilfelle</dd>
-    <dt>Hjemler</dt><dd>§§ 8-10, 8-28 til 8-30, 8-35, 8-38, 8-41, 8-43, 8-46, 8-47, 8-49</dd><dt>Kobling</dt><dd>Vilkårsgrunnlaget</dd></dl>
-    <p>G-regulering, 6G-tak, avviksvurdering, skjønn og dagsats. Hver grunnlagsdel har en inntektstype og egen dekning (§ 8-41, § 8-49 fjerde ledd).</p>
+    <dl><dt>Avgjør</dt><dd>Inntektsgrunnlaget for hele sykefraværstilfellet</dd><dt>Gjelder</dt><dd>Per sykefraværstilfelle, på tvers av yrkesaktivitetene</dd>
+    <dt>Hjemler</dt><dd>§§ 8-10, 8-28 til 8-30, 8-35, 8-38, 8-41, 8-43, 8-46, 8-47, 8-49</dd><dt>Bygger på</dt><dd>Inntekt, Rettighetskategori, Institusjonsopphold</dd><dt>Kobling</dt><dd>Vilkårsgrunnlaget</dd></dl>
+    <p>Ett grunnlag på tvers av yrkesaktivitetene. Det består blant annet av den fastsatte inntekten fra hver yrkesaktivitet, inkludert Dagpenger og Inaktiv. G-regulering, 6G-tak, avviksvurdering, skjønn og dagsats. Hver yrkesaktivitet har egen dekning (§ 8-41, § 8-49 fjerde ledd).</p>
+    <p class="hint">Uavklart: hvordan Andre ytelser og opphør av naturalytelser endrer grunnlaget midt i et sykefraværstilfelle.</p>
     <p><strong>I dag:</strong> i Spleis, sammen med inntekten i <code>inntektsgrunnlag</code>. Skjønnsfastsettelse gjøres via Spleis.</p>
     <p><strong>Planlagt:</strong> trekkes ut og isoleres fra inntekten. Må kunne overstyres, for eksempel ved skjønnsfastsettelse.</p>
     <p><strong>Hva beregningen trenger:</strong> totalen er ikke nok. <code>Økonomi.betal</code> får bare <code>sykepengegrunnlagBegrenset6G</code>, og den setter taket for hva Nav dekker. Men dagsbeløpene bygges per yrkesaktivitet med <code>fastsattÅrsinntekt</code> som <code>aktuellDagsinntekt</code>. Den vekter total sykdomsgrad, 20 %-grensen og fordelingen mellom arbeidsgivere.</p>
@@ -336,51 +393,71 @@ const D = {
     <p class="hint"><code>sykepenger-økonomi/.../Økonomi.kt</code> (betal, totalGrad), <code>ArbeidstakerUtbetalingstidslinjeBuilder.kt</code> (medInntekt), <code>ArbeidsgiverInntektsopplysning.kt</code> (fastsattÅrsinntekt).</p>` },
   "a-inngangsvilkar": { title: "Inngangsvilkår", html: `
     <dl><dt>Avgjør</dt><dd>Om personen har rett til sykepenger i det hele tatt</dd><dt>Gjelder</dt><dd>Per sykefraværstilfelle</dd>
-    <dt>Hjemler</dt><dd>§§ 8-2, 8-3, 8-4</dd><dt>Kobling</dt><dd>Vilkårsgrunnlaget, én kobling per vilkår</dd></dl>
-    <p>Hvert vilkår er en egen abstraksjon. Vilkårene slås ikke sammen.</p>
-    <ul><li><strong>Opptjening (§ 8-2):</strong> trukket ut til sp-vilkarsproving. Faller bort for skip, blad B, vernepliktig og yrkesskade, altså avhengig av rettighetskategorien.</li>
-    <li><strong>Medlemskap i folketrygden:</strong> se egen boks. Planlagt uttrekk.</li>
-    <li>Tap av inntekt og 70-årsgrensen på skjæringstidspunktet (§ 8-3 første ledd): i Spleis.</li>
-    <li>Arbeidsuførhet (§ 8-4): i Spleis.</li>
-    <li>Minsteinntekt: se egen boks.</li></ul>` },
+    <dt>Hjemler</dt><dd>§§ 8-1, 8-2, 8-3</dd><dt>Kobling</dt><dd>Vilkårsgrunnlaget, én kobling per vilkår</dd></dl>
+    <p>Fellesbetegnelse. Hvert vilkår er en egen abstraksjon, og vilkårene slås ikke sammen. Er ett av dem ikke oppfylt, får personen avslag for hele sykefraværstilfellet. Opptjening som ikke er oppfylt, gir likevel ikke avslag hvis hovedkategorien blir Inaktiv.</p>
+    <ul><li>Medlemskap (§ 8-1 og kapittel 2)</li><li>Opptjening (§ 8-2)</li><li>Øvrige inngangsvilkår (§ 8-3 første ledd)</li><li>Minsteinntekt (§§ 8-3, 8-47)</li></ul>
+    <p>Kravet om arbeidsuførhet (§ 8-4) er ikke et inngangsvilkår her. Det står under Arbeidsuførhet.</p>` },
+  "a-opptjening": { title: "Opptjening (inngangsvilkår)", html: `
+    <dl><dt>Avgjør</dt><dd>Om personen har vært i arbeid de fire siste ukene</dd><dt>Gjelder</dt><dd>Per sykefraværstilfelle</dd><dt>Hjemler</dt><dd>§ 8-2</dd><dt>Bygger på</dt><dd>Rettighetskategori (tilleggskategorier og Dagpenger)</dd><dt>Kobling</dt><dd>Vilkårsgrunnlaget (<code>opptjeningsvurderingId</code>)</dd></dl>
+    <p>Kravet faller bort for arbeidstaker på skip (§ 8-44), fisker på blad B (§ 8-45), vernepliktig (§ 8-46) og ved yrkesskade (§ 8-55). Tid med dagpenger er likestilt med arbeid (§ 8-2 andre ledd).</p>
+    <p><strong>I dag:</strong> ferdig i sp-vilkarsproving, med overstyring. Behovet får fortsatt <code>arbeidssituasjon</code>, ikke rettighetskategori.</p>` },
+  "a-ovrige": { title: "Øvrige inngangsvilkår (§ 8-3)", html: `
+    <dl><dt>Avgjør</dt><dd>Tap av pensjonsgivende inntekt og 70-årsgrensen på skjæringstidspunktet</dd><dt>Gjelder</dt><dd>Per sykefraværstilfelle</dd><dt>Hjemler</dt><dd>§ 8-3 første ledd</dd><dt>Kobling</dt><dd>Vilkårsgrunnlaget</dd></dl>
+    <p>Fyller personen 70 år midt i tilfellet, hører avslaget fra den dagen til Sykepengedager/maksdato. Vernepliktige er unntatt når arbeidsuførheten oppstår under tjenesten (§ 8-46). Trinn 1, ingen forgjengere.</p>
+    <p>Aldersgrensen trenger ikke være en abstraksjon. Spleis kan alltid regne den ut riktig, og den skal ikke kunne overstyres. Den kan ligge som en vurdering rett i vilkårsgrunnlaget. Tap av pensjonsgivende inntekt får en egen kobling.</p>
+    <p><strong>I dag:</strong> i Spleis.</p>` },
+  "a-arbeidsufor": { title: "Arbeidsuførhet", html: `
+    <dl><dt>Avgjør</dt><dd>Hvilke dager personen regnes som arbeidsufør</dd><dt>Gjelder</dt><dd>Uavklart</dd><dt>Hjemler</dt><dd>§§ 8-4, 8-7, 8-34, 8-38, 8-44, 8-47, 8-49</dd><dt>Bygger på</dt><dd>Rettighetskategori</dd><dt>Kobling</dt><dd>Uavklart</dd></dl>
+    <p>§ 8-4, tilbakedatering (§ 8-7) og reglene om «arbeidsufør tidligst fra» for selvstendig, frilanser, inaktiv og dagpenger.</p>
+    <p class="hint">Uavklart: vurderes den før inndelingen i sykefraværstilfeller, eller sammen med Løpende vilkår? Vurderes den før, blir avhengigheten til rettighetskategorien sirkulær.</p>
+    <p><strong>I dag:</strong> i Spleis, ut fra sykdomstidslinjen.</p>` },
+  "a-forsikring": { title: "Forsikring", html: `
+    <dl><dt>Avgjør</dt><dd>Om personen har forsikring for tillegg til sykepenger, og hvilken</dd><dt>Gjelder</dt><dd>Periodisert</dd><dt>Hjemler</dt><dd>§§ 8-36, 8-37, 8-39, 8-55</dd><dt>Bygger på</dt><dd>Rettighetskategori (yrkesskade), Sykepengedager/maksdato (opphør etter § 8-37 d)</dd><dt>Kobling</dt><dd>I dag vilkårsgrunnlaget (<code>forsikringsvurderingId</code>)</dd></dl>
+    <p>Egen abstraksjon, ikke en del av Dekning og ingen tilleggskategori. Leverer til Dekning (dekningsgrad og fra-dag) og til Sykepengedager/maksdato (260 dager når trygden dekker de første 16 dagene).</p>
+    <p><strong>I dag:</strong> ferdig i sp-forsikring, med overstyring, for selvstendig næringsdrivende og frilansere.</p>
+    <p class="hint">Forsikring er periodisert, men koblingen ligger i dag på vilkårsgrunnlaget. Om den bør flyttes til beregningen, er ikke avklart.</p>` },
   "a-medlemskap": { title: "Medlemskap i folketrygden (inngangsvilkår)", html: `
-    <dl><dt>Avgjør</dt><dd>Om personen er medlem i folketrygden</dd><dt>Gjelder</dt><dd>Per sykefraværstilfelle</dd><dt>Hjemler</dt><dd>Folketrygdloven kapittel 2</dd><dt>Kobling</dt><dd>Vilkårsgrunnlaget</dd></dl>
-    <p>Står ikke i oversikten i <code>abstraksjoner-kap8.md</code>, fordi reglene ligger i kapittel 2, men er et inngangsvilkår for sykepenger.</p>
+    <dl><dt>Avgjør</dt><dd>Om personen er medlem i folketrygden</dd><dt>Gjelder</dt><dd>Per sykefraværstilfelle</dd><dt>Hjemler</dt><dd>§ 8-1, reglene i kapittel 2</dd><dt>Kobling</dt><dd>Vilkårsgrunnlaget</dd></dl>
+    <p>Trinn 1, ingen forgjengere. Løpende vilkår bruker resultatet: medlemmer etter §§ 2-5, 2-6 og 2-8 er unntatt fra oppholdskravet (§ 8-9).</p>
     <p><strong>I dag:</strong> Spleis sender behovet <code>Medlemskap</code>, som <code>sparkel-medlemskap</code> svarer på. Spleis lagrer bare verdien <code>medlemskapstatus</code> (<code>Ja</code>, <code>Nei</code>, <code>VetIkke</code>, <code>UavklartMedBrukerspørsmål</code>) i vilkårsgrunnlaget, uten kobling til selve vurderingen.</p>
     <p><strong>Planlagt:</strong> trekkes ut i en egen tjeneste, parallelt med rettighetskategori. Vilkårsgrunnlaget får en kobling (id) til vurderingen, slik som for opptjening.</p>` },
   "a-minsteinntekt": { title: "Minsteinntekt (inngangsvilkår)", html: `
-    <dl><dt>Avgjør</dt><dd>Om grunnlaget er høyt nok</dd><dt>Gjelder</dt><dd>Per sykefraværstilfelle</dd><dt>Hjemler</dt><dd>§§ 8-3, 8-47</dd><dt>Kobling</dt><dd>Vilkårsgrunnlaget</dd></dl>
-    <p>0,5G som hovedregel, 1G for inaktiv. Grensen avhenger av rettighetskategorien. <strong>I dag:</strong> i Spleis.</p>` },
+    <dl><dt>Avgjør</dt><dd>Om grunnlaget er høyt nok</dd><dt>Gjelder</dt><dd>Per sykefraværstilfelle</dd><dt>Hjemler</dt><dd>§§ 8-3, 8-47</dd><dt>Bygger på</dt><dd>Sykepengegrunnlag, Rettighetskategori</dd><dt>Kobling</dt><dd>Vilkårsgrunnlaget</dd></dl>
+    <p>0,5G som hovedregel, 1G for Inaktiv. Gjelder ikke i arbeidsgiverperioden. Kravet om 2G fra 67 år er et løpende vilkår. <strong>I dag:</strong> i Spleis.</p>` },
   "a-dekning": { title: "Dekning", html: `
-    <dl><dt>Avgjør</dt><dd>Dekningsgrad og fra-dag, per grunnlagsdel</dd><dt>Gjelder</dt><dd>Per sykefraværstilfelle</dd>
-    <dt>Hjemler</dt><dd>§§ 8-16, 8-17, 8-20, 8-21, 8-34, 8-36, 8-38, 8-39, 8-41, 8-47</dd><dt>Kobling</dt><dd>Vilkårsgrunnlaget</dd></dl>
-    <p>Arbeidstaker 100 %, selvstendig 80 % etter ventetiden, frilanser 100 % etter ventetiden, inaktiv 65 % eller 100 %. Forsikring (§§ 8-36, 8-39) er en del av dekningen, ikke en tilleggskategori. Dekning avgjør også om Nav dekker dager i arbeidsgiverperioden (§§ 8-17, 8-20, 8-21).</p>
-    <p><strong>I dag:</strong> forsikring for selvstendig er trukket ut til sp-forsikring (<code>dekning.grad</code>, <code>dekning.iVentetid</code>). Resten er hardkodet i <code>ArbeidstakerUtbetalingstidslinjeBuilder</code> (100 %) og <code>SelvstendigUtbetalingstidslinjeBuilder</code> (80 %).</p>` },
+    <dl><dt>Avgjør</dt><dd>Dekningsgrad og fra-dag, per yrkesaktivitet</dd><dt>Gjelder</dt><dd>Per sykefraværstilfelle</dd>
+    <dt>Hjemler</dt><dd>§§ 8-16, 8-17, 8-20, 8-21, 8-34, 8-36, 8-38, 8-39, 8-41, 8-47</dd><dt>Bygger på</dt><dd>Sykepengegrunnlag, Rettighetskategori, Forsikring</dd><dt>Kobling</dt><dd>Vilkårsgrunnlaget</dd></dl>
+    <p>Arbeidstaker 100 %, selvstendig 80 % etter ventetiden, frilanser 100 % etter ventetiden, inaktiv 65 % eller 100 %. Ved forsikring bygger dekningsgraden og fra-dagen på resultatet fra Forsikring. Dekning avgjør også om Nav dekker dager i arbeidsgiverperioden (§§ 8-17, 8-20, 8-21).</p>
+    <p class="hint">Uavklart: dekningsgraden for Dagpenger.</p>
+    <p><strong>I dag:</strong> hardkodet i <code>ArbeidstakerUtbetalingstidslinjeBuilder</code> (100 %) og <code>SelvstendigUtbetalingstidslinjeBuilder</code> (80 %), som bruker svaret fra sp-forsikring (<code>dekning.grad</code>, <code>dekning.iVentetid</code>).</p>` },
   "a-andreytelser": { title: "Andre ytelser", html: `
-    <dl><dt>Avgjør</dt><dd>Uføretrygd og AFP i perioder</dd><dt>Gjelder</dt><dd>Periodisert</dd><dt>Hjemler</dt><dd>§§ 8-48, 8-50, 8-52</dd><dt>Kobling</dt><dd>Beregningen</dd></dl>
-    <p>Kan innvilges midt i et sykefraværstilfelle, og hører derfor ikke hjemme i vilkårsgrunnlaget. Dagpenger er ikke med her, fordi dagpengemottaker er en hovedkategori.</p>
-    <p class="hint">Uavklart: hva skjer med sykepengegrunnlaget når uføretrygd eller gradert AFP innvilges midt i tilfellet?</p>
+    <dl><dt>Avgjør</dt><dd>Andre ytelser personen har i perioder, i og utenfor kapittel 8</dd><dt>Gjelder</dt><dd>Periodisert</dd><dt>Hjemler</dt><dd>§§ 8-48, 8-50, 8-52 og hjemler utenfor kapittel 8</dd><dt>Kobling</dt><dd>Beregningen</dd></dl>
+    <p>Uføretrygd, AFP og arbeidsavklaringspenger, og ytelser utenfor kapittel 8 som foreldrepenger og pleiepenger. Kan innvilges midt i et sykefraværstilfelle, og hører derfor ikke hjemme i vilkårsgrunnlaget. Dagpenger er ikke med her, fordi Dagpenger er en hovedkategori med egen yrkesaktivitet.</p>
+    <p class="hint">Uavklart: hva skjer med sykepengegrunnlaget når uføretrygd eller gradert AFP innvilges midt i tilfellet? Hvordan påvirker ytelser utenfor kapittel 8 de andre abstraksjonene?</p>
     <p><strong>I dag:</strong> Spleis henter ytelser i Ytelser-steget (<code>Foreldrepenger</code>, <code>Pleiepenger</code>, <code>DagpengerV2</code>, <code>ArbeidsavklaringspengerV2</code>, …) uten å lagre en kobling.</p>` },
   "a-institusjon": { title: "Institusjonsopphold", html: `
     <dl><dt>Avgjør</dt><dd>Opphold i helseinstitusjon og fengsel</dd><dt>Gjelder</dt><dd>Periodisert</dd><dt>Hjemler</dt><dd>§§ 8-53, 8-54</dd><dt>Kobling</dt><dd>Beregningen</dd></dl>
     <p>Leverer perioder til løpende vilkår (ingen rett), utbetalingsgrad (reduksjon) og AGP/ventetid (ingen arbeidsgiverperiode).</p>
     <p><strong>I dag:</strong> behovet <code>Institusjonsopphold</code> i Ytelser-steget.</p>` },
   "a-lopende": { title: "Løpende vilkår", html: `
-    <dl><dt>Avgjør</dt><dd>Dager uten rett til sykepenger (bare stans, ikke delvis)</dd><dt>Gjelder</dt><dd>Per dato</dd><dt>Hjemler</dt><dd>§§ 8-3, 8-5, 8-7, 8-8, 8-9, 8-15, 8-17, 8-31, 8-34, 8-38, 8-47, 8-51, 8-54</dd><dt>Kobling</dt><dd>Beregningen</dd></dl>
+    <dl><dt>Avgjør</dt><dd>Dager uten rett til sykepenger (bare stans, ikke delvis)</dd><dt>Gjelder</dt><dd>Per dato per yrkesaktivitet</dd><dt>Hjemler</dt><dd>§§ 8-3, 8-5, 8-7, 8-8, 8-9, 8-15, 8-17, 8-31, 8-51, 8-52, 8-54, 8-55</dd><dt>Kobling</dt><dd>Beregningen</dd></dl>
+    <p>Bruker blant annet Medlemskap (unntak fra oppholdskravet), Sykepengegrunnlag (2G fra 67 år), Institusjonsopphold og Andre ytelser (ugradert AFP).</p>
     <p><strong>I dag:</strong> i Spleis, som <code>avslagstidslinje</code> på endringen.</p>` },
   "a-utbetalingsgrad": { title: "Utbetalingsgrad", html: `
-    <dl><dt>Avgjør</dt><dd>Hvor stor del av dagsatsen som utbetales</dd><dt>Gjelder</dt><dd>Per dato</dd><dt>Hjemler</dt><dd>§§ 8-6, 8-13, 8-53, 8-54</dd><dt>Kobling</dt><dd>Beregningen</dd></dl>
+    <dl><dt>Avgjør</dt><dd>Hvor stor del av dagsatsen som utbetales</dd><dt>Gjelder</dt><dd>Per dato per yrkesaktivitet</dd><dt>Hjemler</dt><dd>§§ 8-6, 8-13, 8-53, 8-54</dd><dt>Kobling</dt><dd>Beregningen</dd></dl>
     <p>Gradert sykmelding (minst 20 %) og reduksjon under institusjonsopphold. <strong>I dag:</strong> i Spleis, ut fra sykdomstidslinjen.</p>` },
   "a-reisetilskudd": { title: "Reisetilskudd", html: `
-    <dl><dt>Avgjør</dt><dd>Tilskudd til reise i stedet for sykepenger</dd><dt>Gjelder</dt><dd>Per dato</dd><dt>Hjemler</dt><dd>§ 8-14</dd><dt>Kobling</dt><dd>Beregningen</dd></dl>
+    <dl><dt>Avgjør</dt><dd>Tilskudd til reise i stedet for sykepenger</dd><dt>Gjelder</dt><dd>Per dato per yrkesaktivitet</dd><dt>Hjemler</dt><dd>§ 8-14</dd><dt>Kobling</dt><dd>Beregningen</dd></dl>
     <p><strong>I dag:</strong> ikke modellert i Spleis.</p>` },
   "a-agp": { title: "Arbeidsgiverperiode/ventetid", html: `
-    <dl><dt>Avgjør</dt><dd>Perioden før trygden normalt dekker</dd><dt>Gjelder</dt><dd>På tvers av sykefraværstilfeller</dd><dt>Hjemler</dt><dd>§§ 8-19, 8-31, 8-34, 8-38, 8-46, 8-47, 8-54</dd><dt>Kobling</dt><dd>Beregningen (kan ikke bo i vilkårsgrunnlaget, fordi perioden går på tvers av tilfeller)</dd></dl>
+    <dl><dt>Avgjør</dt><dd>Perioden før trygden normalt dekker</dd><dt>Gjelder</dt><dd>Per yrkesaktivitet, på tvers av sykefraværstilfeller</dd><dt>Hjemler</dt><dd>§§ 8-19, 8-31, 8-34, 8-38, 8-46, 8-47, 8-49, 8-54</dd><dt>Bygger på</dt><dd>Rettighetskategori, Institusjonsopphold</dd><dt>Kobling</dt><dd>Beregningen (kan ikke bo i vilkårsgrunnlaget, fordi perioden går på tvers av tilfeller)</dd></dl>
+    <p class="hint">Fordi en arbeidsgiverperiode kan fortsette i neste sykefraværstilfelle, må tilfellene behandles i kronologisk rekkefølge.</p>
     <p>Én abstraksjon for både arbeidsgiverperiode og ventetid: det har ingen betydning hvem som betaler, så lenge det ikke er Nav. Abstraksjonen sier at en dag er i perioden, også når Nav likevel dekker dagen (for eksempel ved forsikring). Om dagen gir utbetaling, avgjøres i Dekning.</p>
+    <p><strong>Overstyrbar:</strong> saksbehandler må kunne overstyre perioden i abstraksjonen, for eksempel når arbeidsgiver har oppgitt feil arbeidsgiverperiode. En overstyring gir ny versjon, og beregningen peker på den nye. Fordi perioden går på tvers av tilfeller, kan en overstyring påvirke senere sykefraværstilfeller.</p>
     <p><strong>I dag:</strong> to beregnere i Spleis, <code>Arbeidsgiverperiodeberegner</code> og <code>Ventetidberegner</code>, valgt i <code>Yrkesaktivitet.beregnPerioderUtenNavAnsvar()</code>. Resultatet ligger som <code>dagerUtenNavAnsvar</code> på endringen. Omtrent 116 filer i <code>spleis/</code> nevner arbeidsgiverperiode.</p>` },
   "a-maksdato": { title: "Sykepengedager/maksdato", html: `
     <dl><dt>Avgjør</dt><dd>Datoen retten tar slutt</dd><dt>Gjelder</dt><dd>På tvers av sykefraværstilfeller</dd><dt>Hjemler</dt><dd>§§ 8-3, 8-11, 8-12, 8-51, 8-55</dd><dt>Kobling</dt><dd>Beregningen</dd></dl>
-    <p>Antall dager (248, 250 eller 260) avhenger av hovedkategorien og av om trygden dekker de første 16 dagene.</p>
+    <p>Antall dager (248, 250 eller 260) avhenger av hovedkategorien og av om trygden dekker de første 16 dagene (Dekning, AGP/ventetid, Forsikring). Datoene må vurderes kronologisk, fordi hver utbetalt dag flytter maksdatoen.</p>
     <p><strong>I dag:</strong> i Spleis, som <code>maksdatoresultat</code> på endringen.</p>` },
 
   /* Koblinger i dag */
@@ -401,26 +478,29 @@ const D = {
 
   /* Koblinger ønsket */
   "o-endring": { title: "Beregning / endring (ønsket)", html: `<p>Beregningen peker på alt den trenger for å bli riktig: vilkårsgrunnlaget, og alle fakta som ikke gjelder hele sykefraværstilfellet. Hver kobling er en id til én bestemt versjon. Da kan vi gjenskape beregningen, forklare den med hjemmel, og se hva som har endret seg mellom to beregninger.</p>` },
-  "o-vgref": { title: "vilkårsgrunnlagId", html: `<p>Som i dag. Via vilkårsgrunnlaget får beregningen rettighetskategori, sykepengegrunnlag, inngangsvilkår og dekning.</p>` },
-  "o-agp": { title: "AGP/ventetid-avklaring", html: `<p>Går på tvers av sykefraværstilfeller, så koblingen må ligge på beregningen. Erstatter <code>dagerUtenNavAnsvar</code> beregnet i Spleis.</p>` },
-  "o-perioder": { title: "Periodiserte opplysninger", html: `<p>Andre ytelser og institusjonsopphold. Kan starte og slutte midt i et sykefraværstilfelle. Beregningen peker på versjonen den brukte, i stedet for å hente ferske svar uten å lagre hva som ble brukt.</p>` },
-  "o-lopende": { title: "Løpende vilkår og utbetalingsgrad", html: `<p>Vurderes per dato. Kan være koblinger eller beregnes i Spleis ut fra koblede fakta. Uavklart.</p>` },
+  "o-vgref": { title: "vilkårsgrunnlagId", html: `<p>Som i dag. Via vilkårsgrunnlaget får beregningen alt som avgjøres én gang per sykefraværstilfelle: medlemskap, rettighetskategori, inngangsvilkår, sykepengegrunnlag og dekning.</p>` },
+  "o-agp": { title: "AGP/ventetid-avklaring", html: `<p>Per yrkesaktivitet, på tvers av sykefraværstilfeller, så koblingen må ligge på beregningen. Overstyrbar: en overstyring gir ny versjon, og den nye beregningen peker på den. Erstatter <code>dagerUtenNavAnsvar</code> beregnet i Spleis.</p>` },
+  "o-perioder": { title: "Periodiserte opplysninger", html: `<p>Andre ytelser, institusjonsopphold og forsikring. Kan starte og slutte midt i et sykefraværstilfelle. Beregningen peker på versjonen den brukte, i stedet for å hente ferske svar uten å lagre hva som ble brukt.</p><p class="hint">Forsikring er periodisert, men <code>forsikringsvurderingId</code> ligger i dag på vilkårsgrunnlaget. Om den bør flyttes, er ikke avklart.</p>` },
+  "o-arbeidsufor": { title: "Arbeidsuførhet", html: `<p>Hvilke dager som er arbeidsuførhet. Om den vurderes før inndelingen i sykefraværstilfeller eller sammen med løpende vilkår, er ikke avklart. Derfor er det heller ikke avklart hvor koblingen bor.</p>` },
+  "o-lopende": { title: "Løpende vilkår og utbetalingsgrad", html: `<p>Vurderes per dato per yrkesaktivitet. Kan være koblinger eller beregnes i Spleis ut fra koblede fakta. Uavklart.</p>` },
   "o-maksdato": { title: "Sykepengedager/maksdato", html: `<p>Går på tvers av sykefraværstilfeller. Om dette skal være en kobling eller bli i Spleis, er uavklart. Antall dager avhenger av hovedkategorien.</p>` },
-  "o-vg": { title: "Vilkårsgrunnlag (ønsket)", html: `<p>Én per sykefraværstilfelle (skjæringstidspunkt). Peker på alt som avgjøres én gang for hele tilfellet. Rettighetskategorien kommer først, fordi de andre avgjørelsene bruker den.</p>` },
+  "o-vg": { title: "Vilkårsgrunnlag (ønsket)", html: `<p>Én per sykefraværstilfelle (skjæringstidspunkt). Peker på alt som avgjøres én gang for hele tilfellet, og inneholder bare pekere, ikke dataene. Inntekt er ikke med: Spleis trenger bare sykepengegrunnlaget, og det er Sykepengegrunnlag og Rettighetskategori som har forholdet til inntektene. Rekkefølgen følger <code>rekkefolge-kap8.md</code>: medlemskap og § 8-3 først, så rettighetskategori og opptjening (Inaktiv avklares sist, som siste mulighet), sykepengegrunnlag, og til slutt minsteinntekt og dekning.</p>` },
   "o-rk": { title: "rettighetskategoriId", html: D_RK() },
-  "o-inntekt": { title: "Inntekt", html: `<p>Rå opplysninger, egne typede felter per inntektstype. Ingen beregninger. Skal kunne overstyres. En overstyring gir ny versjon og nytt vilkårsgrunnlag.</p>` },
-  "o-spg": { title: "Sykepengegrunnlag", html: `<p>Grunnlagsdeler med inntektstype. Bygger på rettighetskategori og inntekt. Skal kunne overstyres, for eksempel ved skjønnsfastsettelse.</p><p><strong>Minimalt svar til beregningen:</strong> total begrenset til 6G og fastsatt inntekt per yrkesaktivitet. Totalen alene er ikke nok, fordi grad og fordeling vektes med inntekt per yrkesaktivitet. Faktaavklart inntekt er input til grunnlaget, ikke til beregningen.</p>` },
+  "o-spg": { title: "sykepengegrunnlagId", html: `<p>Peker på sykepengegrunnlaget. Ett grunnlag på tvers av yrkesaktivitetene. Sykepengegrunnlag-abstraksjonen har selv forholdet til inntektene fra alle yrkesaktivitetene, også Dagpenger og Inaktiv, så Spleis trenger ikke kjenne inntektene. Bygger også på rettighetskategori og institusjonsopphold. Skal kunne overstyres, for eksempel ved skjønnsfastsettelse eller overstyrt inntekt. Begge gir ny id.</p><p><strong>Minimalt svar til beregningen:</strong> total begrenset til 6G og fastsatt inntekt per yrkesaktivitet. Totalen alene er ikke nok, fordi grad og fordeling vektes med inntekt per yrkesaktivitet. Faktaavklart inntekt er input til grunnlaget, ikke til beregningen.</p>` },
   "o-medlemskap": { title: "medlemskapsvurderingId", html: `<p>Planlagt kobling til en egen medlemskapstjeneste. Utvikles parallelt med rettighetskategori. Erstatter verdien <code>medlemskapstatus</code>.</p>` },
-  "o-inngang": { title: "Inngangsvilkår", html: `<p>Én kobling per vilkår: <code>opptjeningsvurderingId</code> (finnes), minsteinntekt, § 8-3, § 8-4. Hvilke vilkår som gjelder, avhenger av rettighetskategorien.</p>` },
-  "o-dekning": { title: "Dekning per grunnlagsdel", html: `<p>Dekningsgrad og fra-dag per grunnlagsdel. <code>forsikringsvurderingId</code> blir en del av dette. Erstatter hardkodet 100 % og 80 % i utbetalingstidslinje-builderne.</p>` },
+  "o-tapinntekt": { title: "tapAvPensjonsgivendeInntektId", html: `<p>Inngangsvilkår. Kobling til vurderingen av om personen har tapt pensjonsgivende inntekt på grunn av arbeidsuførheten (§ 8-3 første ledd). Ingen forgjengere. Er vilkåret ikke oppfylt, gir det avslag for hele tilfellet. Vernepliktige er unntatt når arbeidsuførheten oppstår under tjenesten (§ 8-46).</p>` },
+  "o-alder": { title: "aldersvurdering", html: `<p>Inngangsvilkår (§ 8-3 første ledd): er personen under 70 år på skjæringstidspunktet? Vurderingen ligger rett i vilkårsgrunnlaget, ikke som en kobling. Spleis kan alltid regne den ut riktig fra fødselsdatoen, og den trenger ikke kunne overstyres. Derfor blir logikken i Spleis.</p><p>Er personen 70 år eller eldre, gir det avslag for hele tilfellet. Fyller personen 70 år midt i tilfellet, hører avslaget fra den dagen til Sykepengedager/maksdato.</p>` },
+  "o-opptjening": { title: "opptjeningsvurderingId", html: `<p>Inngangsvilkår. Finnes i dag og peker på sp-vilkarsproving. Bygger på rettighetskategorien (tilleggskategorier og Dagpenger). Opptjening som ikke er oppfylt, gir ikke avslag hvis hovedkategorien blir Inaktiv.</p>` },
+  "o-minsteinntekt": { title: "minsteinntektId", html: `<p>Inngangsvilkår. Bygger på sykepengegrunnlaget og rettighetskategorien: 0,5G som hovedregel, 1G for Inaktiv. Erstatter vurderingen som gjøres i Spleis i dag.</p>` },
+  "o-dekning": { title: "Dekning per yrkesaktivitet", html: `<p>Dekningsgrad og fra-dag per yrkesaktivitet. Bruker resultatet fra Forsikring. Erstatter hardkodet 100 % og 80 % i utbetalingstidslinje-builderne.</p>` },
   "o-utbtl": { title: "utbetalingstidslinje", html: `<p>Resultatet av beregningen. Spleis setter sammen dager, grad og beløp ut fra koblingene, uten å vite hvilke kategoriregler som ligger bak.</p>` },
 
   /* Apper */
   spleis: { title: "Spleis", html: `<p>Kjernen: sykdomstidslinje, vedtaksperioder og tilstandsmaskin, behandlinger og utbetaling. Målet er at Spleis kjenner svarene den trenger for å beregne utbetaling, ikke reglene bak dem.</p>` },
   "app-rk-idag": { title: "Rettighetskategori i Spleis (i dag)", html: `<p>Implisitt: <code>arbeidssituasjon</code> fra søknaden og yrkesaktivitet ut fra søknadstype. Ingen hjemmel lagres, og kombinerte kategorier støttes ikke.</p>` },
-  "app-rk": { title: "Rettighetskategori (skisse)", html: `<p>Avklares først for hvert sykefraværstilfelle. Om det blir en egen tjeneste eller en modul i Spleis, er ikke bestemt.</p>` },
+  "app-rk": { title: "Rettighetskategori (skisse)", html: `<p>Avklares tidlig for hvert sykefraværstilfelle, ut fra inntekten. Trinn 2 i funksjonskartet, men vi starter med den og bruker inntekten Spleis har i dag. Om det blir en egen tjeneste eller en modul i Spleis, er ikke bestemt.</p>` },
   "app-medlemskap": { title: "Medlemskap (planlagt tjeneste)", html: `<p>Inngangsvilkår, trekkes ut i en egen tjeneste parallelt med rettighetskategori. Eier vurderingen, hjemmelen og overstyringen. I dag svarer <code>sparkel-medlemskap</code> på behovet, og Spleis lagrer bare statusen.</p>` },
-  "app-inntekt": { title: "Inntekt og sykepengegrunnlag (planlagt)", html: `<p>Skal isoleres og kunne overstyres. Egen tjeneste eller modul i Spleis er ikke bestemt.</p>` },
+  "app-inntekt": { title: "Sykepengegrunnlag og Inntekt (planlagt)", html: `<p>Skal isoleres og kunne overstyres. Spleis snakker bare med Sykepengegrunnlag. Sykepengegrunnlag har forholdet til Inntekt, og Rettighetskategori bruker også inntektene. Egen tjeneste eller modul i Spleis er ikke bestemt.</p>` },
   "opptjening-legacy": { title: "Opptjening beregnet i Spleis (før)", html: `<p><code>Opptjening.kt</code> og <code>ArbeidsgiverOpptjeningsgrunnlag</code> regnet ut opptjening selv, med <code>ArbeidsforholdV2</code> og 28-dagersregelen.</p>` },
   "opptjening-rester": { title: "Rester av opptjening i Spleis", html: `<p>Ikke i bruk, men ikke ryddet bort: <code>Opptjening.kt</code>, <code>ArbeidstakerOpptjening</code> og feltet <code>opptjening</code> i <code>Grunnlagsdata</code>.</p>` },
   "sp-vilkarsproving": { title: "sp-vilkarsproving", html: `<ul>
@@ -435,15 +515,15 @@ const D = {
       <li><strong>Regler:</strong> Infotrygd-type 1–5 blir til <code>ÅTTI_PROSENT_FRA_DAG_1</code>, <code>HUNDRE_PROSENT_FRA_DAG_17</code> eller <code>HUNDRE_PROSENT_FRA_DAG_1</code>.</li>
       <li><strong>Ut:</strong> <code>forsikringsvurderingId</code>, senere <code>dekning.grad</code> og <code>dekning.iVentetid</code> på <code>ForsikringsvurderingResultat</code>.</li>
       <li><strong>Endring:</strong> <code>endret_forsikringsvurdering</code>.</li></ul>
-      <p>Forsikring er en del av abstraksjonen Dekning.</p>` },
+      <p>Forsikring er en egen abstraksjon. Dekning bruker resultatet. Dekker selvstendig næringsdrivende og frilansere.</p>` },
   "agp-idag": { title: "AGP og ventetid i Spleis", html: `<p><code>Arbeidsgiverperiodeberegner</code> og <code>Ventetidberegner</code> går gjennom sykdomstidslinjen dag for dag. Dypt vevd inn i tilstandsmaskinen, inntektsmeldingshåndteringen og forkasting.</p>` },
   "dekning-idag": { title: "Dekning i Spleis", html: `<p>Hardkodet per utbetalingstidslinje-builder: 100 % arbeidstaker, 80 % selvstendig, overstyrt av forsikring.</p>` },
-  "app-agp": { title: "AGP/ventetid (skisse)", html: `<p>Én abstraksjon for arbeidsgiverperiode og ventetid. Største og vanskeligste uttrekket, fordi grensesnittet mot sykdomstidslinjen må avklares. Kan like gjerne bli en modul i Spleis som en egen tjeneste.</p>` },
-  "app-dekning": { title: "Dekning (skisse)", html: `<p>Dekningsgrad og fra-dag per grunnlagsdel. sp-forsikring leverer allerede en del av dette for selvstendig.</p>` },
+  "app-agp": { title: "AGP/ventetid (skisse)", html: `<p>Én abstraksjon for arbeidsgiverperiode og ventetid. Største og vanskeligste uttrekket, fordi grensesnittet mot sykdomstidslinjen må avklares. Kan like gjerne bli en modul i Spleis som en egen tjeneste. Må kunne overstyres i abstraksjonen.</p>` },
+  "app-dekning": { title: "Dekning (skisse)", html: `<p>Dekningsgrad og fra-dag per yrkesaktivitet. Bruker resultatet fra Forsikring (sp-forsikring).</p>` },
   kilder: { title: "Kilder", html: `<ul><li>Søknad (i dag kilde til implisitt kategori)</li><li>Aa-reg via <code>ArbeidsforholdV2</code></li><li>Inntekter via sparkel-apper</li><li>Infotrygd-replika (forsikring)</li><li>Inntektsmelding</li></ul>` },
   speil: { title: "Speil og Spesialist", html: `<p>Speil henter opptjeningsvurderingen direkte fra sp-vilkarsproving (<code>useOpptjeningsvurdering.ts</code>). Overstyring går til vurderingsappen, ikke til Spleis.</p>` },
 };
-function D_RK() { return `<p>Ny kobling, og første steg. Gjelder hele sykefraværstilfellet. Hovedkategori og tilleggskategorier, med hjemmel. Erstatter <code>arbeidssituasjon</code> på endringen som implisitt kategori, og gjør det mulig å støtte kombinerte kategorier (§§ 8-40 til 8-43).</p>`; }
+function D_RK() { return `<p>Ny kobling. Gjelder hele sykefraværstilfellet. Hovedkategori (også Dagpenger og Inaktiv) og tilleggskategorier, med hjemmel. Bygger på inntekten. Erstatter <code>arbeidssituasjon</code> på endringen som implisitt kategori, og gjør det mulig å støtte kombinerte kategorier (§§ 8-40 til 8-43).</p>`; }
 
 /* ---------- Felles panel ---------- */
 const CLS = { next: "--next-b", plan: "--next-b", sat: "--sat-b", part: "--part-b", todo: "--todo-b", legacy: "--legacy-b", spleis: "--spleis-b", ext: "--ext-b" };
@@ -477,23 +557,26 @@ function tabs(name, render) {
 
 /* ---------- Byggeklosser ---------- */
 const BLOCKS = [
-  ["Per sykefraværstilfelle", "Avgjøres én gang fra skjæringstidspunktet. Kobling på vilkårsgrunnlaget.", [
-    ["a-rettighetskategori", "Rettighetskategori", "avklares først, ikke et inngangsvilkår", "next"],
-    ["a-medlemskap", "Medlemskap", "inngangsvilkår, egen tjeneste parallelt", "next"],
+  ["Per sykefraværstilfelle", "Avgjøres én gang fra skjæringstidspunktet, i rekkefølgen under. Kobling på vilkårsgrunnlaget. Et inngangsvilkår som ikke er oppfylt, gir avslag for hele tilfellet.", [
     ["a-inntekt", "Inntekt", "planlagt uttrekk, overstyrbar", "plan"],
-    ["a-sykepengegrunnlag", "Sykepengegrunnlag", "planlagt uttrekk, overstyrbar", "plan"],
-    ["a-inngangsvilkar", "Inngangsvilkår", "opptjening ✓ i sp-vilkarsproving", "part"],
+    ["a-medlemskap", "Medlemskap", "inngangsvilkår, egen tjeneste", "next"],
+    ["a-ovrige", "Øvrige inngangsvilkår", "§ 8-3", "todo"],
+    ["a-rettighetskategori", "Rettighetskategori", "bygger på inntekt, ikke et inngangsvilkår", "next"],
+    ["a-opptjening", "Opptjening", "✓ sp-vilkarsproving", "sat"],
+    ["a-sykepengegrunnlag", "Sykepengegrunnlag", "på tvers av yrkesaktiviteter, overstyrbar", "plan"],
     ["a-minsteinntekt", "Minsteinntekt", "inngangsvilkår", "todo"],
-    ["a-dekning", "Dekning", "forsikring ✓ i sp-forsikring", "part"]]],
+    ["a-dekning", "Dekning", "per yrkesaktivitet, hardkodet i dag", "todo"]]],
   ["Periodisert", "Kan starte og slutte midt i tilfellet. Kobling på beregningen.", [
-    ["a-andreytelser", "Andre ytelser", "uføretrygd, AFP", "todo"],
+    ["a-forsikring", "Forsikring", "✓ sp-forsikring", "sat"],
+    ["a-andreytelser", "Andre ytelser", "uføretrygd, AFP, AAP m.fl.", "todo"],
     ["a-institusjon", "Institusjonsopphold", "helseinstitusjon, fengsel", "todo"]]],
-  ["Per dato", "Kan gi ulikt svar for ulike dager. Kobling på beregningen.", [
+  ["Per dato per yrkesaktivitet", "Kan gi ulikt svar for ulike dager. Kobling på beregningen.", [
+    ["a-arbeidsufor", "Arbeidsuførhet", "§ 8-4, plassering uavklart", "todo"],
     ["a-lopende", "Løpende vilkår", "dager uten rett", "todo"],
     ["a-utbetalingsgrad", "Utbetalingsgrad", "gradering, reduksjon", "todo"],
     ["a-reisetilskudd", "Reisetilskudd", "ikke modellert", "todo"]]],
-  ["På tvers av tilfeller", "Avhenger av tidligere sykefravær. Kobling på beregningen.", [
-    ["a-agp", "Arbeidsgiverperiode/ventetid", "én abstraksjon for begge", "todo"],
+  ["På tvers av sykefraværstilfeller", "Avhenger av tidligere sykefravær. Kobling på beregningen.", [
+    ["a-agp", "Arbeidsgiverperiode/ventetid", "per yrkesaktivitet, overstyrbar", "todo"],
     ["a-maksdato", "Sykepengedager/maksdato", "248, 250 eller 260 dager", "todo"]]],
 ];
 document.getElementById("blocks").innerHTML = BLOCKS.map(([t, p, items]) =>
@@ -519,21 +602,24 @@ const MODEL = {
     other: ["m-ytelser", "Hentes ved beregning, uten kobling", "ytelser, institusjonsopphold, vurderingsresultater", []],
   },
   onsket: {
-    desc: "Ønsket (skisse): vilkårsgrunnlaget peker på alt som gjelder hele tilfellet, med rettighetskategori først. Beregningen peker på vilkårsgrunnlaget og på alle andre fakta den trenger.",
+    desc: "Ønsket (skisse): vilkårsgrunnlaget peker på alt som gjelder hele tilfellet, i rekkefølgen fra inntekt til dekning. Beregningen peker på vilkårsgrunnlaget og på alle andre fakta den trenger.",
     endring: ["o-endring", "Behandling → Endring (beregning)", "peker på alt den trenger", [
       ["o-vgref", "vilkårsgrunnlagId", "per sykefraværstilfelle", "spleis", "ref"],
-      ["o-agp", "AGP/ventetid-avklaring", "på tvers av tilfeller", "todo", "ref"],
-      ["o-perioder", "Andre ytelser, institusjonsopphold", "periodisert, versjonert", "todo", "ref"],
-      ["o-lopende", "Løpende vilkår, utbetalingsgrad", "per dato (uavklart form)", "todo", "ref"],
+      ["o-agp", "AGP/ventetid-avklaring", "per yrkesaktivitet, overstyrbar", "todo", "ref"],
+      ["o-perioder", "Andre ytelser, institusjonsopphold, forsikring", "periodisert, versjonert", "todo", "ref"],
+      ["o-arbeidsufor", "Arbeidsuførhet", "plassering uavklart", "todo", "ref"],
+      ["o-lopende", "Løpende vilkår, utbetalingsgrad", "per dato per yrkesaktivitet", "todo", "ref"],
       ["o-maksdato", "Sykepengedager/maksdato", "på tvers (uavklart form)", "todo", "ref"],
       ["o-utbtl", "utbetalingstidslinje", "resultatet", "spleis", "inline"]]],
     vg: ["o-vg", "Vilkårsgrunnlag", "per sykefraværstilfelle", [
+      ["o-medlemskap", "medlemskapsvurderingId", "inngangsvilkår, egen tjeneste", "next", "ref"],
+      ["o-tapinntekt", "tapAvPensjonsgivendeInntektId", "§ 8-3 første ledd", "todo", "ref"],
+      ["o-alder", "aldersvurdering", "under 70 år, beregnes i Spleis", "spleis", "inline"],
       ["o-rk", "rettighetskategoriId", "hovedkategori + tilleggskategorier", "next", "ref"],
-      ["o-medlemskap", "medlemskapsvurderingId", "inngangsvilkår, parallelt", "next", "ref"],
-      ["o-inntekt", "Inntekt", "overstyrbar", "plan", "ref"],
-      ["o-spg", "Sykepengegrunnlag", "grunnlagsdeler, overstyrbar", "plan", "ref"],
-      ["o-inngang", "Andre inngangsvilkår", "opptjeningsvurderingId ✓, minsteinntekt, …", "part", "ref"],
-      ["o-dekning", "Dekning per grunnlagsdel", "forsikringsvurderingId ✓ inngår", "part", "ref"]]],
+      ["o-opptjening", "opptjeningsvurderingId", "✓ sp-vilkarsproving", "sat", "ref"],
+      ["o-spg", "sykepengegrunnlagId", "peker, grunnlaget eier inntektene", "plan", "ref"],
+      ["o-minsteinntekt", "minsteinntektId", "§§ 8-3, 8-47", "todo", "ref"],
+      ["o-dekning", "Dekning per yrkesaktivitet", "bruker Forsikring", "todo", "ref"]]],
     other: null,
   },
 };
@@ -555,14 +641,14 @@ const APPS = {
   for: { desc: "Før: Spleis eide reglene selv, og kategorien var implisitt fra søknaden.",
     core: [["app-rk-idag", "Kategori", "implisitt fra søknad", "spleis"], ["opptjening-legacy", "Opptjening", "Opptjening.kt", "spleis"], ["agp-idag", "AGP og ventetid", "to beregnere", "spleis"], ["dekning-idag", "Dekning", "hardkodet", "spleis"]],
     contract: null, right: [["speil", "Speil / Spesialist", "leser alt fra Spleis", "ext"]] },
-  idag: { desc: "I dag: opptjening og forsikring er trukket ut. Kategori, AGP/ventetid og resten av dekning bor i Spleis.",
+  idag: { desc: "I dag: opptjening og forsikring er trukket ut. Kategori, AGP/ventetid og dekning bor i Spleis.",
     core: [["app-rk-idag", "Kategori", "implisitt fra søknad", "todo"], ["m-medlemskap", "Medlemskap", "status fra sparkel-medlemskap", "todo"], ["agp-idag", "AGP og ventetid", "to beregnere", "todo"], ["dekning-idag", "Dekning", "100 % / 80 % hardkodet", "todo"], ["opptjening-rester", "Rester av opptjening", "ikke i bruk", "legacy"]],
     contract: "Koblinger i vilkårsgrunnlaget: <code>opptjeningsvurderingId</code>, <code>forsikringsvurderingId</code>",
-    right: [["sp-vilkarsproving", "sp-vilkarsproving", "opptjening ✓", "sat"], ["sp-forsikring", "sp-forsikring", "forsikring (del av dekning) ✓", "sat"], ["speil", "Speil / Spesialist", "leser vurderinger fra appene", "ext"]] },
-  onsket: { desc: "Ønsket (skisse): Spleis kjenner svarene, ikke reglene. Rettighetskategori og medlemskap kommer først. Hver abstraksjon blir en egen tjeneste eller en isolert modul i Spleis. Det er bare bestemt for medlemskap.",
-    core: [["app-inntekt", "Inntekt og sykepengegrunnlag", "tjeneste eller modul, overstyrbar", "plan"], ["app-agp", "AGP/ventetid", "tjeneste eller modul", "todo"]],
-    contract: "Vilkårsgrunnlaget peker på rettighetskategori, medlemskap, inntekt, sykepengegrunnlag, inngangsvilkår og dekning. Beregningen peker på vilkårsgrunnlaget, AGP/ventetid og periodiserte fakta. Modulene har rene API-er, slik tjenestene har kontrakter.",
-    right: [["app-rk", "Rettighetskategori", "avklares først", "next"], ["app-medlemskap", "Medlemskap", "egen tjeneste", "next"], ["sp-vilkarsproving", "sp-vilkarsproving", "opptjening ✓", "sat"], ["sp-forsikring", "sp-forsikring", "forsikring ✓", "sat"], ["app-dekning", "Dekning", "skisse", "todo"], ["speil", "Speil / Spesialist", "leser og overstyrer i abstraksjonene", "ext"]] },
+    right: [["sp-vilkarsproving", "sp-vilkarsproving", "opptjening ✓", "sat"], ["sp-forsikring", "sp-forsikring", "forsikring ✓ (SN og frilanser)", "sat"], ["speil", "Speil / Spesialist", "leser vurderinger fra appene", "ext"]] },
+  onsket: { desc: "Ønsket (skisse): Spleis kjenner svarene, ikke reglene. Vi starter med rettighetskategori og medlemskap. Hver abstraksjon blir en egen tjeneste eller en isolert modul i Spleis. Det er bare bestemt for medlemskap.",
+    core: [["app-inntekt", "Sykepengegrunnlag (med Inntekt bak)", "tjeneste eller modul, overstyrbar", "plan"], ["app-agp", "AGP/ventetid", "tjeneste eller modul, overstyrbar", "todo"]],
+    contract: "Vilkårsgrunnlaget har bare pekere: medlemskap, rettighetskategori, inngangsvilkår, sykepengegrunnlag og dekning. Spleis kjenner ikke inntektene. Det gjør Sykepengegrunnlag og Rettighetskategori. Beregningen peker på vilkårsgrunnlaget, AGP/ventetid og periodiserte fakta som forsikring, andre ytelser og institusjonsopphold. Modulene har rene API-er, slik tjenestene har kontrakter.",
+    right: [["app-rk", "Rettighetskategori", "bygger på inntekt", "next"], ["app-medlemskap", "Medlemskap", "egen tjeneste", "next"], ["sp-vilkarsproving", "sp-vilkarsproving", "opptjening ✓", "sat"], ["sp-forsikring", "sp-forsikring", "forsikring ✓", "sat"], ["app-dekning", "Dekning", "skisse", "todo"], ["speil", "Speil / Spesialist", "leser og overstyrer i abstraksjonene", "ext"]] },
 };
 tabs("apps", v => {
   const a = APPS[v];
@@ -579,9 +665,9 @@ tabs("apps", v => {
 /* ---------- Sekvens ---------- */
 const SEQ = [
   ["0. Avklaring av rettighetskategori (skisse)"],
-  [0, 1, "avklar rettighetskategori", false, true, `<p>Planlagt første steg. Når Spleis får et nytt sykefraværstilfelle, avklares rettighetskategorien før noe annet. I dag gjøres dette implisitt ut fra <code>arbeidssituasjon</code> i søknaden.</p>`],
-  [1, 2, "søknad, registre", false, true, `<p>Avklaringen bygger på opplysninger fra søknaden og registre, for eksempel arbeidsforhold, næring, dagpenger og verneplikt.</p>`],
-  [1, 0, "rettighetskategoriId", true, true, `<p>Spleis lagrer id-en på vilkårsgrunnlaget. Alle senere behov sender med rettighetskategorien i stedet for <code>arbeidssituasjon</code>, så vurderingsappene slipper å utlede kategorien selv.</p>`],
+  [0, 1, "avklar rettighetskategori", false, true, `<p>Planlagt første steg. Når Spleis har et skjæringstidspunkt og kjenner inntekten, avklares rettighetskategorien for sykefraværstilfellet. I dag gjøres dette implisitt ut fra <code>arbeidssituasjon</code> i søknaden.</p>`],
+  [1, 2, "inntekt, søknad, registre", false, true, `<p>Avklaringen bygger på inntekten (yrkesaktivitetene på skjæringstidspunktet) og på opplysninger om verneplikt, skip, fiske og yrkesskade. Til å begynne med bruker den inntekten Spleis har i dag, ikke en overstyrt inntekt.</p>`],
+  [1, 0, "rettighetskategoriId", true, true, `<p>Spleis lagrer id-en på vilkårsgrunnlaget. Alle senere behov sender med rettighetskategorien i stedet for <code>arbeidssituasjon</code>, så abstraksjonene slipper å utlede kategorien selv.</p>`],
   ["1. Vilkårsgrunnlag"],
   [0, 1, "behov <X>vurdering", false, false, `<p>Sendes når Spleis bygger vilkårsgrunnlag for et skjæringstidspunkt. Eksempler i dag: <code>Opptjeningsvurdering</code> og <code>Forsikringsvurdering</code>. Planlagt: medlemskap, parallelt med rettighetskategori. Spleis sender bare det abstraksjonen trenger for å identifisere saken, ikke grunnlagsdata.</p>`],
   [1, 2, "henter egne data", false, false, `<p>sp-vilkarsproving sender <code>ArbeidsforholdV2</code>. sp-forsikring leser Infotrygd-replika. Spleis vet ikke hvilke kilder som brukes.</p>`],
@@ -590,7 +676,7 @@ const SEQ = [
   [0, 1, "behov <X>vurderingResultat", false, false, `<p>Sendes sammen med Ytelser når Spleis skal beregne. <code>YtelserRiver</code> krever <code>OpptjeningsvurderingResultat</code> og tar imot <code>ForsikringsvurderingResultat</code>.</p>`],
   [1, 0, "minimalt svar", true, false, `<p><code>ok</code> for opptjening, <code>dekning.grad</code> og <code>dekning.iVentetid</code> for forsikring.</p>`],
   ["3. Overstyring og endring"],
-  [3, 1, "vis / overstyr", false, false, `<p>Speil henter vurderingen direkte fra abstraksjonen og viser grunnlaget. Saksbehandler overstyrer i abstraksjonen, ikke i Spleis sin beregning. Dette gjelder også inntekt og sykepengegrunnlag når de er isolert.</p>`],
+  [3, 1, "vis / overstyr", false, false, `<p>Speil henter vurderingen direkte fra abstraksjonen og viser grunnlaget. Saksbehandler overstyrer i abstraksjonen, ikke i Spleis sin beregning. Dette gjelder også inntekt, sykepengegrunnlag og AGP/ventetid når de er isolert. Abstraksjonen sender samtidig <code>saksbehandlerhandling</code> til Spesialist, som knytter handlingen til totrinnskontrollen.</p>`],
   [1, 0, "event endret_<x>vurdering", true, false, `<p><code>endret_opptjeningsvurdering</code> eller <code>endret_forsikringsvurdering</code> med <code>fødselsnummer</code>, <code>skjæringstidspunkt</code> og ny id. Spleis bytter id i <code>EndretVurderingPåSkjæringstidspunktRiver</code> og reberegner. Den nye beregningen peker på den nye id-en, den gamle beregningen beholder den gamle.</p>`],
 ];
 const seq = document.getElementById("seq"), seqPanel = document.getElementById("seq-panel");
@@ -614,13 +700,15 @@ seq.addEventListener("click", e => {
 
 /* ---------- Rekkefølge ---------- */
 const CARDS = [
-  ["1a. Rettighetskategori", "b-next", "Start her", `<p>Gjør den implisitte kategorien eksplisitt: hovedkategori og tilleggskategorier, med hjemmel, avklart én gang per sykefraværstilfelle og koblet fra vilkårsgrunnlaget.</p><p>Gir grunnlag for å støtte kombinerte kategorier, og for at de andre abstraksjonene kan ta imot kategorien i stedet for <code>arbeidssituasjon</code>. Tjeneste eller modul er ikke bestemt.</p>`],
-  ["1b. Medlemskap", "b-next", "Start her, parallelt", `<p>Inngangsvilkår som trekkes ut i en egen tjeneste. Vilkårsgrunnlaget får en kobling i stedet for verdien <code>medlemskapstatus</code>. Tjenesten eier vurdering, hjemmel og overstyring.</p>`],
-  ["2. Inntekt og sykepengegrunnlag", "b-todo", "Planlagt", `<p>Skal isoleres og kunne overstyres. Rå inntekt skilles fra grunnlaget (G-regulering, 6G, avvik, skjønn, grunnlagsdeler). Begge kobles fra vilkårsgrunnlaget. Tjeneste eller modul er ikke bestemt.</p>`],
-  ["Opptjening", "b-done", "Ferdig (rester gjenstår)", `<p>sp-vilkarsproving eier regler, Aa-reg-oppslag, lagring, visning og overstyring. Spleis har <code>opptjeningsvurderingId</code> på vilkårsgrunnlaget og får <code>ok</code>.</p><p><strong>Gjenstår:</strong> rydde bort restene i Spleis, og la behovet bruke rettighetskategori.</p>`],
-  ["Dekning", "b-part", "Delvis", `<p>Forsikring for selvstendig er trukket ut til sp-forsikring. Resten (100 % arbeidstaker, 80 % selvstendig, frilanser, inaktiv, AGP dekket av Nav) er hardkodet i Spleis. Dekning skal gjelde per grunnlagsdel.</p>`],
-  ["Arbeidsgiverperiode/ventetid", "b-todo", "Kandidat", `<p>Én abstraksjon for begge. Går på tvers av sykefraværstilfeller, så koblingen bor på beregningen. Største uttrekket, fordi AGP er vevd inn i tilstandsmaskinen og inntektsmeldingshåndteringen.</p>`],
-  ["Andre abstraksjoner", "b-todo", "Senere", `<p>Minsteinntekt, andre ytelser, institusjonsopphold, løpende vilkår, utbetalingsgrad, maksdato og reisetilskudd. Rekkefølgen er ikke bestemt.</p>`],
+  ["Ferdig: Opptjening og Forsikring", "b-done", "Ferdig (rester gjenstår)", `<p>sp-vilkarsproving eier opptjening (regler, Aa-reg-oppslag, lagring, visning og overstyring). sp-forsikring eier forsikring for selvstendig næringsdrivende og frilansere. Spleis har <code>opptjeningsvurderingId</code> og <code>forsikringsvurderingId</code> på vilkårsgrunnlaget.</p><p><strong>Gjenstår:</strong> rydde bort restene av opptjening i Spleis, og la behovene bruke rettighetskategori.</p>`],
+  ["Trinn 1: Inntekt, Medlemskap, Øvrige § 8-3, Andre ytelser, Institusjonsopphold", "b-next", "Start her: Medlemskap", `<p>Medlemskap trekkes ut i en egen tjeneste. Vilkårsgrunnlaget får en kobling i stedet for verdien <code>medlemskapstatus</code>.</p><p>Inntekt skal isoleres og kunne overstyres. Den er forgjenger til rettighetskategori, men rettighetskategori kan starte med inntekten Spleis har i dag.</p><p><strong>Leverer:</strong> Medlemskap.</p>`],
+  ["Trinn 2: Rettighetskategori, med hovedkategorien Dagpenger", "b-next", "Start her: Rettighetskategori", `<p>Gjør den implisitte kategorien eksplisitt: hovedkategori og tilleggskategorier, med hjemmel, avklart én gang per sykefraværstilfelle og koblet fra vilkårsgrunnlaget. Dagpenger kan kombineres med arbeidstaker, selvstendig og frilanser. Tjeneste eller modul er ikke bestemt.</p><p><strong>Leverer:</strong> fiskere på blad B (§ 8-45).</p>`],
+  ["Trinn 3: Hovedkategorien Inaktiv", "b-todo", "Senere", `<p>§ 8-47. Kan ikke kombineres med andre hovedkategorier. Siste mulighet når ingen andre passer, eller når opptjeningen ikke er oppfylt. Kommer derfor etter Opptjening.</p>`],
+  ["Trinn 4: Sykepengegrunnlag, AGP/ventetid, Arbeidsuførhet", "b-todo", "Planlagt", `<p>Sykepengegrunnlaget skal isoleres og kunne overstyres. Det er ett grunnlag på tvers av yrkesaktivitetene, satt sammen av blant annet inntektene fra hver av dem. AGP/ventetid går per yrkesaktivitet på tvers av tilfeller og skal også kunne overstyres. Det er det største uttrekket fordi det er vevd inn i tilstandsmaskinen og inntektsmeldingshåndteringen.</p><p><strong>Leverer:</strong> skip (§ 8-44), tilbakedatering (§ 8-7), varig endring (§ 8-35). Naturalytelser er uavklart.</p>`],
+  ["Trinn 5: Minsteinntekt og Dekning", "b-todo", "Senere", `<p>Dekning per yrkesaktivitet erstatter hardkodet 100 % og 80 %, og bruker resultatet fra Forsikring.</p><p><strong>Leverer:</strong> kombinert arbeidstaker og selvstendig (§ 8-41), andre kombinasjoner (§§ 8-40, 8-42, 8-43), frilansere, inaktive (§ 8-47), dagpenger (§ 8-49, dekningsgrad uavklart) og vernepliktige.</p>`],
+  ["Trinn 6: Løpende vilkår og Utbetalingsgrad", "b-todo", "Senere", `<p>Vurderes per dato per yrkesaktivitet.</p><p><strong>Leverer:</strong> § 8-9, § 8-5, fengsel (§ 8-54) og helseinstitusjon (§ 8-53).</p>`],
+  ["Trinn 7: Sykepengedager/maksdato", "b-todo", "Senere", `<p><strong>Leverer:</strong> selvstendig med forsikring, § 8-12, 26 uker, AFP, uføretrygd og yrkesskade.</p>`],
+  ["Trinn 8: Reisetilskudd", "b-todo", "Senere", `<p>Ikke modellert i Spleis i dag.</p>`],
 ];
 document.getElementById("cards").innerHTML = CARDS.map(([t, bc, s, html]) =>
   `<details${bc === "b-next" ? " open" : ""}><summary>${t} <span class="badge ${bc}">${s}</span></summary>${html}</details>`).join("");
