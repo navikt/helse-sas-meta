@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz: Spleis og abstraksjonene</title>
+<style>
+  :root { --bg: #f7f7f5; --card: #fff; --line: #d9d9d4; --text: #23262a; --muted: #5d636b; --ok: #e6f4ea; --ok-b: #2e8b57; --bad: #fdecea; --bad-b: #c0392b; --acc: #3366cc; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { margin: 0 0 4px; }
+  .lead { color: var(--muted); margin: 0 0 20px; }
+  .progress { position: sticky; top: 0; background: var(--bg); padding: 8px 0; border-bottom: 1px solid var(--line); margin-bottom: 16px; z-index: 1; font-weight: 600; }
+  .q { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; margin: 0 0 16px; }
+  .q h2 { font-size: 1.05rem; margin: 0 0 10px; }
+  .q h2 span { color: var(--muted); font-weight: 500; margin-right: 6px; }
+  .opts { display: grid; gap: 8px; }
+  .opts button { text-align: left; font: inherit; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; cursor: pointer; }
+  .opts button:hover:not([disabled]) { border-color: var(--acc); }
+  .opts button:focus-visible { outline: 3px solid var(--acc); outline-offset: 2px; }
+  .opts button[disabled] { cursor: default; color: var(--text); }
+  .opts button.ok { background: var(--ok); border-color: var(--ok-b); }
+  .opts button.bad { background: var(--bad); border-color: var(--bad-b); }
+  .opts button .mark { font-weight: 700; margin-right: 6px; }
+  .why { margin: 10px 0 0; padding: 8px 12px; border-left: 4px solid var(--acc); background: #f1f4fb; border-radius: 4px; }
+  .why:empty { display: none; }
+  #result { background: var(--card); border: 2px solid var(--acc); border-radius: 10px; padding: 16px 18px; }
+  #result[hidden] { display: none; }
+  .actions { margin-top: 12px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .actions button, .actions a { font: inherit; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--acc); background: var(--acc); color: #fff; cursor: pointer; text-decoration: none; }
+  .actions a { background: #fff; color: var(--acc); }
+  code { background: #eef0f2; padding: 1px 4px; border-radius: 4px; font-size: .9em; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Quiz: Spleis og abstraksjonene</h1>
+  <p class="lead">25 spørsmål om kapittel 8, abstraksjonene, hvor ting skal bo og ADR-ene om domenetjenester, subsumsjoner, kodeverk og veien ut av Infotrygd. Ingen trekk for feil svar, og ingen beslutter som sender deg i retur. Du får forklaringen med en gang du har svart.</p>
+  <div class="progress" aria-live="polite"><span id="progress">0 av 25 besvart, 0 riktige</span></div>
+  <div id="quiz"></div>
+  <section id="result" hidden aria-live="polite"></section>
+</main>
+<script>
+const Q = [
+  {
+    q: "I ønsket modell: hva lagrer vilkårsgrunnlaget om medlemskap, opptjening og sykepengegrunnlag?",
+    a: ["Hele vurderingen, med grunnlag, kilder og hjemler, sånn i tilfelle", "Bare en peker (id) til én bestemt versjon av vurderingen", "Ingenting. Spleis spør på nytt hver gang den trenger svaret", "En PDF av vedtaket, for sikkerhets skyld"],
+    c: 1,
+    w: "Vilkårsgrunnlaget har bare pekere. Dataene og reglene bor i abstraksjonen, som eier vurderingen."
+  },
+  {
+    q: "Saksbehandler overstyrer en vurdering. Hva skjer?",
+    a: ["Den gamle vurderingen blir endret, og ingen får vite det", "Abstraksjonen lager en ny versjon med ny id, og Spleis bytter id og revurderer", "Spleis overstyrer verdien direkte i sin egen beregning", "Saken går tilbake til Infotrygd"],
+    c: 1,
+    w: "Vurderinger endres aldri. En ny vurdering gir en ny id. Gamle beregninger peker fortsatt på den gamle id-en, så vi kan se hvilken versjon hver beregning brukte."
+  },
+  {
+    q: "Hva er rettighetskategori?",
+    a: ["Et inngangsvilkår på linje med medlemskap og opptjening", "Avklaringen som kommer først, og som avgjør hvilke regelsett som gjelder for personen", "Et annet navn på søknadstype", "Kategorien saksbehandleren havner i etter fem overstyringer på rad"],
+    c: 1,
+    w: "Rettighetskategori er ikke et inngangsvilkår. Den avklares først, og de fleste andre abstraksjonene bygger på den."
+  },
+  {
+    q: "Hvordan vet Spleis rettighetskategorien i dag?",
+    a: ["Den er implisitt gjennom søknadstypen, og kombinerte kategorier støttes ikke", "Den hentes fra en egen tjeneste", "Saksbehandler legger den inn i Speil", "Den gjettes ut fra hvilken ukedag søknaden kom"],
+    c: 0,
+    w: "I dag ligger den implisitt i søknadstypen (<code>arbeidssituasjon</code>). Målet er å gjøre den eksplisitt: hovedkategori og tilleggskategorier, med hjemmel."
+  },
+  {
+    q: "Hvilken påstand om Dagpenger og Inaktiv stemmer?",
+    a: ["Begge er tilleggskategorier", "Begge kan kombineres med hva som helst", "Begge er hovedkategorier. Dagpenger kan kombineres med arbeidstaker, selvstendig og frilanser. Inaktiv kan ikke kombineres med noe", "Inaktiv betyr at saksbehandleren har gått hjem for dagen"],
+    c: 2,
+    w: "Inaktiv (§ 8-47) er siste mulighet når ingen andre hovedkategorier passer, eller når opptjeningen ikke er oppfylt. Derfor kan den ikke kombineres."
+  },
+  {
+    q: "Hvilken abstraksjon trekker vi ut i en egen tjeneste parallelt med rettighetskategori?",
+    a: ["Reisetilskudd", "Medlemskap i folketrygden", "Maksdato", "Kaffemaskinen"],
+    c: 1,
+    w: "Medlemskap (§ 8-1) er et inngangsvilkår. Vilkårsgrunnlaget får en peker i stedet for verdien <code>medlemskapstatus</code>."
+  },
+  {
+    q: "Hva trenger Spleis egentlig for å beregne sykepengene?",
+    a: ["Alle inntektene, måned for måned, for alle arbeidsforhold", "Sykepengegrunnlaget. Inntektene er input til sykepengegrunnlaget, ikke til Spleis", "Bare inntektsmeldingen", "Skattemeldingen fra fjoråret og en god magefølelse"],
+    c: 1,
+    w: "Sykepengegrunnlag-abstraksjonen har forholdet til inntektene. Spleis trenger bare sykepengegrunnlaget og har ingen egen peker til inntekt."
+  },
+  {
+    q: "Hva er sykepengegrunnlaget?",
+    a: ["Ett grunnlag per arbeidsgiver, uten sammenheng med hverandre", "Ett grunnlag på tvers av yrkesaktivitetene, satt sammen av blant annet inntektene fra alle yrkesaktivitetene", "Det samme som månedslønnen", "Et tall som alltid er 6G"],
+    c: 1,
+    w: "Sykepengegrunnlaget gjelder hele sykefraværstilfellet og alle yrkesaktivitetene. Det skal kunne overstyres."
+  },
+  {
+    q: "Hvorfor er aldersvurderingen ikke en egen abstraksjon med egen id?",
+    a: ["Vi kan alltid regne den ut riktig, og den trenger ikke kunne overstyres. Vurderingen ligger derfor rett i vilkårsgrunnlaget", "Den er for vanskelig å trekke ut", "Alder er en personopplysning, så den skal ikke lagres", "Ingen blir eldre i Spleis"],
+    c: 0,
+    w: "Det som aldri trenger overstyring og alltid kan regnes ut, kan bli i Spleis. Det som må kunne overstyres, er kandidat for en egen abstraksjon."
+  },
+  {
+    q: "Hvor bor koblingen til forsikring, andre ytelser og institusjonsopphold?",
+    a: ["På vilkårsgrunnlaget, som alt annet", "Beregningen peker direkte på dem, fordi de er periodiserte og kan starte og slutte midt i et sykefraværstilfelle", "I Speil", "I et Excel-ark på noens skrivebord"],
+    c: 1,
+    w: "Vilkårsgrunnlaget har koblinger til det som gjelder hele sykefraværstilfellet, fra skjæringstidspunktet. Periodiserte ting og ting på tvers av sykefraværstilfeller kobles til beregningen."
+  },
+  {
+    q: "Hva stemmer om arbeidsgiverperiode og ventetid?",
+    a: ["Den gjelder bare ett sykefraværstilfelle og kan ikke overstyres", "Den går per yrkesaktivitet på tvers av sykefraværstilfeller, og den må kunne overstyres", "Den er alltid 16 dager for alle", "Den er arbeidsgiverens problem, ikke vårt"],
+    c: 1,
+    w: "AGP og ventetid kan gå på tvers av flere sykefraværstilfeller. Det er det største uttrekket, fordi logikken er vevd inn i tilstandsmaskinen og håndteringen av inntektsmeldinger."
+  },
+  {
+    q: "Hvor skal abstraksjonene bo, ifølge ADR-en om domenetjenester?",
+    a: ["Alt skal bo i Spleis, som i dag", "Hovedsakelig i små domenetjenester utenfor Spleis. En modul i Spleis kan fortsatt være riktig der det ikke er hensiktsmessig eller lett å trekke ting ut", "I én stor ny tjeneste som tar over alt Spleis gjør", "Bare i tjenester med et kult navn som begynner på «sp»"],
+    c: 1,
+    w: "Domenetjenester er standardvalget, fordi et fagområde helt utenfor Spleis er lettere å resonnere om. Moduler deler applikasjon, modell og livssyklus med Spleis, og grensene glir lett sammen. Når en modul totalt sett er enklest, kan den likevel være riktig. Kontrakten mot vilkårsgrunnlaget og beregningen er den samme uansett."
+  },
+  {
+    q: "Arbeidstaker og frilanser behandles etter samme regler som arbeidstakere. Hvorfor er de likevel en egen hovedkategori?",
+    a: ["Fordi vi må kunne vise at § 8-40 er brukt. Hjemmelen bevares, også når resultatet blir det samme", "Fordi frilansere er spesielle", "Det er en feil som skal ryddes bort", "For å få flere bokser i diagrammet"],
+    c: 0,
+    w: "Grunnprinsippet er at hjemmelen bevares. Vi slår aldri sammen tolkninger av loven, selv når to bestemmelser gir samme resultat."
+  },
+  {
+    q: "Saksbehandler vurderer opptjening manuelt i sp-vilkarsproving. Hvem eier totrinnskontrollen?",
+    a: ["sp-vilkarsproving, med egen beslutterflyt", "Spleis", "Spesialist. sp-vilkarsproving sender en <code>saksbehandlerhandling</code> med <code>kreverTotrinnsvurdering</code>, og Spesialist knytter den til totrinnsvurderingen", "Den som roper høyest på standup"],
+    c: 2,
+    w: "Abstraksjonen eier vurderingen og historikken over versjoner. Spesialist eier totrinnskontrollen og listen over handlinger. Spleis bytter bare id og revurderer."
+  },
+  {
+    q: "En domenetjeneste eier en juridisk vurdering. Hvordan dokumenteres subsumsjonen?",
+    a: ["Den lagrede vurderingen, med hjemmel, fakta og utfall, er dokumentasjonen. Tjenesten sender ikke i tillegg en melding til subsumsjonsloggen", "Tjenesten sender en melding til subsumsjonsloggen og lagrer ingenting selv", "Begge deler, for dobbelt så mye sikkerhet", "Ingen steder. Loven er jo offentlig"],
+    c: 0,
+    w: "To representasjoner av samme beslutning kan avvike, og loggen har bare et utsnitt. Forutsetningen er at tjenesten aldri overskriver tidligere vurderinger. Overgangen skjer per subsumsjon, og eksisterende subsumsjoner bevares."
+  },
+  {
+    q: "Hvorfor bygger vi domenetjenester rundt Spleis?",
+    a: ["Fordi flere tjenester er målet i seg selv", "For at hver del skal være enkel nok til at vi kan resonnere om den uten å forstå hele Spleis", "For å få flere ting å deploye", "Fordi Spleis er sliten og trenger ferie"],
+    c: 1,
+    w: "Flere tjenester er et middel, ikke et mål. Kategoriene som gjenstår i Infotrygd, er for komplekse til å bygges inn i Spleis uten at hver endring må forstås opp mot hele Spleis."
+  },
+  {
+    q: "Hva gikk galt med Spillkar og Spiskammerset?",
+    a: ["Ingenting. De er fortsatt planen", "De ble for raske", "Lagringen ble flyttet ut, men logikken ble igjen i Spleis. Vi fikk flere hopp og flere id-er, og kompleksiteten ble fordelt i stedet for redusert", "Navnene var for vanskelige å stave"],
+    c: 2,
+    w: "Spleis måtte fortsatt kjenne hele domenet like godt som før. En domenetjeneste eier derimot både fakta, regler og vurderinger."
+  },
+  {
+    q: "Hva skjedde med funksjonaliteten som var planlagt i Spillerom?",
+    a: ["Den skal lages i Speil, så saksbehandler jobber i ett fagsystem. Ett manuelt steg skal ikke tvinge resten av saken over i en helmanuell løype", "Spillerom får nytt navn og fortsetter", "Den skal i Infotrygd", "Den ble satt på en Post-it og forsvant"],
+    c: 0,
+    w: "Derfor må vi støtte både manuelle og automatiske vurderinger for flere kategorier enn i dag."
+  },
+  {
+    q: "En domenetjeneste starter med manuell vurdering og automatiserer senere. Hva må endres i Spleis og Speil?",
+    a: ["Begge må skrives om", "Spleis må få et nytt felt for automatiseringsnivå", "Ingenting. Nivået for saksbehandlerinvolvering er domenetjenestens sak", "Spleis må slås av i en uke"],
+    c: 2,
+    w: "Spleis bruker svaret uten å gjenta vurderingen. Ulike nivåer av automatisering kan lages isolert i domenetjenesten."
+  },
+  {
+    q: "Hva er et tegn på at grensen for en domenetjeneste er trukket feil?",
+    a: ["Tjenesten har sin egen database", "Tjenestene må stadig endres sammen", "Tjenesten svarer på ett tydelig faglig spørsmål", "Den har færre enn tre bokstaver i navnet"],
+    c: 1,
+    w: "Vi deler inn etter faglige sammenhenger, ikke etter paragraf, skjermbilde eller teknisk lag. Når en domenetjeneste overtar et ansvar, fjerner vi den gamle logikken fra Spleis, så hvert resultat har én autoritativ kilde."
+  },
+  {
+    q: "Hvordan organiserer vi arbeidet for å komme ut av Infotrygd?",
+    a: ["Én kategori eller paragraf av gangen, ferdig før vi starter på neste", "Vi bygger abstraksjoner for leddene i saksbehandlingen, flere parallelt, og innfører en funksjonalitet når abstraksjonene den trenger er på plass", "Vi venter til Infotrygd slutter å virke av seg selv", "Vi trekker lodd hver mandag"],
+    c: 1,
+    w: "Når vi tar én funksjonalitet av gangen, mister vi helhetsbildet og risikerer å gjøre neste funksjonalitet vanskeligere å lage."
+  },
+  {
+    q: "Hva er målet til Seksjon for helseytelser (SHY)?",
+    a: ["Erstatte behovet for all førstegangsbehandling i Infotrygd innen utgangen av 2027", "Flytte Infotrygd til skyen", "Legge ned Spleis innen 2027", "Å få Infotrygd til å fylle 50 i fred"],
+    c: 0,
+    w: "Etter det som allerede er løst, gjenstår 25 funksjonaliteter for Team SAS. Eksempler er fiskere, inaktive, kombinert AT og SN, medlemskap og reisetilskudd."
+  },
+  {
+    q: "Hvilke abstraksjoner regner vi med blir de tyngste?",
+    a: ["Reisetilskudd og institusjonsopphold", "Inntekt og sykepengegrunnlag", "Aldersvurderingen", "Den med flest paragrafer i navnet"],
+    c: 1,
+    w: "De er de første og mest sentrale abstraksjonene, og de tar antakelig en del tid. For hver abstraksjon må vi også vurdere hvordan vi forholder oss til eksisterende data, så historikken bevares presist."
+  },
+  {
+    q: "Må alle regler i en abstraksjon være automatisert fra første dag?",
+    a: ["Ja, ellers kan den ikke tas i bruk", "Nei. Delmanuell saksbehandling kan være godt nok i første iterasjon, særlig for særtilfeller og lavt volum", "Ja, og den må også ha en chatbot", "Nei, vi automatiserer aldri"],
+    c: 1,
+    w: "Å automatisere alt i hver abstraksjon kan bli mer arbeid enn vi har tid til. Vi vurderer kost og nytte."
+  },
+  {
+    q: "Skal vi ha et felles, sentralisert kodeverk for vilkår, begrunnelser og beregningsregler?",
+    a: ["Ja, som sp-kodeverk i Spillerom", "Nei. Hver domenetjeneste eier og versjonerer sine egne koder, og hjemmel og beskrivelse følger med i svaret", "Ja, i et delt Excel-ark", "Nei, vi bruker ingen koder i det hele tatt"],
+    c: 1,
+    w: "Spleis bruker utfallet, og Speil viser hjemmelen fra svaret. Et felles kodeverk ville koblet tjenestene sammen igjen, og vi ville mistet uavhengigheten."
+  }
+];
+
+const VERDICT = [
+  [1, "Full pott. Du kan ta beslutterrollen i quizen neste gang."],
+  [0.8, "Sterkt. Totrinnskontrollen er godkjent, med et par små kommentarer."],
+  [0.6, "Godt jobbet. Noen vurderinger bør få en ny versjon med ny id."],
+  [0.33, "Halvveis der. Sendt i retur, men med vennlig begrunnelse."],
+  [0, "Revurdering nødvendig. Les abstraksjonssiden en gang til, så tar vi en ny runde."]
+];
+
+const quiz = document.getElementById("quiz");
+let answered = 0, correct = 0;
+
+
+function shuffle(n) {
+  const o = [...Array(n).keys()];
+  for (let k = n - 1; k > 0; k--) { const r = Math.floor(Math.random() * (k + 1)); [o[k], o[r]] = [o[r], o[k]]; }
+  return o;
+}
+
+function render() {
+  answered = 0; correct = 0;
+  document.getElementById("result").hidden = true;
+  quiz.innerHTML = Q.map((x, i) => `
+    <section class="q" aria-labelledby="q${i}">
+      <h2 id="q${i}"><span>${i + 1}.</span>${x.q}</h2>
+      <div class="opts" role="group" aria-labelledby="q${i}">
+        ${shuffle(x.a.length).map(j => `<button type="button" data-q="${i}" data-a="${j}">${x.a[j]}</button>`).join("")}
+      </div>
+      <p class="why" id="why${i}" aria-live="polite"></p>
+    </section>`).join("");
+  updateProgress();
+}
+
+function updateProgress() {
+  document.getElementById("progress").textContent = `${answered} av ${Q.length} besvart, ${correct} riktige`;
+}
+
+quiz.addEventListener("click", e => {
+  const btn = e.target.closest("button[data-q]");
+  if (!btn || btn.disabled) return;
+  const i = +btn.dataset.q, j = +btn.dataset.a, x = Q[i];
+  const buttons = btn.parentElement.querySelectorAll("button");
+  buttons.forEach(b => {
+    const k = +b.dataset.a;
+    b.disabled = true;
+    if (k === x.c) { b.classList.add("ok"); b.insertAdjacentHTML("afterbegin", '<span class="mark">✓ Riktig svar:</span>'); }
+    else if (k === j) { b.classList.add("bad"); b.insertAdjacentHTML("afterbegin", '<span class="mark">✗ Ditt svar:</span>'); }
+  });
+  const ok = j === x.c;
+  answered++; if (ok) correct++;
+  document.getElementById("why" + i).innerHTML = `<strong>${ok ? "Riktig." : "Ikke helt."}</strong> ${x.w}`;
+  updateProgress();
+  if (answered === Q.length) showResult();
+});
+
+function showResult() {
+  const v = VERDICT.find(([min]) => correct / Q.length >= min)[1];
+  const r = document.getElementById("result");
+  r.innerHTML = `<h2>Du fikk ${correct} av ${Q.length}</h2><p>${v}</p>
+    <div class="actions"><button type="button" id="again">Ta quizen på nytt</button><a href="index.html">Tilbake til abstraksjonssiden</a></div>`;
+  r.hidden = false;
+  document.getElementById("again").addEventListener("click", () => { render(); window.scrollTo(0, 0); });
+  r.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+render();
+</script>
+</body>
+</html>
