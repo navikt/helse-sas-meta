@@ -1,5 +1,72 @@
 <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
 
+<style>
+  .diagram {
+    position: relative;
+    margin: 1rem 0;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    background: #fff;
+    overflow: hidden;
+  }
+  .diagram pre.mermaid {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: none;
+    border: 0;
+    overflow: hidden;
+  }
+  .diagram svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: none !important;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+  }
+  .diagram svg.drar {
+    cursor: grabbing;
+  }
+  .diagram:fullscreen {
+    border: 0;
+    border-radius: 0;
+    height: 100vh !important;
+  }
+  .diagram-verktoy {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 1;
+    display: flex;
+    gap: 0.25rem;
+  }
+  .diagram-verktoy button {
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+    font: inherit;
+    font-size: 0.9rem;
+    color: #24292f;
+    background: #f6f8fa;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .diagram-verktoy button:hover {
+    background: #eaeef2;
+  }
+  .diagram-hint {
+    position: absolute;
+    left: 0.5rem;
+    bottom: 0.4rem;
+    font-size: 0.75rem;
+    color: #57606a;
+    pointer-events: none;
+  }
+</style>
+
 <script type="module">
   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
 
@@ -15,6 +82,125 @@
   if (blokker.length > 0) {
     mermaid.initialize({ startOnLoad: false, securityLevel: "strict" });
     await mermaid.run({ querySelector: "pre.mermaid" });
+    document.querySelectorAll("pre.mermaid").forEach(gjorZoombar);
+  }
+
+  function gjorZoombar(pre) {
+    const svg = pre.querySelector("svg");
+    if (!svg) return;
+
+    const opprinnelig = svg.viewBox.baseVal;
+    const start = { x: opprinnelig.x, y: opprinnelig.y, w: opprinnelig.width, h: opprinnelig.height };
+    if (!start.w || !start.h) return;
+    let vb = { ...start };
+
+    const ramme = document.createElement("div");
+    ramme.className = "diagram";
+    pre.replaceWith(ramme);
+    ramme.append(pre);
+
+    svg.removeAttribute("height");
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+
+    const settHoyde = () => {
+      if (document.fullscreenElement === ramme) return;
+      const naturligHoyde = ramme.clientWidth * (start.h / start.w);
+      ramme.style.height = `${Math.round(Math.max(250, Math.min(naturligHoyde, window.innerHeight * 0.8)))}px`;
+    };
+    settHoyde();
+    window.addEventListener("resize", settHoyde);
+
+    const tegn = () => svg.setAttribute("viewBox", `${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
+
+    const tilSvgPunkt = (klientX, klientY) => {
+      const punkt = new DOMPoint(klientX, klientY);
+      return punkt.matrixTransform(svg.getScreenCTM().inverse());
+    };
+
+    const zoom = (faktor, klientX, klientY) => {
+      const nyBredde = vb.w * faktor;
+      if (nyBredde < start.w / 40 || nyBredde > start.w * 4) return;
+      const boks = svg.getBoundingClientRect();
+      const p = tilSvgPunkt(klientX ?? boks.left + boks.width / 2, klientY ?? boks.top + boks.height / 2);
+      vb = {
+        x: p.x - (p.x - vb.x) * faktor,
+        y: p.y - (p.y - vb.y) * faktor,
+        w: nyBredde,
+        h: vb.h * faktor,
+      };
+      tegn();
+    };
+
+    const tilbakestill = () => {
+      vb = { ...start };
+      tegn();
+    };
+
+    // Vanlig scrolling skal fortsatt scrolle siden. Pinch på styreflate sender ctrlKey.
+    svg.addEventListener(
+      "wheel",
+      (e) => {
+        if (!(e.ctrlKey || e.metaKey || document.fullscreenElement === ramme)) return;
+        e.preventDefault();
+        zoom(Math.exp(e.deltaY * 0.002), e.clientX, e.clientY);
+      },
+      { passive: false },
+    );
+
+    let drag = null;
+    svg.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0) return;
+      drag = { x: e.clientX, y: e.clientY, skala: svg.getScreenCTM().a };
+      svg.setPointerCapture(e.pointerId);
+      svg.classList.add("drar");
+    });
+    svg.addEventListener("pointermove", (e) => {
+      if (!drag) return;
+      vb.x -= (e.clientX - drag.x) / drag.skala;
+      vb.y -= (e.clientY - drag.y) / drag.skala;
+      drag.x = e.clientX;
+      drag.y = e.clientY;
+      tegn();
+    });
+    const slipp = () => {
+      drag = null;
+      svg.classList.remove("drar");
+    };
+    svg.addEventListener("pointerup", slipp);
+    svg.addEventListener("pointercancel", slipp);
+    svg.addEventListener("dblclick", tilbakestill);
+
+    const verktoy = document.createElement("div");
+    verktoy.className = "diagram-verktoy";
+    const knapp = (tekst, tittel, handling) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = tekst;
+      b.title = tittel;
+      b.setAttribute("aria-label", tittel);
+      b.addEventListener("click", handling);
+      verktoy.append(b);
+      return b;
+    };
+    knapp("+", "Zoom inn", () => zoom(1 / 1.4));
+    knapp("−", "Zoom ut", () => zoom(1.4));
+    knapp("⟲", "Tilbakestill", tilbakestill);
+    if (ramme.requestFullscreen) {
+      const fullskjerm = knapp("⛶", "Fullskjerm", () =>
+        document.fullscreenElement === ramme ? document.exitFullscreen() : ramme.requestFullscreen(),
+      );
+      document.addEventListener("fullscreenchange", () => {
+        fullskjerm.title = document.fullscreenElement === ramme ? "Avslutt fullskjerm" : "Fullskjerm";
+        settHoyde();
+      });
+    }
+    ramme.append(verktoy);
+
+    const hint = document.createElement("div");
+    hint.className = "diagram-hint";
+    hint.textContent = "Dra for å flytte · Ctrl/⌘ + scroll eller knappene for å zoome · dobbeltklikk for å tilbakestille";
+    ramme.append(hint);
   }
 </script>
 
