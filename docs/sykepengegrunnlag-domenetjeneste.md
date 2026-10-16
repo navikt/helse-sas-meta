@@ -308,6 +308,8 @@ sequenceDiagram
 
 Vi lar Spleis bestemme om den skal spørre om inntekt, fordi avgjørelsen skjer i det perioden går inn i `AvventerInntektsmelding`. Et ekstra behov der ville gitt en ny ventetilstand før forespørselen går ut. Spleis har allerede tjenestens siste resultat for skjæringstidspunktet lagret, med kilde per yrkesaktivitet, og det er nok til avgjørelsen.
 
+[Forespørsel til arbeidsgiver utenfor Spleis](arbeidsgiverforesporsel-utenfor-spleis.md) beskriver alternativet, der en egen tjeneste eier hele protokollen og sp-sykepengegrunnlag avgjør om vi skal spørre om inntekt.
+
 ### Kontrakten mot Spesialist
 
 - Spesialist sender skjønn, korrigert inntekt og endring av arbeidsforhold til tjenesten med REST, med begrunnelsen. Tjenesten svarer med den nye `sykepengegrunnlagId`, og Spesialist knytter den til totrinnsvurderingen.

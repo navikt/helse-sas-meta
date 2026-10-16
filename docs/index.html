@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dokumentasjon for team SAS</title>
+<style>
+  :root { --bg: #f7f7f8; --fg: #1f2328; --muted: #59636e; --card: #fff; --line: #d0d7de; --link: #3b6fd4; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 32px 20px 64px; }
+  h1 { margin: 0 0 24px; }
+  h2 { margin: 32px 0 12px; font-size: 1.15rem; color: var(--muted); }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  li { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; }
+  a { color: var(--link); font-weight: 600; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  p { margin: 4px 0 0; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+<h1>Dokumentasjon for team SAS</h1>
+
+<h2>Abstraksjoner for kapittel 8</h2>
+<ul>
+  <li>
+    <a href="abstraksjoner-kap8.html">Abstraksjoner for folketrygdloven kapittel 8</a>
+    <p>Abstraksjonene vi bruker for å modellere sykepengereglene.</p>
+  </li>
+  <li>
+    <a href="funksjonskart-kap8.html">Funksjonskart for kapittel 8</a>
+    <p>Hvilke abstraksjoner vi trenger for funksjonene som mangler før Infotrygd kan erstattes.</p>
+  </li>
+  <li>
+    <a href="rekkefolge-kap8.html">Rekkefølge for abstraksjonene</a>
+    <p>I hvilken rekkefølge abstraksjonene må vurderes.</p>
+  </li>
+  <li>
+    <a href="spleis-abstraksjoner/">Spleis: å trekke ut konsepter</a>
+    <p>Hvordan vi flytter regler Spleis ikke trenger å eie ut i egne abstraksjoner. Interaktiv oversikt.</p>
+  </li>
+</ul>
+
+<h2>Domenetjenester</h2>
+<ul>
+  <li>
+    <a href="sykepengegrunnlag-domenetjeneste.html">Domenetjeneste for inntekt og sykepengegrunnlag</a>
+    <p>Hvordan vi flytter inntektsavklaring og fastsettelse av sykepengegrunnlaget ut av Spleis.</p>
+  </li>
+  <li>
+    <a href="arbeidsgiverforesporsel-utenfor-spleis.html">Forespørsel til arbeidsgiver utenfor Spleis</a>
+    <p>Hva som skal til for å flytte forespørselen til arbeidsgiveren ut av Spleis.</p>
+  </li>
+</ul>
+
+<h2>Lov og rundskriv</h2>
+<ul>
+  <li>
+    <a href="folketrygdloven-kap8.html">Folketrygdloven kapittel 8</a>
+    <p>Lovteksten, hentet fra Lovdata.</p>
+  </li>
+  <li>
+    <a href="folketrygdloven-kap8-rundskriv.html">Rundskriv til folketrygdloven kapittel 8</a>
+    <p>Navs rundskriv om sykepenger, hentet fra Lovdata.</p>
+  </li>
+</ul>
+
+<h2>Bibliotek</h2>
+<ul>
+  <li>
+    <a href="biblioteksbruk-tbd-libs.html">Bruk av bibliotekene i tbd-libs</a>
+    <p>Hvilke apper som bruker hvilke biblioteker. Generert.</p>
+  </li>
+  <li>
+    <a href="biblioteksbruk-sykepenger-libs.html">Bruk av bibliotekene i sykepenger-libs</a>
+    <p>Hvilke apper som bruker hvilke biblioteker. Generert.</p>
+  </li>
+</ul>
+</main>
+</body>
+</html>
