@@ -17,6 +17,7 @@
 /risk-mock
 /sp-forsikring
 /sp-forsikring-statistikk
+/sp-medlemskap
 /sp-vilkarsproving
 /spaghet
 /spalten
@@ -64,4 +65,3 @@
 /tbd-libs
 /vedtaksfeed
 /web
-/arkitektur/**/node_modules/
