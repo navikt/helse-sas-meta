@@ -298,7 +298,7 @@ Broene må brukes i alle overganger til disse tilstandene, ikke bare i `nesteTil
 
 En bro beskytter bare valget av neste tilstand. Kall til arbeidstakerfunksjoner før overgangen, blant annet `skalArbeidstakerBehandlesISpeil()`, må beskyttes separat med spørsmålene fra trinn 2.
 
-### Trinn 1: Fjerne Frilans og Arbeidsledig
+### Trinn 1: Fjerne Frilans og Arbeidsledig ✅
 
 - Vi kartlegger `FRILANS_*` og `ARBEIDSLEDIG_*` i produksjonsdatabasen, også på forkastede perioder. Aktive perioder forkastes gjennom den vanlige hendelsesflyten før tilstandene fjernes. Eventuelle gamle navn som blir igjen i lagrede personer, må få en serde-migrering.
 - Vi gjør `ArbeidstakerStart` til felles `Start` allerede her, uten å endre det serialiserte navnet `START`. `SelvstendigStart` blir stående til trinn 3.
