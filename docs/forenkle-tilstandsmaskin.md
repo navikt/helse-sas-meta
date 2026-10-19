@@ -88,6 +88,8 @@ Disse arbeidstakertilstandene har ingen Selvstendig-variant:
 - Tilstanden lagres som `tilstand` i person-JSON. `PersonDataBuilder`, `VedtaksperiodetilstandDto` og `SpannerPersonDto` mapper navnene. Å fjerne en tilstand krever en serde-migrering.
 - `vedtaksperiode_endret` sender `gjeldendeTilstand` og `forrigeTilstand`. Disse konsumentene bruker tilstandsnavnene:
   - `spesialist`: `VedtaksperiodeReberegnetRiver` lytter på `SELVSTENDIG_AVSLUTTET` og `SELVSTENDIG_TIL_UTBETALING` i tillegg til arbeidstakernavnene.
+  - `spock`: lagrer gjeldende tilstand, sender påminnelser og velger påminnelsesintervall og sluttilstand ut fra navnet (`Tilstandsendringer.kt`).
+  - `spetakkel`: har en egen enum med alle tilstandsnavnene i `TilstandsendringMonitor`.
   - `spammer`: `LoopMonitor`.
   - `bomlo-cli`: `TraceCommand`.
   - `spaghet`: tidsmålinger på tilstandsendringer.
@@ -219,6 +221,38 @@ Andre steder i Spleis som i dag velger regler ut fra yrkesaktivitetstypen, behol
 
 Hvert trinn er en egen PR som kan rulles ut alene. Hvert trinn som fjerner tilstander, har en serde-migrering som skriver om `tilstand` i lagrede personer, og vi varsler konsumentene før trinnet rulles ut.
 
+### Felles for trinnene som slår sammen tilstander
+
+Trinn 3, 4 og 5 flytter vedtaksperioder som står i en Selvstendig-tilstand i produksjon, over i en generisk tilstand. Dette gjelder for alle tre trinnene.
+
+**Før utrulling**
+
+- Vi teller perioder per tilstand i tabellen `paminnelse` i `spock`. Den har gjeldende tilstand for hver vedtaksperiode. Da vet vi hvor mange perioder hvert trinn flytter, og hvilke tilstander som er tomme.
+- Vi kjører migreringen mot en kopi av produksjonsdata i dev og sjekker at personene kan gjenopprettes og serialiseres uten feil.
+- Vi oppdaterer konsumentene som filtrerer på tilstandsnavn, slik at de godtar både det gamle og det generiske navnet.
+
+**Migreringen**
+
+- Migreringen er en `JsonMigration` som bytter navn på `tilstand`, etter mønsteret i `V342RenameAvventersøknadForTidligereEllerOverlappendePeriode`. Den rører ikke behandlinger, utbetalinger eller noe annet.
+- Spleis migrerer en person når den leser personen. Personer som ikke får meldinger, beholder det gamle navnet i databasen til de blir lest. Vil vi ha alle over med en gang, kjører vi jobben `migrate_v2`.
+- Migreringen kjører ikke `entering()`. Perioden står i den generiske tilstanden som om den alltid hadde vært der, og ingen behov sendes på nytt. Det er trygt fordi tilstandene vi slår sammen, gjør det samme for selvstendig næringsdrivende.
+- Spleis sender ikke `vedtaksperiode_endret` for perioder som migreres. Konsumenter som lagrer tilstanden, ser det gamle navnet til perioden bytter tilstand neste gang.
+
+**Påminnelser og løsninger som er underveis**
+
+- `spock` sender påminnelser med tilstanden den kjenner, altså det gamle navnet. `PåminnelserRiver` godtar bare navn som finnes i `TilstandType`. Derfor beholder vi de gamle verdiene i `TilstandType` til trinn 6.
+- Når påminnelsen har feil tilstand, sender Spleis `vedtaksperiode_ikke_påminnet` med den nye tilstanden. `spock` lagrer den og påminner med riktig navn neste gang. Slik retter `spock` seg selv uten egen migrering.
+- Løsninger på behov som er sendt før utrulling (Infotrygd-historikk, vilkårsprøving, ytelser, simulering, godkjenning, utbetaling), ruter vi som før på `vedtaksperiodeId`. Den generiske tilstanden håndterer løsningen på samme måte som Selvstendig-tilstanden gjorde.
+- Perioder som står til godkjenning, har en oppgave i `spesialist`. Godkjenningen kommer tilbake til `AvventerGodkjenning` og går videre som før.
+
+**Rollback**
+
+Spleis deployes med `Recreate`, så to versjoner kjører aldri samtidig. Når en person er lagret med det nye navnet, kan vi likevel ikke rulle tilbake: den gamle koden ville behandlet en selvstendig periode i `AVVENTER_HISTORIKK` med arbeidstakerlogikk. Feil retter vi derfor med en ny versjon, ikke med rollback.
+
+**Midlertidige broer**
+
+Fram til trinn 5 finnes `SelvstendigAvventerBlokkerendePeriode` og `SelvstendigAvventerRevurdering` fortsatt. Generiske tilstander som sender perioden tilbake til en av disse, for eksempel ved et revurderingseventyr i `nesteTilstandEtterIgangsattOverstyring`, må velge riktig tilstand ut fra yrkesaktiviteten. Vi samler valget i to funksjoner, `avventerBlokkerendePeriode()` og `avventerRevurdering()`, og fjerner dem i trinn 5.
+
 ### Trinn 1: Fjerne Frilans og Arbeidsledig
 
 - Vi sjekker i produksjonsdatabasen at ingen personer har vedtaksperioder i `FRILANS_*` eller `ARBEIDSLEDIG_*`. Finnes det noen, forkaster vi dem først.
@@ -232,11 +266,32 @@ Rivene og `Behandlingsporing.Yrkesaktivitet.Frilans` og `.Arbeidsledig` blir væ
 
 Vi lager spørsmålene fra tabellen over og bruker dem i de eksisterende arbeidstakertilstandene. Ingen tilstander endres, og ingen oppførsel endres. Arbeidstakertestene skal være grønne uten endringer.
 
+I praksis:
+
+- Vi lager spørsmålene som funksjoner på `Behandlingsporing.Yrkesaktivitet`, eller i en egen klasse ved siden av, og skriver enhetstester for hver yrkesaktivitetstype.
+- Vi bytter ut implisitte arbeidstakerantakelser med spørsmålene der de ligger i dag:
+  - valget mellom `AvventerInntektsmelding` og `AvventerBlokkerendePeriode` ut av `AvventerInfotrygdHistorikk`
+  - sjekkene i `AvventerBlokkerendePeriode.entering()` og ventingen i `tilstandHvisBlokkeresAvAndre`
+  - ventingen på andre arbeidsgivere i `AvventerRevurdering`
+  - `loggEventuellSkattPåDirekten` i `AvventerGodkjenning`
+- For arbeidstaker svarer alle spørsmålene ja, så koden gjør det samme som før.
+- Selvstendig-tilstandene rører vi ikke.
+
+Trinnet har ingen migrering og trenger ikke koordinering med konsumentene.
+
 ### Trinn 3: Start og Infotrygd-historikk
 
-- `SelvstendigStart` blir `Start`. Migrering: `SELVSTENDIG_START` blir `START`.
-- `SelvstendigAvventerInfotrygdHistorikk` blir `AvventerInfotrygdHistorikk`. Den delegerer allerede dit.
-- Ut av `AvventerInfotrygdHistorikk` går perioden til `AvventerInntektsmelding` hvis den trenger inntektsmelding, ellers til `SelvstendigAvventerBlokkerendePeriode`.
+- `SelvstendigStart` blir `Start`, og `SelvstendigAvventerInfotrygdHistorikk` blir `AvventerInfotrygdHistorikk`. Den siste delegerer allerede dit.
+- `Vedtaksperiode` opprettes i `Start` også for `Selvstendig`. `Start` bruker spørsmålene der den i dag går ut fra at perioden er arbeidstaker.
+- Ut av `AvventerInfotrygdHistorikk` går perioden til `AvventerInntektsmelding` hvis den trenger inntektsmelding. Ellers går den til `avventerBlokkerendePeriode()`, som foreløpig gir `SelvstendigAvventerBlokkerendePeriode` for selvstendig næringsdrivende.
+- Migrering: `SELVSTENDIG_START` blir `START`, og `SELVSTENDIG_AVVENTER_INFOTRYGDHISTORIKK` blir `AVVENTER_INFOTRYGDHISTORIKK`.
+
+Perioder i produksjon:
+
+- `SELVSTENDIG_START` er en overgangstilstand. Perioden forlater den i samme melding som oppretter den, så vi venter ingen perioder her. Migreringen tar dem likevel.
+- Perioder i `SELVSTENDIG_AVVENTER_INFOTRYGDHISTORIKK` venter på svar på behovet for Infotrygd-historikk. Svaret kommer til `AvventerInfotrygdHistorikk` og sender perioden videre til `SelvstendigAvventerBlokkerendePeriode`, som før.
+
+Tester: Selvstendig-testene skal vise `START` og `AVVENTER_INFOTRYGDHISTORIKK` i `assertTilstander`. Vi oppdaterer forventningene, men ikke selve scenarioene.
 
 ### Trinn 4: Slutten av flyten
 
@@ -246,7 +301,24 @@ Vi slår sammen tilstandene som er like, og begynner nederst i flyten:
 2. `SelvstendigAvventerGodkjenning`, `SelvstendigAvventerSimulering`, `SelvstendigAvventerHistorikk` og `SelvstendigAvventerVilkårsprøving`
 3. Revurderingstilstandene unntatt `SelvstendigAvventerRevurdering`
 
-Rekkefølgen gjør at hver Selvstendig-tilstand bare peker videre til tilstander som allerede er generiske. `spesialist` lytter allerede på `AVSLUTTET` og `TIL_UTBETALING`.
+Rekkefølgen gjør at hver Selvstendig-tilstand bare peker videre til tilstander som allerede er generiske. Hvert punkt kan være en egen PR med egen migrering.
+
+I praksis, for hver tilstand:
+
+- Vi sletter Selvstendig-tilstanden og lar overgangene som pekte dit, peke til den generiske tilstanden.
+- Vi fjerner grenene for tilstanden i de uttømmende `when`-ene. Kompilatoren viser hvor de er.
+- Der den generiske tilstanden går tilbake til blokkerende periode eller revurdering, bruker vi `avventerBlokkerendePeriode()` og `avventerRevurdering()`. Et eksempel er `nesteTilstandEtterIgangsattOverstyring`, som i dag sender `SelvstendigAvsluttet` til `SelvstendigAvventerRevurdering`. Etter trinnet må `Avsluttet` sende en selvstendig periode dit.
+- `AvventerGodkjenning` logger «skatt på direkten» bare når spørsmålet sier det (B9).
+- Migreringen bytter `SELVSTENDIG_X` til `X` for tilstandene i punktet.
+
+Perioder i produksjon:
+
+- `SELVSTENDIG_AVSLUTTET` har trolig flest perioder. De blir `AVSLUTTET`. Et senere revurderingseventyr sender dem til `SelvstendigAvventerRevurdering` gjennom broen.
+- Perioder i `SELVSTENDIG_TIL_UTBETALING` venter på kvittering fra oppdrag. Kvitteringen kommer til `TilUtbetaling`, som sender perioden til `Avsluttet`.
+- Perioder i godkjenning, simulering, historikk og vilkårsprøving har et behov ute. Løsningen kommer til den generiske tilstanden og går videre i flyten.
+- Perioder midt i en revurdering blir stående i den generiske revurderingstilstanden og fortsetter derfra.
+
+Konsumenter: `spesialist` lytter allerede på `AVSLUTTET` og `TIL_UTBETALING` i `VedtaksperiodeReberegnetRiver`. `spock` har påminnelsesintervaller for de generiske navnene og regner `AVSLUTTET` som sluttilstand.
 
 ### Trinn 5: `AvventerBlokkerendePeriode` og `AvventerRevurdering`
 
@@ -255,15 +327,32 @@ Her ligger de reelle forskjellene.
 - `AvventerBlokkerendePeriode.entering()` sjekker refusjonstidslinjen og om perioden skal behandles i Speil, og lagrer faktaavklart inntekt for arbeidstaker. Dette gjøres bare når spørsmålene sier at det gjelder.
 - `tilstandHvisBlokkeresAvAndre` venter bare på inntekt og refusjon fra andre arbeidsgivere når yrkesaktiviteten gjør det.
 - `AvventerRevurdering` hopper over ventingen på andre arbeidsgivere på samme måte.
+- Vi fjerner broene `avventerBlokkerendePeriode()` og `avventerRevurdering()`. Alle overganger går rett til de generiske tilstandene.
 
 Migrering: `SELVSTENDIG_AVVENTER_BLOKKERENDE_PERIODE` og `SELVSTENDIG_AVVENTER_REVURDERING` blir de generiske navnene.
 
+Perioder i produksjon:
+
+- Perioder i `SELVSTENDIG_AVVENTER_BLOKKERENDE_PERIODE` venter på at en tidligere periode skal bli ferdig. Migreringen kjører ikke `entering()`, så arbeidstakersjekkene kjører aldri for dem. Ved neste påminnelse eller når den tidligere perioden er ferdig, spør tilstanden yrkesaktiviteten og går videre som før.
+- Perioder i `SELVSTENDIG_AVVENTER_REVURDERING` fortsetter fra `AvventerRevurdering` på samme måte.
+
+Trinnet har mest risiko for å endre oppførsel. Vi kjører hele testsuiten for både arbeidstaker og selvstendig, og følger med på perioder i `AVVENTER_BLOKKERENDE_PERIODE` og `AVVENTER_REVURDERING` med `spammer` de første dagene.
+
 ### Trinn 6: Rydde opp
 
-- Vi fjerner de gamle verdiene fra `TilstandType`, `VedtaksperiodetilstandDto` og `SpannerPersonDto`.
-- Vi fjerner grenene i de uttømmende `when`-ene i `Vedtaksperiode.kt` og `ArbeidstakerAvklartInntekt.kt`.
-- Vi fjerner `starttilstander`.
-- Vi fjerner de gamle navnene hos konsumentene (`spesialist`, `spammer`, `bomlo-cli`, `spaghet`).
+Etter trinn 5 finnes det ingen Selvstendig-tilstander i koden, men de gamle navnene lever fortsatt noen steder.
+
+Før vi rydder, sjekker vi at ingenting bruker de gamle navnene lenger:
+
+- Tabellen `paminnelse` i `spock` har ingen perioder med et gammelt navn. Hvis den har det, venter vi en påminnelsesrunde så `vedtaksperiode_ikke_påminnet` retter dem.
+- Alle personer i databasen er migrert. Vi kjører `migrate_v2` hvis det er usikkert.
+
+Deretter:
+
+- Vi fjerner de gamle verdiene fra `TilstandType`, `VedtaksperiodetilstandDto` og `SpannerPersonDto`, og fra mappingen i `SpeilGenerasjonerBuilder`. Migreringene blir stående, siden de skriver til strenger og ikke bruker enumene.
+- Vi fjerner grenene som er igjen i de uttømmende `when`-ene i `Vedtaksperiode.kt` og `ArbeidstakerAvklartInntekt.kt`.
+- Vi fjerner `starttilstander` og det som er igjen av valget av starttilstand ut fra yrkesaktivitetstype i `Vedtaksperiode.kt`.
+- Vi fjerner de gamle navnene hos konsumentene: `spesialist`, `spock`, `spetakkel`, `spammer`, `bomlo-cli`, `spaghet` og modellene i `bomlo-dbt`. Historiske data i `spaghet` og BigQuery beholder de gamle navnene, så rapporter som går bakover i tid, må fortsatt kjenne dem.
 
 Etter dette trinnet har Spleis én tilstandsmaskin.
 
@@ -311,4 +400,19 @@ Vi bygger ingenting for disse nå. De stiller disse kravene til kontrakten:
 
 ## Åpne spørsmål
 
-1. Hvilken kategori skal skallet svare når brukeren har søkt både som arbeidstaker og som selvstendig næringsdrivende på samme skjæringstidspunkt? Forslaget er kategorien til den første søknaden på skjæringstidspunktet. Perioden med den andre yrkesaktiviteten får da en kategori som ikke passer, og Spleis forkaster den med `RV_IV_13`. Utfallet er det samme som i dag, men perioden blir forkastet før vilkårsprøvingen i stedet for i den.
+1. Hvilken kategori skal skallet svare når brukeren har søkt både som arbeidstaker og som selvstendig næringsdrivende på samme skjæringstidspunkt? Det er to alternativer.
+
+   **Alternativ A: kategorien til den første søknaden.** Perioden med den andre yrkesaktiviteten får da en kategori som ikke passer, og Spleis forkaster den med `RV_IV_13`. Utfallet er det samme som i dag, men perioden blir forkastet før vilkårsprøvingen i stedet for i den.
+
+   **Alternativ B: en egen kategori, `ARBEIDSTAKER_OG_SELVSTENDIG_NARINGSDRIVENDE` (§ 8-41).** Spleis kan fortsatt ikke utbetale kombinasjonen. Den krever Dekning og et sykepengegrunnlag som er fordelt på yrkesaktivitetene. Konsekvensene er disse:
+
+   - B10 får en tredje verdi.
+   - Regelen for om kategorien passer, endres. Den kombinerte kategorien passer med både `Arbeidstaker` og `Selvstendig`, så begge periodene går videre. Forkastingen ved kategori som ikke passer, fanger ikke lenger opp dette tilfellet.
+   - Spleis må fortsatt avvise kombinasjonen. Enten sjekker `AvventerRettighetskategori` den eksplisitt og gir `RV_IV_13`, eller så forkaster vilkårsprøvingen perioden som i dag (`Vedtaksperiode.kt:3232-3235`). Utfallet er det samme.
+   - `rettighetskategoriId` blir riktig. Med alternativ A får den første perioden en ID som sier `ARBEIDSTAKER`, selv om saken egentlig hører under § 8-41. Den ID-en går videre til `sp-vilkarsproving`.
+   - Rekkefølgen på søknadene får betydning. Kommer arbeidstakersøknaden først og blir utbetalt, gir en senere søknad som selvstendig næringsdrivende ny avklaring med `endretFraForrige = true`. Det starter et revurderingseventyr fra skjæringstidspunktet. Revurderingen treffer en kombinasjon Spleis ikke støtter, og den utbetalte perioden kan ikke forkastes. Vi må bestemme om bare den nye perioden skal forkastes, eller om Spleis ikke skal starte revurdering når den nye kategorien ikke støttes. Med alternativ A er kategorien uendret, så det startes ingen revurdering, og bare perioden for selvstendig næringsdrivende forkastes.
+   - Kategorien erstatter ikke inntektssjekken. `erKombinert` bygger på inntekt, også ghost-inntekter fra A-ordningen. En person som bare har søkt som selvstendig næringsdrivende, men har arbeidstakerinntekt i skatteopplysningene, blir fortsatt fanget av `RV_IV_13` i vilkårsprøvingen. Skallet svarer bare ut fra søknadene og ser ikke dette tilfellet.
+   - `sp-vilkarsproving` må håndtere den nye verdien i opptjeningsvurderingen. Det er trolig de samme reglene som for arbeidstaker, men det må avklares.
+   - Kombinasjonene i § 8-42 og § 8-43 vil kreve det samme senere. Vi bør vurdere om verdiene skal følge hovedkategoriene i [abstraksjoner-kap8.md](abstraksjoner-kap8.md#hovedkategorier) fra starten, så nye kategorier bare blir nye verdier og ikke endrer betydningen av kontrakten.
+
+   Forslaget er alternativ B. Spleis behandler kategorien som «ikke støttet» og gir `RV_IV_13`. Før trinn 8 må vi bestemme hvordan Spleis håndterer en endret kategori på perioder som allerede er utbetalt.
