@@ -245,9 +245,30 @@ Trinn 3, 4 og 5 flytter vedtaksperioder som står i en Selvstendig-tilstand i pr
 - Løsninger på behov som er sendt før utrulling (Infotrygd-historikk, vilkårsprøving, ytelser, simulering, godkjenning, utbetaling), ruter vi som før på `vedtaksperiodeId`. Den generiske tilstanden håndterer løsningen på samme måte som Selvstendig-tilstanden gjorde.
 - Perioder som står til godkjenning, har en oppgave i `spesialist`. Godkjenningen kommer tilbake til `AvventerGodkjenning` og går videre som før.
 
-**Rollback**
+**Gammel og ny kode samtidig**
 
-Spleis deployes med `Recreate`, så to versjoner kjører aldri samtidig. Når en person er lagret med det nye navnet, kan vi likevel ikke rulle tilbake: den gamle koden ville behandlet en selvstendig periode i `AVVENTER_HISTORIKK` med arbeidstakerlogikk. Feil retter vi derfor med en ny versjon, ikke med rollback.
+Migreringen er ikke en databasemigrering som kjører én gang ved deploy. Den ligger i koden og kjører hver gang en pod leser en person. Derfor er spørsmålet hvilke podder som kan lese og skrive personer mens gammel og ny kode finnes samtidig.
+
+Gammel kode avviser ikke personer med høyere `skjema_versjon` enn den kjenner. Den hopper over migreringene og deserialiserer JSON-en som den er. For disse trinnene er det farlig, fordi de nye navnene (`START`, `AVSLUTTET`, `AVVENTER_HISTORIKK` og så videre) finnes i gammel kode. Gammel kode leser derfor en selvstendig periode i `AVVENTER_HISTORIKK` uten feil og behandler den med arbeidstakerlogikk.
+
+Slik er det for hver app som leser `person`-tabellen:
+
+| App | Deploy | Leser eller skriver | Konsekvens |
+|---|---|---|---|
+| `spleis` | `Recreate`, 8–24 podder i prod | Leser, migrerer og skriver | Kubernetes stopper alle gamle podder før de nye starter. Gammel og ny kode behandler derfor aldri meldinger samtidig. Meldinger som kommer mens podder byttes, blir liggende på Kafka og behandles av ny kode. |
+| `spleis-api` | Rullerende, egen workflow | Leser bare, og migrerer i minnet | Gamle og nye podder kjører side om side en kort stund, og `spleis-api` kan bli deployet før eller etter `spleis`. En gammel pod som leser en migrert person, kan vise en selvstendig periode med feil status i Speil. Den skriver ingenting, så feilen forsvinner når utrullingen er ferdig. |
+| `spleis-jobs` | Egen workflow og eget image | `migrate_v2` leser, migrerer og skriver | Kjører vi `migrate_v2` med et image som er eldre enn migreringen, skriver jobben personen tilbake med lavere `skjema_versjon` og gamle navn. Jobben `migrate` er trygg, fordi den bare sender meldinger som `spleis` behandler. |
+
+Det gir disse reglene:
+
+- **Ingen rollback av `spleis`.** Når ny kode har lagret en person med de nye navnene, ville gammel kode behandlet selvstendige perioder med arbeidstakerlogikk. Feil retter vi med en ny versjon.
+- **Kjør `migrate_v2` bare med et image som har migreringen.** Sjekk at `main-jobs`-workflowen er ferdig før jobben startes.
+- **Gjør migreringene idempotente.** Får en person likevel lavere `skjema_versjon`, for eksempel etter en rollback, kjører migreringen på nytt ved neste lesing. Et navnebytte som bare endrer gamle navn, tåler det.
+- **Ikke gjør `spleis` avhengig av at `spleis-api` er oppdatert, eller omvendt.** De to rulles ut hver for seg, selv om de bygges fra samme commit.
+
+Kafka følger den vanlige garantien om minst én levering. Stopper en gammel pod etter at personen er lagret, men før offset er committet, behandler ny kode meldingen på nytt. Det er ikke spesielt for disse trinnene, men nå leser ny kode en person som gammel kode nettopp skrev. Det går bra, fordi migreringen kjører ved lesing.
+
+Trinn 8 er annerledes. `AVVENTER_RETTIGHETSKATEGORI` finnes ikke i gammel kode. En gammel `spleis-api`-pod feiler derfor når den leser en person med en periode i den tilstanden, til utrullingen er ferdig. Vil vi unngå det, legger vi verdien i enumene i en egen PR før tilstanden tas i bruk.
 
 **Midlertidige broer**
 
