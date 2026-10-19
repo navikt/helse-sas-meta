@@ -7,8 +7,8 @@ Dokumentet bygger på abstraksjonen [Rettighetskategori](abstraksjoner-kap8.md#r
 ## Sammendrag
 
 - Vi får én tilstandsmaskin for arbeidstakere og selvstendig næringsdrivende. De 15 Selvstendig-tilstandene forsvinner. Forskjellene uttrykker vi som vilkår i de generiske tilstandene, ikke som egne tilstander.
-- De fleste Selvstendig-tilstandene er allerede like arbeidstakertilstandene, bortsett fra navnet. Bare `AvventerBlokkerendePeriode`, `AvventerRevurdering` og inngangen til flyten har reelle forskjeller.
-- Frilans- og Arbeidsledig-tilstandene fjerner vi helt. Flyten deres stopper med en feil i dag og har trolig aldri vært i produksjon. Søknader som gir yrkesaktiviteten `Frilans` eller `Arbeidsledig`, avviser vi før det opprettes en vedtaksperiode.
+- Mange Selvstendig-tilstander har lite egen kode, men hendelseshåndteringen i `Vedtaksperiode.kt` skiller mellom tilstandene. Før sammenslåing må vi bevare forskjellene i forkasting, overstyring, korrigerte søknader og andre hendelser.
+- Frilans- og Arbeidsledig-tilstandene fjerner vi helt. Vi oppretter vedtaksperiodene i felles `Start` (`START`) og forkaster dem direkte der med `RV_SØ_39` ut fra yrkesaktivitetstypen. Vi beholder `vedtaksperiode_forkastet`, som brukes til å opprette oppgaver i Gosys.
 - Vi slår sammen tilstandene først. Når det er gjort, innfører vi `AvventerRettighetskategori` i den felles flyten.
 - `AvventerRettighetskategori` kommer etter `AvventerInfotrygdHistorikk`. Den sender behovet `Rettighetskategori` og venter på løsningen. Den første løseren er et skall av en ekstern domenetjeneste, og den svarer ut fra hva brukeren har søkt som.
 - Vi avklarer én gang per skjæringstidspunkt og gjenbruker svaret. Når en førstegangssøknad for en ny yrkesaktivitet treffer skjæringstidspunktet, avklarer vi på nytt.
@@ -25,7 +25,7 @@ Dokumentet bygger på abstraksjonen [Rettighetskategori](abstraksjoner-kap8.md#r
 | B3 | Den felles flyten gjelder bare arbeidstaker og selvstendig næringsdrivende. |
 | B4 | Overstyring fra saksbehandler og regler i domenetjenesten er en senere fase. Vi bygger ingenting for det nå. |
 | B5 | Rettighetskategori er ikke det samme som yrkesaktivitetstype. Yrkesaktivitetstypen styrer fortsatt inntektsmelding, arbeidsgiverperiode/ventetid og refusjon per yrkesaktivitet. Vedtaksperioden flytter ikke til en annen yrkesaktivitet ut fra svaret. |
-| B6 | Frilans- og Arbeidsledig-tilstandene fjernes helt, sammen med starten på flyten for yrkesaktivitetene `Frilans` og `Arbeidsledig`. |
+| B6 | Frilans- og Arbeidsledig-tilstandene fjernes helt. Periodene opprettes i felles `Start` og forkastes direkte der med `RV_SØ_39` ut fra yrkesaktivitetstypen, før de går videre i den felles flyten. |
 | B7 | Vi avklarer per skjæringstidspunkt og gjenbruker avklaringen. En førstegangssøknad for en ny yrkesaktivitet på skjæringstidspunktet gir ny avklaring. |
 | B8 | Venteårsaken for `AvventerRettighetskategori` er `AVVENTER_RETTIGHETSKATEGORI`. |
 | B9 | Loggingen «skatt på direkten» i `AvventerGodkjenning` gjelder bare arbeidstakere. Selvstendig næringsdrivende bruker fortsatt inntektene fra søknaden. |
@@ -51,25 +51,42 @@ Selvstendig har en hel parallell flyt: blokkerende periode, vilkårsprøving, hi
 
 ### Frilans og arbeidsledig
 
-`FrilansAvventerBlokkerendePeriode` og `ArbeidsledigAvventerBlokkerendePeriode` kaster feil i `entering()` («ikke støttet ennå»). Ingen periode med yrkesaktiviteten `Frilans` eller `Arbeidsledig` kan derfor ha kommet lenger enn hit.
+Søknader med yrkesaktiviteten `Frilans` eller `Arbeidsledig` avvises allerede med `RV_SØ_39` i `Yrkesaktivitet.kt:516-519`, men først etter at vedtaksperioden er opprettet i sin egen starttilstand. Forkastingen sender `vedtaksperiode_forkastet`, som `VedtaksperiodeForkastetRiver` i `spre/oppgaver` bruker til å opprette en oppgave i Gosys. Starttilstandene er dermed i bruk, selv om periodene ikke fortsetter i flyten.
+
+`FrilansAvventerBlokkerendePeriode` og `ArbeidsledigAvventerBlokkerendePeriode` kaster feil i `entering()` («ikke støttet ennå»). Den videre flyten er ikke støttet. `BARNEPASSER` og `FISKER` avvises også etter at en vedtaksperiode er opprettet, ikke før.
 
 Arbeidsledigsøknader der brukeren har oppgitt en tidligere arbeidsgiver, er noe annet. `NyeArbeidsledigSøknaderRiver` og `SendtArbeidsledigSøknaderRiver` gir dem yrkesaktiviteten `Arbeidstaker` med den tidligere arbeidsgiveren, og `Søknad.validerArbeidsledig` gir varsel. De går gjennom arbeidstakerflyten og berøres ikke av denne planen.
 
 ### Hvor like er Selvstendig-tilstandene?
 
-Vi sammenlignet hver Selvstendig-tilstand med arbeidstakertilstanden med samme navn.
+Vi sammenlignet hver Selvstendig-tilstand med arbeidstakertilstanden med samme navn. Tabellen beskriver koden i tilstandsobjektene. Den er ikke tilstrekkelig til å fastslå lik oppførsel: mye av hendelseshåndteringen ligger i `when (tilstand)` i `Vedtaksperiode.kt`.
 
 | Selvstendig-tilstand | Forskjell fra arbeidstakertilstanden |
 |---|---|
-| `SelvstendigStart`, `SelvstendigAvventerInfotrygdHistorikk` | Ingen. Delegerer eller har ingen oppførsel. |
-| `SelvstendigAvventerVilkårsprøving` | Ingen. Valideringen velges allerede ut fra yrkesaktivitetstype (`Vedtaksperiode.kt:3266`). |
-| `SelvstendigAvventerHistorikk` | Ingen. |
-| `SelvstendigAvventerSimulering` | Ingen. |
+| `SelvstendigStart`, `SelvstendigAvventerInfotrygdHistorikk` | Delegerer eller har ingen egen oppførsel. Hendelseshåndteringen skiller likevel mellom tilstandene, se under. |
+| `SelvstendigAvventerVilkårsprøving` | Valideringen velges allerede ut fra yrkesaktivitetstype (`Vedtaksperiode.kt:3266`). Overstyringsflyten er forskjellig. |
+| `SelvstendigAvventerHistorikk` | Ingen forskjell i tilstandsobjektet. Overstyringsflyten er forskjellig. |
+| `SelvstendigAvventerSimulering` | Ingen forskjell i tilstandsobjektet. Overstyringsflyten er forskjellig. |
 | `SelvstendigAvventerGodkjenning` | Arbeidstaker logger i tillegg «skatt på direkten», se under. |
-| `SelvstendigTilUtbetaling`, `SelvstendigAvsluttet` | Ingen. |
-| Revurderingstilstandene unntatt `AvventerRevurdering` | Ingen. |
+| `SelvstendigTilUtbetaling`, `SelvstendigAvsluttet` | Ingen forskjell i tilstandsobjektene. Overganger ved revurdering må fortsatt velge riktig flyt under sammenslåingen. |
+| Revurderingstilstandene unntatt `AvventerRevurdering` | Forskjeller ved blant annet overstyring og korrigert søknad, se under. |
 | `SelvstendigAvventerRevurdering` | Arbeidstaker venter på inntekt og refusjon fra andre arbeidsgivere før vilkårsprøving eller beregning. |
 | `SelvstendigAvventerBlokkerendePeriode` | Arbeidstaker sjekker at perioden skal behandles i Speil, at refusjonstidslinjen ikke er tom, lagrer faktaavklart inntekt og venter på søknad, inntekt eller refusjon fra andre perioder. Selvstendig går rett videre. |
+
+#### Forskjeller i hendelseshåndteringen
+
+Disse forskjellene må håndteres før de berørte tilstandene slås sammen. Linjereferansene er til `Vedtaksperiode.kt` slik den var ved gjennomgangen.
+
+| Hendelse eller funksjon | Forskjell i dag | Krav før sammenslåing |
+|---|---|---|
+| Anmodning om forkasting (`488-536`) | `SelvstendigAvventerInfotrygdHistorikk` avviser anmodningen, mens `AvventerInfotrygdHistorikk` tillater den. | Bevar utfallet per yrkesaktivitet og test begge før trinn 3. |
+| `nesteTilstandEtterIgangsattOverstyring` (`4384-4398`) | De generiske tilstandene for godkjenning, historikk, simulering og vilkårsprøving kaller `skalArbeidstakerBehandlesISpeil()`, som krever `Arbeidstaker` med `check()` (`3690-3692`). | Beskytt arbeidstakerkallet før trinn 4.2. En bro for neste tilstand hindrer ikke at sjekken feiler før overgangen. |
+| `igangsettOverstyringPåBehandlingen` (`3462-3471`) | `SelvstendigAvventerGodkjenningRevurdering` oppretter verken ny behandling eller subsumsjon for fvl. § 35. Den generiske varianten gjør begge deler. | Bevar forskjellen og test behandlinger og subsumsjoner, ikke bare tilstandsrekkefølgen. |
+| `håndterKorrigertSøknad` (`253-261`) | `SelvstendigAvventerRevurderingTilUtbetaling` kaller `nyBehandling`, mens den generiske varianten ikke gjør det. | Bevar forskjellen når revurderingstilstandene slås sammen. |
+| Annullering (`2404-2410`, `2440-2456`) | Selvstendigs førstegangstilstander velger `AvventerAnnullering`, mens arbeidstakervariantene returnerer `null`. | Avklar om grenene er nåbare, og test eller dokumenter utfallet før de fjernes. Gjennomgangen har ikke bekreftet at Selvstendig-grenen kan nås. |
+| Korrigert inntekt og inntektsmelding (`582-628`, `1362-1430`) | Flere Selvstendig-grener kaster feil, mens de generiske grenene håndterer hendelsen eller lar den passere. | Kartlegg de berørte hendelsene og bevar eksplisitt avvisning der hendelsen ikke støttes. |
+
+Sammenslåingen skal ikke endre disse utfallene uten en egen beslutning og tester for den tilsiktede endringen.
 
 `loggEventuellSkattPåDirekten` i `AvventerGodkjenning` skriver bare til aktivitetsloggen. Den slår til når en periode skal til godkjenning uten skjæringstidspunkt og uten inntekt fra inntektsmelding eller vilkårsgrunnlag. Da logger den om perioden kunne vært beregnet på nytt med et skjæringstidspunkt som allerede er vilkårsprøvd. Den hører til arbeidstakerinntekter og skal ikke gjelde selvstendig næringsdrivende (B9).
 
@@ -104,6 +121,7 @@ Tilstandene kaller funksjoner som `trengerYtelser` og `trengerSimulering`. Aktiv
 ```mermaid
 stateDiagram-v2
     [*] --> Start
+    Start --> TilInfotrygd: Frilans eller Arbeidsledig, RV_SØ_39
     Start --> AvventerInfotrygdHistorikk: mangler historikk
     Start --> AvventerRettighetskategori: har historikk
     AvventerInfotrygdHistorikk --> AvventerRettighetskategori
@@ -122,7 +140,7 @@ stateDiagram-v2
     TilUtbetaling --> Avsluttet
 ```
 
-Revurderings- og annulleringstilstandene er generiske på samme måte, men er utelatt fra figuren.
+Bare arbeidstaker og selvstendig går videre fra `Start` til Infotrygd-historikk eller rettighetskategori. Frilans og arbeidsledig forkastes i `Start`. Revurderings- og annulleringstilstandene er generiske på samme måte, men er utelatt fra figuren.
 
 ### Forskjellene blir vilkår, ikke tilstander
 
@@ -134,6 +152,8 @@ Vi samler forskjellene i noen få spørsmål til yrkesaktiviteten. Tilstandene s
 | Kan perioden avsluttes uten utbetaling innenfor arbeidsgiverperioden? | Ja | Nei |
 | Venter perioden på inntekt eller refusjon fra andre arbeidsgivere? | Ja | Nei |
 | Kreves refusjonstidslinje før beregning? | Ja | Nei |
+| Skal perioden vurderes for arbeidstakerbehandling i Speil? | Ja | Nei |
+| Skal faktaavklart arbeidstakerinntekt lagres på perioden? | Ja | Nei |
 | Skal godkjenning logge «skatt på direkten»? | Ja | Nei |
 
 Vi legger spørsmålene på `Behandlingsporing.Yrkesaktivitet` eller i en egen klasse ved siden av den, så de ligger samlet ett sted. Vi skal ikke spre `when (yrkesaktivitetstype)` utover tilstandene.
@@ -201,7 +221,7 @@ Søknadsidene finnes i dokumentsporingen på behandlingene. `arbeidssituasjon` e
 
 1. Svaret gjelder en annen behandling enn den åpne: Spleis logger og ignorerer det. Påminnelsen sender behovet på nytt.
 2. Kategorien passer med yrkesaktiviteten til perioden: Spleis lagrer `rettighetskategoriId` og går videre til `AvventerInntektsmelding` eller `AvventerBlokkerendePeriode`. `ARBEIDSTAKER` passer med `Arbeidstaker`, og `SELVSTENDIG_NARINGSDRIVENDE` passer med `Selvstendig`.
-3. Kategorien passer ikke med yrkesaktiviteten: I fase 1 skjer det bare når brukeren har søkt både som arbeidstaker og som selvstendig næringsdrivende på samme skjæringstidspunkt. Spleis støtter ikke den kombinasjonen i dag. Vilkårsprøvingen gir funksjonell feil med `RV_IV_13` («Inntekter for både arbeidstaker og selvstendig», `Vedtaksperiode.kt:3232-3235`). Forslaget er at Spleis gir samme feil og forkaster perioden allerede her. Se [Åpne spørsmål](#åpne-spørsmål).
+3. Kategorien passer ikke med yrkesaktiviteten: Forslaget er at Spleis gir `RV_IV_13` og forkaster perioden allerede her. Vilkårsprøvingen bruker denne feilen for inntekter fra både arbeidstaker og selvstendig (`Vedtaksperiode.kt:3232-3235`). Vi må avklare hvilke søknadskombinasjoner som faktisk kan nå den nye tilstanden: `RV_SØ_53` avviser allerede en annen yrkesaktivitetstype når periodene overlapper eller er kant i kant. Se [Åpne spørsmål](#åpne-spørsmål).
 
 ### Bruk av rettighetskategorien
 
@@ -209,7 +229,7 @@ Spleis sender `rettighetskategoriId` videre i stedet for kategorien. Den første
 
 - I dag sender Spleis `arbeidssituasjon` (`Arbeidstaker`, `SelvstendigNæringsdrivende` og så videre) i behovet `Opptjeningsvurdering` (`EventBusOversetter.kt`).
 - Etter endringen sender Spleis `rettighetskategoriId`. `sp-vilkarsproving` slår opp kategorien i `sp-rettighetskategori`.
-- I en overgang sender Spleis begge feltene, til `sp-vilkarsproving` har tatt i bruk ID-en.
+- I en overgang sender Spleis begge feltene når ID-en finnes, og beholder `arbeidssituasjon` for perioder uten ID. At `sp-vilkarsproving` har tatt i bruk ID-en, er ikke alene nok til å fjerne feltet. Håndtering av eldre perioder er et [åpent spørsmål](#åpne-spørsmål).
 
 Andre steder i Spleis som i dag velger regler ut fra yrkesaktivitetstypen, beholder det inntil videre (B5).
 
@@ -235,7 +255,7 @@ Trinn 3, 4 og 5 flytter vedtaksperioder som står i en Selvstendig-tilstand i pr
 
 - Migreringen er en `JsonMigration` som bytter navn på `tilstand`, etter mønsteret i `V342RenameAvventersøknadForTidligereEllerOverlappendePeriode`. Den rører ikke behandlinger, utbetalinger eller noe annet.
 - Spleis migrerer en person når den leser personen. Personer som ikke får meldinger, beholder det gamle navnet i databasen til de blir lest. Vil vi ha alle over med en gang, kjører vi jobben `migrate_v2`.
-- Migreringen kjører ikke `entering()`. Perioden står i den generiske tilstanden som om den alltid hadde vært der, og ingen behov sendes på nytt. Det er trygt fordi tilstandene vi slår sammen, gjør det samme for selvstendig næringsdrivende.
+- Migreringen kjører ikke `entering()`, og ingen behov sendes på nytt. Før migreringen tas i bruk, må både den generiske tilstanden og hendelseshåndteringen bevare Selvstendig-oppførselen. Det gjelder også påminnelser, løsninger som er underveis, og overstyring som første hendelse etter migrering.
 - Spleis sender ikke `vedtaksperiode_endret` for perioder som migreres. Konsumenter som lagrer tilstanden, ser det gamle navnet til perioden bytter tilstand neste gang.
 
 **Påminnelser og løsninger som er underveis**
@@ -272,14 +292,21 @@ Trinn 8 er annerledes. `AVVENTER_RETTIGHETSKATEGORI` finnes ikke i gammel kode. 
 
 **Midlertidige broer**
 
-Fram til trinn 5 finnes `SelvstendigAvventerBlokkerendePeriode` og `SelvstendigAvventerRevurdering` fortsatt. Generiske tilstander som sender perioden tilbake til en av disse, for eksempel ved et revurderingseventyr i `nesteTilstandEtterIgangsattOverstyring`, må velge riktig tilstand ut fra yrkesaktiviteten. Vi samler valget i to funksjoner, `avventerBlokkerendePeriode()` og `avventerRevurdering()`, og fjerner dem i trinn 5.
+Fram til trinn 5 finnes `SelvstendigAvventerBlokkerendePeriode` og `SelvstendigAvventerRevurdering` fortsatt. Generiske tilstander som sender perioden tilbake til en av disse, må velge riktig tilstand ut fra yrkesaktiviteten. Vi samler valget i to funksjoner, `avventerBlokkerendePeriode()` og `avventerRevurdering()`, og fjerner dem i trinn 5.
+
+Broene må brukes i alle overganger til disse tilstandene, ikke bare i `nesteTilstandEtterIgangsattOverstyring`. Etter trinn 4.1 kan `TilUtbetaling` gå til generisk `AvventerRevurderingTilUtbetaling`. `håndterUtbetalingHendelse` der går i dag direkte til generisk `AvventerRevurdering` (`Vedtaksperiode.kt:2271`). Den må bruke `avventerRevurdering()` allerede i trinn 4.1. Også øvrig hendelseshåndtering i den mellomliggende tilstanden må bevare Selvstendig-oppførselen fra da av.
+
+En bro beskytter bare valget av neste tilstand. Kall til arbeidstakerfunksjoner før overgangen, blant annet `skalArbeidstakerBehandlesISpeil()`, må beskyttes separat med spørsmålene fra trinn 2.
 
 ### Trinn 1: Fjerne Frilans og Arbeidsledig
 
-- Vi sjekker i produksjonsdatabasen at ingen personer har vedtaksperioder i `FRILANS_*` eller `ARBEIDSLEDIG_*`. Finnes det noen, forkaster vi dem først.
-- Søknader med yrkesaktiviteten `Frilans` eller `Arbeidsledig` får en funksjonell feil før vedtaksperioden opprettes, på samme måte som `BARNEPASSER` og `FISKER` i dag.
+- Vi kartlegger `FRILANS_*` og `ARBEIDSLEDIG_*` i produksjonsdatabasen, også på forkastede perioder. Aktive perioder forkastes gjennom den vanlige hendelsesflyten før tilstandene fjernes. Eventuelle gamle navn som blir igjen i lagrede personer, må få en serde-migrering.
+- Vi gjør `ArbeidstakerStart` til felles `Start` allerede her, uten å endre det serialiserte navnet `START`. `SelvstendigStart` blir stående til trinn 3.
+- Søknader med yrkesaktiviteten `Frilans` eller `Arbeidsledig` oppretter en vedtaksperiode i `Start`. Ved søknadshåndtering i `Start` gir yrkesaktivitetstypen `RV_SØ_39`, og perioden forkastes direkte før behov eller videre overganger. Vi flytter dagens avvisning hit og beholder den vanlige forkastingsflyten og `vedtaksperiode_forkastet`.
+- Vi oppdaterer både valget av starttilstand i konstruktøren og `opprettForkastetVedtaksperiode` til å bruke felles `Start` for disse yrkesaktivitetene.
 - Vi fjerner `FrilansStart`, `FrilansAvventerInfotrygdHistorikk`, `FrilansAvventerBlokkerendePeriode`, `ArbeidsledigStart`, `ArbeidsledigAvventerInfotrygdHistorikk` og `ArbeidsledigAvventerBlokkerendePeriode` med verdiene i `TilstandType`, DTO-ene og serde.
 - Arbeidsledigsøknader med tidligere arbeidsgiver går som før, gjennom arbeidstakerflyten.
+- Tester skal vise `START` etterfulgt av forkasting for begge yrkesaktivitetene, med `RV_SØ_39` og hendelsen som gir Gosys-oppgave. De skal også vise at periodene ikke sender behov for Infotrygd-historikk eller går videre i flyten.
 
 Rivene og `Behandlingsporing.Yrkesaktivitet.Frilans` og `.Arbeidsledig` blir værende. De brukes også av avbrutte søknader, sykmeldingsperioder og utgående meldinger.
 
@@ -293,10 +320,13 @@ I praksis:
 - Vi bytter ut implisitte arbeidstakerantakelser med spørsmålene der de ligger i dag:
   - valget mellom `AvventerInntektsmelding` og `AvventerBlokkerendePeriode` ut av `AvventerInfotrygdHistorikk`
   - sjekkene i `AvventerBlokkerendePeriode.entering()` og ventingen i `tilstandHvisBlokkeresAvAndre`
+  - `AvventerBlokkerendePeriode.håndterPåminnelse`, som også kaller `lagreArbeidstakerFaktaavklartInntektPåPeriode`; funksjonen krever `Arbeidstaker` med `check()` (`Vedtaksperiode.kt:3721`)
+  - kallene til `skalArbeidstakerBehandlesISpeil()` fra `nesteTilstandEtterIgangsattOverstyring`, også fra godkjenning, historikk, simulering og vilkårsprøving
   - ventingen på andre arbeidsgivere i `AvventerRevurdering`
   - `loggEventuellSkattPåDirekten` i `AvventerGodkjenning`
 - For arbeidstaker svarer alle spørsmålene ja, så koden gjør det samme som før.
 - Selvstendig-tilstandene rører vi ikke.
+- Vi kartlegger alle kall fra de berørte generiske tilstandene til funksjoner som krever `Arbeidstaker`, og alle direkte overganger til tilstander som fortsatt har en Selvstendig-variant. Kartleggingen skal dekke hendelseshåndteringen, ikke bare `entering()`.
 
 Trinnet har ingen migrering og trenger ikke koordinering med konsumentene.
 
@@ -312,24 +342,26 @@ Perioder i produksjon:
 - `SELVSTENDIG_START` er en overgangstilstand. Perioden forlater den i samme melding som oppretter den, så vi venter ingen perioder her. Migreringen tar dem likevel.
 - Perioder i `SELVSTENDIG_AVVENTER_INFOTRYGDHISTORIKK` venter på svar på behovet for Infotrygd-historikk. Svaret kommer til `AvventerInfotrygdHistorikk` og sender perioden videre til `SelvstendigAvventerBlokkerendePeriode`, som før.
 
-Tester: Selvstendig-testene skal vise `START` og `AVVENTER_INFOTRYGDHISTORIKK` i `assertTilstander`. Vi oppdaterer forventningene, men ikke selve scenarioene.
+Tester: Selvstendig-testene skal vise `START` og `AVVENTER_INFOTRYGDHISTORIKK` i `assertTilstander`. Vi beholder eksisterende scenarioer og legger til tester for anmodning om forkasting i `AvventerInfotrygdHistorikk` for begge yrkesaktivitetene. Selvstendig skal fortsatt avvise anmodningen, også når den er første hendelse etter migrering.
 
 ### Trinn 4: Slutten av flyten
 
-Vi slår sammen tilstandene som er like, og begynner nederst i flyten:
+Vi slår sammen tilstandene etter at forskjellene i hendelseshåndteringen er bevart i den generiske koden, og begynner nederst i flyten:
 
 1. `SelvstendigAvsluttet` og `SelvstendigTilUtbetaling`
 2. `SelvstendigAvventerGodkjenning`, `SelvstendigAvventerSimulering`, `SelvstendigAvventerHistorikk` og `SelvstendigAvventerVilkårsprøving`
 3. Revurderingstilstandene unntatt `SelvstendigAvventerRevurdering`
 
-Rekkefølgen gjør at hver Selvstendig-tilstand bare peker videre til tilstander som allerede er generiske. Hvert punkt kan være en egen PR med egen migrering.
+Hvert punkt kan være en egen PR med egen migrering, men rekkefølgen alene gjør ikke mellomtrinnene trygge. Revurdering kan gå inn i generiske tilstander som ennå ikke er tilpasset Selvstendig. Før trinn 4.1 må derfor også `AvventerRevurderingTilUtbetaling` støtte Selvstendig og bruke broen videre til `SelvstendigAvventerRevurdering`.
 
 I praksis, for hver tilstand:
 
 - Vi sletter Selvstendig-tilstanden og lar overgangene som pekte dit, peke til den generiske tilstanden.
-- Vi fjerner grenene for tilstanden i de uttømmende `when`-ene. Kompilatoren viser hvor de er.
+- Før vi fjerner grenene for tilstanden i de uttømmende `when`-ene, sammenligner vi utfallet for hver hendelse med den generiske grenen. Kompilatoren finner referansene, men ikke forskjellene i behandlinger, subsumsjoner eller avvisning.
 - Der den generiske tilstanden går tilbake til blokkerende periode eller revurdering, bruker vi `avventerBlokkerendePeriode()` og `avventerRevurdering()`. Et eksempel er `nesteTilstandEtterIgangsattOverstyring`, som i dag sender `SelvstendigAvsluttet` til `SelvstendigAvventerRevurdering`. Etter trinnet må `Avsluttet` sende en selvstendig periode dit.
 - `AvventerGodkjenning` logger «skatt på direkten» bare når spørsmålet sier det (B9).
+- Før trinn 4.2 kontrollerer vi at overstyring fra generisk godkjenning, historikk, simulering og vilkårsprøving ikke kaller arbeidstakerfunksjoner for Selvstendig.
+- Vi bevarer forskjellene ved overstyring i `AvventerGodkjenningRevurdering` og korrigert søknad i `AvventerRevurderingTilUtbetaling`. Annullering, korrigert inntekt og inntektsmelding avklares etter tabellen over før de berørte grenene fjernes.
 - Migreringen bytter `SELVSTENDIG_X` til `X` for tilstandene i punktet.
 
 Perioder i produksjon:
@@ -339,13 +371,16 @@ Perioder i produksjon:
 - Perioder i godkjenning, simulering, historikk og vilkårsprøving har et behov ute. Løsningen kommer til den generiske tilstanden og går videre i flyten.
 - Perioder midt i en revurdering blir stående i den generiske revurderingstilstanden og fortsetter derfra.
 
+Tester per deltrinn skal dekke overstyring fra alle tilstandene som slås sammen, korrigert søknad under revurdering til utbetaling og antall behandlinger og subsumsjoner. Vi tester også `TilUtbetaling → AvventerRevurderingTilUtbetaling → SelvstendigAvventerRevurdering` mens broen fortsatt finnes, med utbetalingskvittering som neste hendelse. Migreringstestene må følge perioden videre med hendelser, ikke bare kontrollere navnebyttet og serde.
+
 Konsumenter: `spesialist` lytter allerede på `AVSLUTTET` og `TIL_UTBETALING` i `VedtaksperiodeReberegnetRiver`. `spock` har påminnelsesintervaller for de generiske navnene og regner `AVSLUTTET` som sluttilstand.
 
 ### Trinn 5: `AvventerBlokkerendePeriode` og `AvventerRevurdering`
 
-Her ligger de reelle forskjellene.
+Her samler vi også ventingen og arbeidstakersjekkene i de siste to tilstandene.
 
 - `AvventerBlokkerendePeriode.entering()` sjekker refusjonstidslinjen og om perioden skal behandles i Speil, og lagrer faktaavklart inntekt for arbeidstaker. Dette gjøres bare når spørsmålene sier at det gjelder.
+- `AvventerBlokkerendePeriode.håndterPåminnelse` bruker de samme spørsmålene før lagring av faktaavklart arbeidstakerinntekt. At migreringen ikke kjører `entering()`, beskytter ikke mot arbeidstakerkall ved neste påminnelse.
 - `tilstandHvisBlokkeresAvAndre` venter bare på inntekt og refusjon fra andre arbeidsgivere når yrkesaktiviteten gjør det.
 - `AvventerRevurdering` hopper over ventingen på andre arbeidsgivere på samme måte.
 - Vi fjerner broene `avventerBlokkerendePeriode()` og `avventerRevurdering()`. Alle overganger går rett til de generiske tilstandene.
@@ -354,10 +389,10 @@ Migrering: `SELVSTENDIG_AVVENTER_BLOKKERENDE_PERIODE` og `SELVSTENDIG_AVVENTER_R
 
 Perioder i produksjon:
 
-- Perioder i `SELVSTENDIG_AVVENTER_BLOKKERENDE_PERIODE` venter på at en tidligere periode skal bli ferdig. Migreringen kjører ikke `entering()`, så arbeidstakersjekkene kjører aldri for dem. Ved neste påminnelse eller når den tidligere perioden er ferdig, spør tilstanden yrkesaktiviteten og går videre som før.
+- Perioder i `SELVSTENDIG_AVVENTER_BLOKKERENDE_PERIODE` venter på at en tidligere periode skal bli ferdig. Migreringen kjører ikke `entering()`. Ved neste påminnelse eller når den tidligere perioden er ferdig, må også hendelseshåndteringen spørre yrkesaktiviteten før arbeidstakerfunksjoner kalles.
 - Perioder i `SELVSTENDIG_AVVENTER_REVURDERING` fortsetter fra `AvventerRevurdering` på samme måte.
 
-Trinnet har mest risiko for å endre oppførsel. Vi kjører hele testsuiten for både arbeidstaker og selvstendig, og følger med på perioder i `AVVENTER_BLOKKERENDE_PERIODE` og `AVVENTER_REVURDERING` med `spammer` de første dagene.
+Vi tester migrerte perioder med påminnelse som første hendelse og med gjenopptakelse når en tidligere periode blir ferdig. Begge løp må fungere uten arbeidstakerkall for Selvstendig og bevare ventingen for arbeidstaker. Vi kjører hele testsuiten for begge yrkesaktivitetene og følger med på perioder i `AVVENTER_BLOKKERENDE_PERIODE` og `AVVENTER_REVURDERING` med `spammer` de første dagene.
 
 ### Trinn 6: Rydde opp
 
@@ -388,13 +423,13 @@ Vi ruller ut skallet `sp-rettighetskategori`. Den lytter på behovet `Rettighets
 - Spleis lagrer `rettighetskategoriId` på behandlingen, gjenbruker den per skjæringstidspunkt og avklarer på nytt ved førstegangssøknad for ny yrkesaktivitet.
 - Ut av tilstanden går perioden til `AvventerInntektsmelding` eller `AvventerBlokkerendePeriode`.
 
-Perioder som allerede er forbi Infotrygd-steget, får ingen avklaring. Det trenger de ikke i fase 1, fordi svaret ikke endrer flyten.
+Perioder som allerede er forbi Infotrygd-steget, får ingen avklaring i dette trinnet. De kan senere trenge opptjeningsvurdering uten å ha en `rettighetskategoriId`, blant annet ved revurdering. Trinn 9 må derfor fortsatt støtte perioder uten ID.
 
 ### Trinn 9: Opptjening med `rettighetskategoriId`
 
 - Spleis sender `rettighetskategoriId` i behovet `Opptjeningsvurdering`, ved siden av `arbeidssituasjon`.
 - `sp-vilkarsproving` slår opp kategorien i `sp-rettighetskategori` når ID-en finnes, og bruker `arbeidssituasjon` ellers.
-- Når alle åpne perioder har en `rettighetskategoriId`, fjerner vi `arbeidssituasjon` fra behovet.
+- Vi beholder `arbeidssituasjon` inntil håndteringen av eldre perioder uten ID er avklart. At alle åpne perioder har ID, er ikke tilstrekkelig: avsluttede perioder kan senere revurderes. Vilkåret for å fjerne feltet er et [åpent spørsmål](#åpne-spørsmål).
 
 ## Senere faser
 
@@ -423,7 +458,9 @@ Vi bygger ingenting for disse nå. De stiller disse kravene til kontrakten:
 
 1. Hvilken kategori skal skallet svare når brukeren har søkt både som arbeidstaker og som selvstendig næringsdrivende på samme skjæringstidspunkt? Det er to alternativer.
 
-   **Alternativ A: kategorien til den første søknaden.** Perioden med den andre yrkesaktiviteten får da en kategori som ikke passer, og Spleis forkaster den med `RV_IV_13`. Utfallet er det samme som i dag, men perioden blir forkastet før vilkårsprøvingen i stedet for i den.
+   Alternativene nedenfor forutsetter at kombinasjonen kan nå avklaringen. Det må vurderes mot `RV_SØ_53`, se punkt 2.
+
+   **Alternativ A: kategorien til den første søknaden.** Hvis perioden med den andre yrkesaktiviteten når avklaringen, får den en kategori som ikke passer, og Spleis forkaster den med `RV_IV_13`. Vi må avklare forholdet til dagens avvisning med `RV_SØ_53` før vi kan si at utfallet er det samme som i dag.
 
    **Alternativ B: en egen kategori, `ARBEIDSTAKER_OG_SELVSTENDIG_NARINGSDRIVENDE` (§ 8-41).** Spleis kan fortsatt ikke utbetale kombinasjonen. Den krever Dekning og et sykepengegrunnlag som er fordelt på yrkesaktivitetene. Konsekvensene er disse:
 
@@ -431,9 +468,13 @@ Vi bygger ingenting for disse nå. De stiller disse kravene til kontrakten:
    - Regelen for om kategorien passer, endres. Den kombinerte kategorien passer med både `Arbeidstaker` og `Selvstendig`, så begge periodene går videre. Forkastingen ved kategori som ikke passer, fanger ikke lenger opp dette tilfellet.
    - Spleis må fortsatt avvise kombinasjonen. Enten sjekker `AvventerRettighetskategori` den eksplisitt og gir `RV_IV_13`, eller så forkaster vilkårsprøvingen perioden som i dag (`Vedtaksperiode.kt:3232-3235`). Utfallet er det samme.
    - `rettighetskategoriId` blir riktig. Med alternativ A får den første perioden en ID som sier `ARBEIDSTAKER`, selv om saken egentlig hører under § 8-41. Den ID-en går videre til `sp-vilkarsproving`.
-   - Rekkefølgen på søknadene får betydning. Kommer arbeidstakersøknaden først og blir utbetalt, gir en senere søknad som selvstendig næringsdrivende ny avklaring med `endretFraForrige = true`. Det starter et revurderingseventyr fra skjæringstidspunktet. Revurderingen treffer en kombinasjon Spleis ikke støtter, og den utbetalte perioden kan ikke forkastes. Vi må bestemme om bare den nye perioden skal forkastes, eller om Spleis ikke skal starte revurdering når den nye kategorien ikke støttes. Med alternativ A er kategorien uendret, så det startes ingen revurdering, og bare perioden for selvstendig næringsdrivende forkastes.
+   - Hvis en senere søknad som selvstendig næringsdrivende passerer `RV_SØ_53` og når samme skjæringstidspunkt som en utbetalt arbeidstakerperiode, kan den gi ny avklaring med `endretFraForrige = true`. Det starter et revurderingseventyr fra skjæringstidspunktet. Revurderingen treffer en kombinasjon Spleis ikke støtter, og den utbetalte perioden kan ikke forkastes. Vi må først avklare om scenarioet er nåbart. Hvis det er det, må vi bestemme om bare den nye perioden skal forkastes, eller om Spleis ikke skal starte revurdering når den nye kategorien ikke støttes.
    - Kategorien erstatter ikke inntektssjekken. `erKombinert` bygger på inntekt, også ghost-inntekter fra A-ordningen. En person som bare har søkt som selvstendig næringsdrivende, men har arbeidstakerinntekt i skatteopplysningene, blir fortsatt fanget av `RV_IV_13` i vilkårsprøvingen. Skallet svarer bare ut fra søknadene og ser ikke dette tilfellet.
    - `sp-vilkarsproving` må håndtere den nye verdien i opptjeningsvurderingen. Det er trolig de samme reglene som for arbeidstaker, men det må avklares.
    - Kombinasjonene i § 8-42 og § 8-43 vil kreve det samme senere. Vi bør vurdere om verdiene skal følge hovedkategoriene i [abstraksjoner-kap8.md](abstraksjoner-kap8.md#hovedkategorier) fra starten, så nye kategorier bare blir nye verdier og ikke endrer betydningen av kontrakten.
 
    Forslaget er alternativ B. Spleis behandler kategorien som «ikke støttet» og gir `RV_IV_13`. Før trinn 8 må vi bestemme hvordan Spleis håndterer en endret kategori på perioder som allerede er utbetalt.
+
+2. Hvordan skal `RV_SØ_53` påvirke avklaringen av rettighetskategori? `vurderOmSøknadIkkeKanHåndteres` i `Yrkesaktivitet.kt:526-534` avviser allerede en søknad med en annen yrkesaktivitetstype når den overlapper eller er kant i kant med en eksisterende periode. Det skjer før tilstandsflyten. Vi må avklare hvilke kombinasjoner som kan nå `AvventerRettighetskategori`, om avvisningen skal bestå, og om forkastede søknader skal inngå i behovet. Vurderingen av alternativ A og B må bygge på nåbare scenarioer. `RV_IV_13` fanger dessuten kombinerte inntekter, også ghost-inntekter, uten at brukeren har søkt under begge yrkesaktivitetstypene.
+
+3. Når kan vi fjerne `arbeidssituasjon` fra `Opptjeningsvurdering`? Perioder som er forbi Infotrygd-steget ved trinn 8, får ingen ID. Også avsluttede perioder kan senere revurderes og trenge ny opptjeningsvurdering. `OpptjeningsvurderingRiver` i `sp-vilkarsproving` krever i dag `Opptjeningsvurdering.arbeidssituasjon` (`requireKey`, linje 40). Vi må velge mellom å beholde feltet som fallback for eldre perioder og å sikre at disse får en ID før et nytt behov sendes, for eksempel med backfill eller avklaring ved revurdering. Fjerning krever at både Spleis og konsumenten håndterer dette; alle åpne perioder med ID er ikke et tilstrekkelig kriterium.
