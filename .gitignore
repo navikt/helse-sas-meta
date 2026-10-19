@@ -65,3 +65,5 @@
 /tbd-libs
 /vedtaksfeed
 /web
+/arkitektur/**/node_modules/
+/arkitektur/viewer/dist/
