@@ -1,0 +1,249 @@
+{
+  "version": 1,
+  "title": "25% avviksvurdering",
+  "description": "Når Spesialist skal behandle en godkjenningssak, må den vite om inntektsgrunnlaget som ble brukt sist har endret seg for mye siden forrige vurdering (mer enn 25%). Spesialist ber derfor Spinnvill om en avviksvurdering. Hvis Spinnvill ikke allerede har et sammenligningsgrunnlag liggende, henter den fersk inntektsinformasjon fra Sparkel inntekt (som igjen henter fra a-inntekt-registeret). Behovsakkumulator fungerer som en mellomstasjon som samler opp svar og markerer dem som komplette (@final=true) før Spinnvill går videre. Spinnvill selv beregner avviksprosenten og avgjør om avviket er innenfor 25%-grensen, og sender så svaret (@løsning Avviksvurdering) tilbake via Behovsakkumulator til Spesialist, som fortsetter godkjenningsbehandlingen basert på resultatet.",
+  "direction": "RIGHT",
+  "nodes": [
+    {
+      "id": "spleis",
+      "type": "service",
+      "label": "Spleis",
+      "summary": "Formodet oppstrøms kilde til godkjenningssaken. Vi ser ikke direkte i denne kodebiten at Spleis sender behovet, men Spesialist er kjent for å motta Godkjenning-behov derfra i den normale saksflyten.",
+      "evidence": [
+        {
+          "file": "spesialist/spesialist-kafka/src/main/kotlin/no/nav/helse/kafka/GodkjenningsbehovRiver.kt",
+          "line": 14,
+          "symbol": "GodkjenningsbehovRiver.preconditions"
+        }
+      ]
+    },
+    {
+      "id": "spesialist",
+      "type": "service",
+      "label": "Spesialist",
+      "summary": "Saksbehandlingsapplikasjonen der en saksbehandler til slutt godkjenner sykepengesaken. For å vite om tidligere brukt inntektsgrunnlag fortsatt er gyldig, ber den Spinnvill om en avviksvurdering, og venter med å fortsette til svaret kommer tilbake.",
+      "evidence": [
+        {
+          "file": "spesialist/spesialist-application/src/main/kotlin/no/nav/helse/modell/kommando/VurderBehovForAvviksvurdering.kt",
+          "line": 69,
+          "symbol": "behov"
+        },
+        {
+          "file": "spesialist/spesialist-kafka/src/main/kotlin/no/nav/helse/kafka/AvviksvurderingLøsningRiver.kt",
+          "line": 24,
+          "symbol": "preconditions"
+        }
+      ]
+    },
+    {
+      "id": "spinnvill",
+      "type": "service",
+      "label": "Spinnvill",
+      "summary": "En egen tjeneste dedikert til å avgjøre om inntektsgrunnlaget har endret seg for mye. Den sjekker først om den allerede har et sammenligningsgrunnlag fra tidligere; hvis ikke, henter den nye tall før den selv regner ut avviksprosenten.",
+      "evidence": [
+        {
+          "file": "spinnvill/spinnvill-app/src/main/kotlin/no/nav/helse/kafka/AvviksvurderingbehovRiver.kt",
+          "line": 35,
+          "symbol": "AvviksvurderingbehovRiver"
+        },
+        {
+          "file": "spinnvill/spinnvill-app/src/main/kotlin/no/nav/helse/mediator/Mediator.kt",
+          "line": 75,
+          "symbol": "avgjørVidereBehandling"
+        }
+      ]
+    },
+    {
+      "id": "sparkel_inntekt",
+      "type": "service",
+      "label": "Sparkel inntekt",
+      "summary": "En \"sparkelapp\" som er ansvarlig for å hente inntektsdata fra a-inntekt-registeret. Her spesifikt: leverer inntektsopplysningene Spinnvill trenger for å bygge et nytt sammenligningsgrunnlag.",
+      "evidence": [
+        {
+          "file": "sparkelapper/inntekt/src/main/kotlin/no/nav/helse/sparkel/inntekt/Inntekter.kt",
+          "line": 49,
+          "symbol": "Type.InntekterForSammenligningsgrunnlag"
+        },
+        {
+          "file": "sparkelapper/inntekt/src/main/kotlin/no/nav/helse/sparkel/inntekt/Inntekter.kt",
+          "line": 120,
+          "symbol": "Sammenligningsgrunnlag"
+        }
+      ]
+    },
+    {
+      "id": "behovsakkumulator",
+      "type": "service",
+      "label": "Behovsakkumulator",
+      "summary": "En generell mellomtjeneste (ikke spesifikk for avviksvurdering) som samler svar på behov som består av flere deler. Den venter til alle nødvendige svar har kommet inn, og markerer da meldingen som \"ferdig\" (@final=true) slik at mottakeren vet den kan behandle den videre.",
+      "evidence": [
+        {
+          "file": "behovsakkumulator/src/main/kotlin/no/nav/helse/behovsakkumulator/Behovsakkumulator.kt",
+          "line": 24,
+          "symbol": "precondition"
+        },
+        {
+          "file": "behovsakkumulator/src/main/kotlin/no/nav/helse/behovsakkumulator/Behovsakkumulator.kt",
+          "line": 52,
+          "symbol": "onPacket"
+        }
+      ]
+    },
+    {
+      "id": "avvik_25",
+      "type": "decision",
+      "label": "Avvik ≤ 25%?",
+      "summary": "Selve regelen: hvis inntektsgrunnlaget har endret seg med 25% eller mindre siden sist, er avviket akseptabelt og saken kan fortsette automatisk. Er avviket større, må det håndteres spesielt av saksbehandler.",
+      "evidence": [
+        {
+          "file": "spinnvill/spinnvill-avviksvurdering/src/main/kotlin/no/nav/helse/avviksvurdering/Avviksvurderingsgrunnlag.kt",
+          "line": 14,
+          "symbol": "MAKSIMALT_TILLATT_AVVIK"
+        },
+        {
+          "file": "spinnvill/spinnvill-avviksvurdering/src/main/kotlin/no/nav/helse/avviksvurdering/Avviksvurderingsgrunnlag.kt",
+          "line": 19,
+          "symbol": "avviksvurdering"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "spleis-til-spesialist-godkjenning",
+      "source": "spleis",
+      "target": "spesialist",
+      "type": "behov",
+      "label": "@behov Godkjenning",
+      "uncertain": true,
+      "evidence": [
+        {
+          "file": "spesialist/spesialist-kafka/src/main/kotlin/no/nav/helse/kafka/GodkjenningsbehovRiver.kt",
+          "line": 14
+        }
+      ]
+    },
+    {
+      "id": "spesialist-til-spinnvill-avvik-behov",
+      "source": "spesialist",
+      "target": "spinnvill",
+      "type": "behov",
+      "label": "@behov Avviksvurdering",
+      "uncertain": false,
+      "evidence": [
+        {
+          "file": "spesialist/spesialist-application/src/main/kotlin/no/nav/helse/modell/kommando/VurderBehovForAvviksvurdering.kt",
+          "line": 69
+        },
+        {
+          "file": "spesialist/spesialist-kafka/src/main/kotlin/no/nav/helse/kafka/messagebuilders/BehovMessageBuilder.kt",
+          "line": 47
+        }
+      ]
+    },
+    {
+      "id": "spinnvill-til-sparkel-sammenligningsgrunnlag-behov",
+      "source": "spinnvill",
+      "target": "sparkel_inntekt",
+      "type": "behov",
+      "label": "@behov InntekterForSammenligningsgrunnlag",
+      "uncertain": false,
+      "evidence": [
+        {
+          "file": "spinnvill/spinnvill-app/src/main/kotlin/no/nav/helse/MeldingPubliserer.kt",
+          "line": 145
+        },
+        {
+          "file": "sparkelapper/inntekt/src/main/kotlin/no/nav/helse/sparkel/inntekt/Inntekter.kt",
+          "line": 125
+        }
+      ]
+    },
+    {
+      "id": "sparkel-til-behovsakk-sammenligningsgrunnlag-losning",
+      "source": "sparkel_inntekt",
+      "target": "behovsakkumulator",
+      "type": "løsning",
+      "label": "@løsning InntekterForSammenligningsgrunnlag",
+      "uncertain": false,
+      "evidence": [
+        {
+          "file": "sparkelapper/inntekt/src/main/kotlin/no/nav/helse/sparkel/inntekt/Inntekter.kt",
+          "line": 223
+        },
+        {
+          "file": "behovsakkumulator/src/main/kotlin/no/nav/helse/behovsakkumulator/Behovsakkumulator.kt",
+          "line": 26
+        }
+      ]
+    },
+    {
+      "id": "behovsakk-til-spinnvill-final-sammenligningsgrunnlag",
+      "source": "behovsakkumulator",
+      "target": "spinnvill",
+      "type": "løsning",
+      "label": "@final=true + @løsning InntekterForSammenligningsgrunnlag",
+      "uncertain": false,
+      "evidence": [
+        {
+          "file": "behovsakkumulator/src/main/kotlin/no/nav/helse/behovsakkumulator/Behovsakkumulator.kt",
+          "line": 52
+        },
+        {
+          "file": "spinnvill/spinnvill-app/src/main/kotlin/no/nav/helse/kafka/SammenligningsgrunnlagRiver.kt",
+          "line": 35
+        }
+      ]
+    },
+    {
+      "id": "spinnvill-til-avvik25",
+      "source": "spinnvill",
+      "target": "avvik_25",
+      "type": "flow",
+      "label": "beregner avviksprosent",
+      "uncertain": false,
+      "evidence": [
+        {
+          "file": "spinnvill/spinnvill-avviksvurdering/src/main/kotlin/no/nav/helse/avviksvurdering/Avviksvurderingsgrunnlag.kt",
+          "line": 17
+        }
+      ]
+    },
+    {
+      "id": "avvik25-til-behovsakk-avvik-losning",
+      "source": "avvik_25",
+      "target": "behovsakkumulator",
+      "type": "løsning",
+      "label": "@løsning Avviksvurdering (NyVurderingForetatt/TrengerIkkeNyVurdering)",
+      "uncertain": false,
+      "evidence": [
+        {
+          "file": "spinnvill/spinnvill-app/src/main/kotlin/no/nav/helse/MeldingPubliserer.kt",
+          "line": 80
+        },
+        {
+          "file": "spinnvill/spinnvill-app/src/main/kotlin/no/nav/helse/MeldingPubliserer.kt",
+          "line": 92
+        }
+      ]
+    },
+    {
+      "id": "behovsakk-til-spesialist-final-avvik-losning",
+      "source": "behovsakkumulator",
+      "target": "spesialist",
+      "type": "løsning",
+      "label": "@final=true + @løsning Avviksvurdering",
+      "uncertain": false,
+      "evidence": [
+        {
+          "file": "behovsakkumulator/src/main/kotlin/no/nav/helse/behovsakkumulator/Behovsakkumulator.kt",
+          "line": 52
+        },
+        {
+          "file": "spesialist/spesialist-kafka/src/main/kotlin/no/nav/helse/kafka/AvviksvurderingLøsningRiver.kt",
+          "line": 24
+        }
+      ]
+    }
+  ]
+}

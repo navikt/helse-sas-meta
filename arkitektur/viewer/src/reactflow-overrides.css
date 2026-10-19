@@ -1,0 +1,36 @@
+/*
+ * Overstyrer React Flows standard lag-rekkefølge: som standard tegnes
+ * `.react-flow__edges` FØR `.react-flow__nodes` i DOM-en, uten eksplisitt
+ * z-index på noen av de to — det gjør at nodene alltid males OVENPÅ
+ * kantene, uansett hvor en kants rute geometrisk går. Resultatet er at en
+ * pil som (etter manuell dra-og-slipp, eller i tette diagrammer) passerer
+ * inntil eller under en boks, blir usynlig der den er "bak" boksen.
+ *
+ * Vi ønsker i stedet at en linje ALDRI skal kunne skjules bak en boks —
+ * heller at den (i sjeldne tilfeller) tegnes synlig over boks-kanten enn
+ * at den forsvinner helt. Løsningen er å gi kant-laget (`.react-flow__edges`,
+ * som allerede har `position: absolute` fra biblioteket selv) en eksplisitt
+ * z-index. Siden begge lagene er direkte barn av samme positurerte
+ * forelder (`.react-flow__viewport`), er det nok å heve z-index på
+ * kant-laget alene — det løfter det automatisk over node-laget uansett
+ * DOM-rekkefølge, uten at node-laget selv trenger noen endring.
+ *
+ * `pointer-events` på selve `.react-flow__edges`-laget forblir uendret
+ * (satt av biblioteket til å la klikk/dra "falle gjennom" til nodene der
+ * det ikke er en kant), så dette påvirker kun VISUELL rekkefølge, ikke
+ * interaksjon.
+ */
+.react-flow__edges {
+  z-index: 10;
+}
+
+/*
+ * Selve kant-LABELEN (tegnet av `ElkRoutedEdge` via `EdgeLabelRenderer`)
+ * portes inn i et eget lag, `.react-flow__edgelabel-renderer`, som i
+ * biblioteket plasseres FØR node-laget i DOM-en (samme årsak som over) —
+ * uten denne regelen ville selve teksten på en kant kunne bli skjult bak
+ * en boks selv om streken/pilen nå alltid vises øverst.
+ */
+.react-flow__edgelabel-renderer {
+  z-index: 10;
+}

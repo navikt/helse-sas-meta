@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "title": "Planlagt: Outbox-mønster i sp-vilkårsprøving (fjerner dual-write-risiko)",
+  "description": "Viser hvordan outbox-mønsteret fra sporhund kan innføres i sp-vilkårsprøving for å tette et hull i transaksjonssikkerheten. I dag lagrer OpptjeningsvurderingRiver vurderingen i databasen i én transaksjon, og publiserer deretter @løsning-meldingen på Kafka i et helt separat, ikke-transaksjonelt steg RETT ETTER at transaksjonen er commitet (se OpptjeningsvurderingRiver.kt og GrunnlagForAutomatiskArbeidstakerOpptjeningsvurderingRiver.kt). Hvis appen krasjer, eller Kafka-produsenten feiler, mellom disse to stegene, har vi en vurdering lagret som Spleis aldri får vite om — Spleis blir da stående og vente på en løsning som allerede finnes, men aldri blir sendt. Løsningen (som i sporhund) er å skrive løsningen som en outbox-rad i SAMME databasetransaksjon som selve vurderingen, og la en separat bakgrunnsjobb stå for selve Kafka-publiseringen, uavhengig av request-håndteringen i riveren.",
+  "direction": "RIGHT",
+  "nodes": [
+    {
+      "id": "spleis",
+      "type": "service",
+      "label": "Spleis",
+      "summary": "Sender @behov Opptjeningsvurdering når vilkårsgrunnlaget skal fastsettes, og venter på @løsning før saksbehandlingen kan gå videre.",
+      "evidence": [
+        {
+          "file": "sp-vilkarsproving/sp-vilkarsproving/src/main/kotlin/no/nav/helse/sykepenger/vilkarsproving/infra/kafka/OpptjeningsvurderingRiver.kt",
+          "symbol": "OpptjeningsvurderingRiver",
+          "note": "Riveren lytter på @behov Opptjeningsvurdering, som sendes av Spleis."
+        }
+      ]
+    },
+    {
+      "id": "sp_vilkarsproving",
+      "type": "service",
+      "label": "sp-vilkårsprøving",
+      "summary": "PLANLAGT ENDRING: I stedet for å publisere @løsning direkte i riveren rett etter at DB-transaksjonen er commitet, skriver appen en outbox-rad i SAMME transaksjon som selve vurderingen. En ny bakgrunnsjobb (mønster kopiert fra sporhunds KafkaProducerJobb) poller outbox-tabellen og gjør selve Kafka-publiseringen.",
+      "evidence": [
+        {
+          "file": "sp-vilkarsproving/sp-vilkarsproving/src/main/kotlin/no/nav/helse/sykepenger/vilkarsproving/infra/kafka/OpptjeningsvurderingRiver.kt",
+          "symbol": "context.publish",
+          "note": "DAGENS KODE (gapet vi fjerner): context.publish(packet.toJson()) kalles utenfor/etter transaksjonen — ikke transaksjonssikkert."
+        },
+        {
+          "file": "sporhund/src/main/kotlin/no/nav/helse/sporhund/infrastructure/kafka/KafkaProducerJobb.kt",
+          "note": "Forbildet: sporhunds bakgrunnsjobb som poller outbox og publiserer, brukes som mal for den nye jobben i sp-vilkårsprøving."
+        }
+      ]
+    },
+    {
+      "id": "sp_vilkarsproving_db",
+      "type": "database",
+      "label": "sp-vilkårsprøving-database (Postgres)",
+      "summary": "Eksisterende Postgres-database for opptjeningsprøving/-vurdering. PLANLAGT ENDRING: ny outbox-tabell legges til, etter mønster fra sporhunds outbox-tabell (id, event jsonb, opprettet, sendt_tidspunkt).",
+      "evidence": [
+        {
+          "file": "sp-vilkarsproving/sp-vilkarsproving/src/main/kotlin/no/nav/helse/sykepenger/vilkarsproving/infra/db/PostgresOpptjeningsvurderingRepository.kt",
+          "note": "Eksisterende repository som i dag lagrer opptjeningsvurderingen i egen transaksjon via PostgresTransaksjonProvider."
+        },
+        {
+          "file": "sporhund/src/main/kotlin/no/nav/helse/sporhund/infrastructure/db/PgOutbox.kt",
+          "note": "Mal for den nye outbox-tabellen/repositoryet i sp-vilkårsprøving."
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "spleis-vilkarsproving-behov",
+      "source": "spleis",
+      "target": "sp_vilkarsproving",
+      "type": "behov",
+      "label": "@behov Opptjeningsvurdering",
+      "step": 1,
+      "evidence": [
+        {
+          "file": "sp-vilkarsproving/sp-vilkarsproving/src/main/kotlin/no/nav/helse/sykepenger/vilkarsproving/infra/kafka/OpptjeningsvurderingRiver.kt",
+          "symbol": "behovKey",
+          "note": "River.precondition krever @behov = Opptjeningsvurdering."
+        }
+      ]
+    },
+    {
+      "id": "vilkarsproving-db-write-samme-tx",
+      "source": "sp_vilkarsproving",
+      "target": "sp_vilkarsproving_db",
+      "type": "write",
+      "label": "NY: Lagrer vurdering + outbox-rad (samme transaksjon)",
+      "step": 2,
+      "evidence": [
+        {
+          "file": "sp-vilkarsproving/sp-vilkarsproving/src/main/kotlin/no/nav/helse/sykepenger/vilkarsproving/application/OpptjeningService.kt",
+          "symbol": "OpptjeningService.vurderOpptjening",
+          "note": "Eksisterende domenelogikk kjøres i transaksjonProvider.transaksjon { ... } — outbox-skrivingen legges inn her, i samme lambda."
+        },
+        {
+          "file": "sporhund/src/main/kotlin/no/nav/helse/sporhund/application/Outbox.kt",
+          "note": "Mønster: Outbox.nyMelding kalles fra domenelaget, som en del av samme forretningstransaksjon."
+        }
+      ]
+    },
+    {
+      "id": "vilkarsproving-db-poll-outbox",
+      "source": "sp_vilkarsproving",
+      "target": "sp_vilkarsproving_db",
+      "type": "read",
+      "label": "NY: bakgrunnsjobb poller outbox (FOR UPDATE SKIP LOCKED)",
+      "step": 3,
+      "evidence": [
+        {
+          "file": "sporhund/src/main/kotlin/no/nav/helse/sporhund/infrastructure/kafka/KafkaProducerJobb.kt",
+          "note": "Mal: egen coroutine/løkke, separat fra River-håndteringen, som poller outbox-tabellen med korte mellomrom."
+        }
+      ]
+    },
+    {
+      "id": "vilkarsproving-spleis-losning",
+      "source": "sp_vilkarsproving",
+      "target": "spleis",
+      "type": "løsning",
+      "label": "@løsning Opptjeningsvurdering (publiseres av outbox-jobben, ikke lenger direkte fra riveren)",
+      "step": 4,
+      "evidence": [
+        {
+          "file": "sp-vilkarsproving/sp-vilkarsproving/src/main/kotlin/no/nav/helse/sykepenger/vilkarsproving/infra/kafka/OpptjeningsvurderingRiver.kt",
+          "symbol": "@løsning",
+          "note": "Løsningens innhold (opptjeningsvurderingId) er uendret — det er KUN tidspunktet/mekanismen for publisering som flyttes til outbox-jobben."
+        }
+      ]
+    },
+    {
+      "id": "vilkarsproving-db-write-sendt",
+      "source": "sp_vilkarsproving",
+      "target": "sp_vilkarsproving_db",
+      "type": "write",
+      "label": "NY: markerer outbox-rad som sendt",
+      "step": 5,
+      "evidence": [
+        {
+          "file": "sporhund/src/main/kotlin/no/nav/helse/sporhund/infrastructure/kafka/KafkaProducerJobb.kt",
+          "symbol": "outbox.meldingSendt",
+          "note": "Mal: markeres som sendt først etter bekreftet Kafka-publisering, slik at et krasj før dette gir en trygg gjensending — ikke tap av melding."
+        }
+      ]
+    }
+  ]
+}
