@@ -10,7 +10,7 @@ Dokumentet bygger på abstraksjonen [Rettighetskategori](abstraksjoner-kap8.md#r
 - Mange Selvstendig-tilstander har lite egen kode, men hendelseshåndteringen i `Vedtaksperiode.kt` skiller mellom tilstandene. Før sammenslåing må vi bevare forskjellene i forkasting, overstyring, korrigerte søknader og andre hendelser.
 - Frilans- og Arbeidsledig-tilstandene fjerner vi helt. Vi oppretter vedtaksperiodene i felles `Start` (`START`) og forkaster dem direkte der med `RV_SØ_39` ut fra yrkesaktivitetstypen. Vi beholder `vedtaksperiode_forkastet`, som brukes til å opprette oppgaver i Gosys.
 - Vi slår sammen tilstandene først. Når det er gjort, innfører vi `AvventerRettighetskategori` i den felles flyten.
-- Vi flytter periodene ut av Selvstendig-tilstandene uten en JSON-migrering per tilstand. Ingen overganger går lenger til en Selvstendig-tilstand, og påminnelser sender periodene gjennom overgangene på nytt. Bare `SELVSTENDIG_AVSLUTTET` og `SELVSTENDIG_AVVENTER_BLOKKERENDE_PERIODE` JSON-migreres. Deretter fjerner vi tilstandene.
+- Vi flytter periodene ut av Selvstendig-tilstandene uten en JSON-migrering per tilstand. Ingen overganger går lenger til en Selvstendig-tilstand, og påminnelser sender periodene gjennom overgangene på nytt. Bare `SELVSTENDIG_AVSLUTTET` JSON-migreres. Deretter fjerner vi tilstandene.
 - `AvventerRettighetskategori` kommer etter `AvventerInfotrygdHistorikk`. Den sender behovet `Rettighetskategori` og venter på løsningen. Den første løseren er et skall av en ekstern domenetjeneste, og den svarer ut fra hva brukeren har søkt som.
 - Vi avklarer én gang per skjæringstidspunkt og gjenbruker svaret. Når en førstegangssøknad for en ny yrkesaktivitet treffer skjæringstidspunktet, avklarer vi på nytt.
 - Behovet tar med `vedtaksperiodeId`, `behandlingId`, skjæringstidspunktet og søknadsidene til alle vedtaksperioder som hører til skjæringstidspunktet. Svaret finner veien tilbake til riktig vedtaksperiode.
@@ -246,7 +246,7 @@ Hvert trinn er en egen PR som kan rulles ut alene. Hvert trinn som fjerner tilst
 
 ### Felles for trinnene som flytter perioder ut av Selvstendig-tilstandene
 
-Trinn 3–7 flytter vedtaksperioder som står i en Selvstendig-tilstand i produksjon, over i en generisk tilstand. Vi bruker ikke en JSON-migrering per tilstand. I stedet sørger vi for at ingen overganger går til en Selvstendig-tilstand, og lar påminnelser flytte periodene videre gjennom de vanlige overgangene. Bare `SELVSTENDIG_AVSLUTTET` og `SELVSTENDIG_AVVENTER_BLOKKERENDE_PERIODE` får en JSON-migrering. En avsluttet periode skal ikke revurderes bare for å bytte tilstandsnavn, og en periode som venter på en periode foran, flytter seg ikke på en påminnelse.
+Trinn 3–7 flytter vedtaksperioder som står i en Selvstendig-tilstand i produksjon, over i en generisk tilstand. Vi bruker ikke en JSON-migrering per tilstand. I stedet sørger vi for at ingen overganger går til en Selvstendig-tilstand, og lar påminnelser flytte periodene videre gjennom de vanlige overgangene. Bare `SELVSTENDIG_AVSLUTTET` får en JSON-migrering. En avsluttet periode skal ikke revurderes bare for å bytte tilstandsnavn.
 
 Fordelen er at periodene går inn i den generiske tilstanden med `entering()`, sender behovene på nytt og gir `vedtaksperiode_endret`. Da får konsumentene det nye navnet med en gang, og vi slipper å resonnere om hvordan en migrert periode oppfører seg uten `entering()`.
 
@@ -401,14 +401,15 @@ Trinnet har ingen migrering. Tilstandsobjektene, `TilstandType`, DTO-ene og serd
 
 Tester (`SelvstendigTilstanderTilGeneriskeTest`): Vi lagrer en selvstendig periode, bytter tilstanden i JSON-en til Selvstendig-navnet og gjenoppretter personen. Deretter sender vi påminnelse, påminnelse med `ønskerReberegning` eller løsningen på behovet, og sjekker at perioden går til den generiske tilstanden og videre i flyten.
 
-### Trinn 5: Påminne periodene i Selvstendig-tilstandene
+### Trinn 5: Påminne periodene i Selvstendig-tilstandene ✅
 
-Vi sender påminnelser til alle perioder som står i en Selvstendig-tilstand, unntatt `SELVSTENDIG_AVSLUTTET` og `SELVSTENDIG_AVVENTER_BLOKKERENDE_PERIODE`, som vi JSON-migrerer i trinn 6. Periodene går da gjennom overgangene på nytt og havner i de generiske tilstandene.
+Vi sender påminnelser til alle perioder som står i en Selvstendig-tilstand, unntatt `SELVSTENDIG_AVSLUTTET`, som vi JSON-migrerer i trinn 6. Periodene går da gjennom overgangene på nytt og havner i de generiske tilstandene.
 
 | Tilstand | Påminnelse | Resultat |
 |---|---|---|
 | `SELVSTENDIG_START` | Ventes tom. Ellers `ønskerReberegning`. | Som `Start` |
 | `SELVSTENDIG_AVVENTER_INFOTRYGDHISTORIKK` | Vanlig påminnelse | Behovet sendes på nytt, og svaret gir `AVVENTER_BLOKKERENDE_PERIODE` |
+| `SELVSTENDIG_AVVENTER_BLOKKERENDE_PERIODE` | Vanlig påminnelse | `AVVENTER_VILKÅRSPRØVING` eller `AVVENTER_HISTORIKK` |
 | `SELVSTENDIG_AVVENTER_VILKÅRSPRØVING`, `_HISTORIKK`, `_SIMULERING`, `_GODKJENNING` | `ønskerReberegning` | `AVVENTER_BLOKKERENDE_PERIODE` og videre |
 | Revurderingstilstandene unntatt `_TIL_UTBETALING` | `ønskerReberegning` | `AVVENTER_REVURDERING` og videre |
 | `SELVSTENDIG_TIL_UTBETALING`, `SELVSTENDIG_AVVENTER_REVURDERING_TIL_UTBETALING` | Ingen ekstra. Vi venter på kvitteringen. | `AVSLUTTET` eller `AVVENTER_REVURDERING` |
@@ -419,16 +420,15 @@ Vi sender påminnelser til alle perioder som står i en Selvstendig-tilstand, un
 - Utbetalingsperiodene sender vi ikke reberegning til, fordi det ville startet en revurdering mens utbetalingen pågår.
 - Vi teller på nytt i `paminnelse` etterpå og gjentar for perioder som står igjen.
 
-### Trinn 6: JSON-migrere `SELVSTENDIG_AVSLUTTET` og `SELVSTENDIG_AVVENTER_BLOKKERENDE_PERIODE`
+### Trinn 6: JSON-migrere `SELVSTENDIG_AVSLUTTET`
 
-- En `JsonMigration` bytter `SELVSTENDIG_AVSLUTTET` til `AVSLUTTET` og `SELVSTENDIG_AVVENTER_BLOKKERENDE_PERIODE` til `AVVENTER_BLOKKERENDE_PERIODE`, etter mønsteret i `V342RenameAvventersøknadForTidligereEllerOverlappendePeriode`. Den rører ikke behandlinger, utbetalinger eller noe annet.
+`SELVSTENDIG_AVVENTER_BLOKKERENDE_PERIODE` ble tømt med påminnelser i trinn 5, så bare `SELVSTENDIG_AVSLUTTET` trenger migrering.
+
+- En `JsonMigration` bytter `SELVSTENDIG_AVSLUTTET` til `AVSLUTTET`, etter mønsteret i `V342RenameAvventersøknadForTidligereEllerOverlappendePeriode`. Den rører ikke behandlinger, utbetalinger eller noe annet.
 - Migreringen tar også eventuelle andre `SELVSTENDIG_*`-navn som står igjen etter trinn 5, og bytter dem til det generiske navnet. Det er en sikring, ikke hovedveien.
 - `SelvstendigAvsluttet` og `Avsluttet` har lik oppførsel, og en senere overstyring går til `AvventerRevurdering` etter trinn 4. Migreringen kjører ikke `entering()`, og det trengs ikke.
-- Perioder i `SELVSTENDIG_AVVENTER_BLOKKERENDE_PERIODE` venter på at en periode foran skal bli ferdig. En påminnelse flytter dem ikke, og reberegning ville startet et revurderingseventyr som også beregner perioden foran på nytt. For selvstendig næringsdrivende gjør `AvventerBlokkerendePeriode.entering()` bare en gjenopptakelse, og gjenopptakelse og påminnelse har allerede Selvstendig-oppførselen fra trinn 2. Derfor trenger heller ikke disse periodene `entering()`.
 - Spleis sender ikke `vedtaksperiode_endret` for perioder som migreres. Konsumenter som lagrer tilstanden, ser det gamle navnet til perioden bytter tilstand neste gang. `spock` regner både `SELVSTENDIG_AVSLUTTET` og `AVSLUTTET` som sluttilstand.
 - Personer som ikke får meldinger, beholder det gamle navnet i databasen til de blir lest. Vi kjører `migrate_v2` for å få alle over.
-
-Vi kjører migreringen mot en kopi av produksjonsdata i dev og sjekker at personene kan gjenopprettes og serialiseres uten feil. Migreringstestene følger periodene videre med hendelser, ikke bare navnebyttet: en overstyring for avsluttet periode, og gjenopptakelse når perioden foran er ferdig for blokkerende periode.
 
 ### Trinn 7: Fjerne Selvstendig-tilstandene
 
@@ -479,7 +479,7 @@ Vi bygger ingenting for disse nå. De stiller disse kravene til kontrakten:
 
 | Risiko | Tiltak |
 |---|---|
-| En migrering skriver om en tilstand feil, og perioder blir stående fast. | Kjør migreringen mot en kopi av produksjonsdata i dev. Følg med på perioder i de nye tilstandene med `spammer` og påminnelser. |
+| En migrering skriver om en tilstand feil, og perioder blir stående fast. | Følg med på perioder i de nye tilstandene med `spammer` og påminnelser. |
 | Konsumenter filtrerer på gamle tilstandsnavn og slutter å reagere. | Søk etter navnene i alle repoer før hvert trinn, og oppdater konsumentene først. |
 | Det finnes likevel personer med perioder i Frilans- eller Arbeidsledig-tilstander. | Sjekk databasen før trinn 1, og forkast periodene før vi fjerner tilstandene. |
 | Arbeidstakeroppførsel endres ved et uhell når arbeidstakersjekkene legges inn i tilstandene. | Trinn 2 endrer ingen oppførsel og kjøres alene. Hele testsuiten for arbeidstaker må være grønn uendret i hvert trinn. |
