@@ -322,7 +322,7 @@ Vi sender påminnelser til alle perioder som står i en Selvstendig-tilstand, un
 - Utbetalingsperiodene sender vi ikke reberegning til, fordi det ville startet en revurdering mens utbetalingen pågår.
 - Vi teller på nytt i `paminnelse` etterpå og gjentar for perioder som står igjen.
 
-### Trinn 6: JSON-migrere `SELVSTENDIG_AVSLUTTET`
+### Trinn 6: JSON-migrere `SELVSTENDIG_AVSLUTTET` ✅
 
 `SELVSTENDIG_AVVENTER_BLOKKERENDE_PERIODE` ble tømt med påminnelser i trinn 5, så bare `SELVSTENDIG_AVSLUTTET` trenger migrering.
 
@@ -332,7 +332,7 @@ Vi sender påminnelser til alle perioder som står i en Selvstendig-tilstand, un
 - Spleis sender ikke `vedtaksperiode_endret` for perioder som migreres. Konsumenter som lagrer tilstanden, ser det gamle navnet til perioden bytter tilstand neste gang. `spock` regner både `SELVSTENDIG_AVSLUTTET` og `AVSLUTTET` som sluttilstand.
 - Personer som ikke får meldinger, beholder det gamle navnet i databasen til de blir lest. Vi kjører `migrate_v2` for å få alle over.
 
-### Trinn 7: Fjerne Selvstendig-tilstandene
+### Trinn 7: Fjerne Selvstendig-tilstandene ✅
 
 Før vi fjerner noe, sjekker vi at ingenting bruker de gamle navnene lenger:
 
