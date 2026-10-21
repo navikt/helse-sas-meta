@@ -1,0 +1,887 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forenklet tilstandsmaskin i Spleis</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #f0eee6; overflow: hidden; }
+  .stage { position: fixed; inset: 0; }
+  .stage svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  #bg, #scene, .grain { will-change: transform; }
+  .grain { position: fixed; inset: 0; pointer-events: none; mix-blend-mode: multiply; background-size: 320px 320px; }
+  .controls {
+    position: fixed; right: 20px; bottom: 18px; z-index: 2;
+    display: flex; align-items: center; gap: 14px;
+    padding: 8px 12px; border-radius: 10px;
+    background: rgba(250,246,239,.92); box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 3px 8px rgba(0,0,0,.06);
+    font: 14px "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; color: #1f1e1d;
+  }
+  .controls[hidden] { display: none; }
+  .controls button {
+    min-width: 104px; padding: 6px 12px; border: 0; border-radius: 6px; cursor: pointer;
+    background: #d97757; color: #f8f1e6; font: inherit; font-weight: 600;
+  }
+  .controls button:focus-visible, .controls select:focus-visible, .controls input:focus-visible { outline: 2px solid #1f1e1d; outline-offset: 2px; }
+  .controls label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .controls select { font: inherit; padding: 2px 4px; }
+  .controls .step { color: rgba(31,30,29,.58); min-width: 64px; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <svg id="bg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+  <svg id="scene" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet" role="img"
+       aria-label="Animasjon: tilstandsmaskinen i Spleis går fra 46 til 25 tilstander. Frilans- og arbeidsledig-tilstandene fjernes, og selvstendige perioder flyter gjennom de generiske tilstandene."></svg>
+</div>
+<div class="grain" aria-hidden="true"></div>
+<div class="controls" id="controls" hidden>
+  <button type="button" id="playPause">Pause</button>
+  <label><input type="checkbox" id="autoStop" checked> Stopp mellom trinn</label>
+  <label>Fart
+    <select id="speed">
+      <option value="0.25">0,25×</option>
+      <option value="0.5" selected>0,5×</option>
+      <option value="0.75">0,75×</option>
+      <option value="1">1×</option>
+    </select>
+  </label>
+  <span class="step" id="stepInfo" aria-live="polite"></span>
+</div>
+<script>
+(() => {
+'use strict';
+
+const CONFIG = {
+  seed: 'spleis-2026-10-20',
+  colors: {
+    bg: '#f0eee6',
+    paper: '#faf6ef',
+    ink: '#1f1e1d',
+    inkSoft: 'rgba(31,30,29,.58)',
+    terra: '#d97757',
+    onTerra: '#f8f1e6',
+    sand: '#e3dacc',
+    sage: '#9caf96',
+  },
+  fonts: {
+    serif: '"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif',
+    sans: '"Avenir Next",Avenir,"Segoe UI",system-ui,sans-serif',
+    mono: '"SF Mono",Menlo,Consolas,monospace',
+  },
+  loopMs: 17200,
+  reducedMotionTime: 16000,
+  defaultSpeed: 0.5,
+  mainFps: 24,
+  steppedFps: 12,
+  boilFps: 10,
+  boilVariants: 3,
+  stagger: 70,
+  grainOpacity: 0.07,
+  ease: [0.22, 1, 0.36, 1],
+  easeBack: [0.34, 1.5, 0.64, 1],
+  easeIn: [0.55, 0, 0.75, 0.2],
+  dur: { lay: 900, fly: 800, slide: 1000, draw: 650, hop: 240, hopPause: 30, header: 800, fade: 350, stamp: 600 },
+  motion: { dropY: 38, dropRot: 3.5, breathDeg: 0.35, breathHz: 0.22, bobPx: 1.4 },
+  jitter: { paperEdge: 1.7, ink: 1.2, boil: 0.9, restRotation: 1.6, displacement: 3 },
+  layout: { x0: 96, cardW: 108, cardH: 80, gap: 22, rowA: 250, rowS: 410, rowF: 560, stats: 700, slipW: 320, slipH: 150, slipGap: 36 },
+  phases: { intro: 0, frilans: 3000, merge: 6600, flow: 10200, stats: 13800, outro: 16600 },
+  numbers: { before: 46, after: 25, mainDeleted: 1443, mainAdded: 250, vpBefore: 554, vpAfter: 48, filesDeleted: 21 },
+};
+
+const NS = 'http://www.w3.org/2000/svg';
+const C = CONFIG.colors;
+const L = CONFIG.layout;
+
+/* ---------- små verktøy ---------- */
+
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs || {}) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+const clamp01 = x => (x < 0 ? 0 : x > 1 ? 1 : x);
+const lerp = (a, b, t) => a + (b - a) * t;
+const quant = (t, fps) => Math.floor(t / (1000 / fps)) * (1000 / fps);
+const fmt = n => n.toFixed(1);
+
+function hashStr(s) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+function mulberry32(a) {
+  return () => {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const rngFor = key => mulberry32(hashStr(CONFIG.seed + ':' + key));
+
+function makeNoise(rng, n) {
+  const v = Array.from({ length: n }, () => rng() * 2 - 1);
+  return u => {
+    const x = (((u % 1) + 1) % 1) * n;
+    const i = Math.floor(x), f = x - i, s = f * f * (3 - 2 * f);
+    return v[i % n] + (v[(i + 1) % n] - v[i % n]) * s;
+  };
+}
+
+function bezier(x1, y1, x2, y2) {
+  const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
+  const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+  const sx = t => ((ax * t + bx) * t + cx) * t;
+  const sy = t => ((ay * t + by) * t + cy) * t;
+  const dsx = t => (3 * ax * t + 2 * bx) * t + cx;
+  return x => {
+    if (x <= 0) return 0;
+    if (x >= 1) return 1;
+    let t = x;
+    for (let i = 0; i < 8; i++) {
+      const d = sx(t) - x, dd = dsx(t);
+      if (Math.abs(d) < 1e-5 || Math.abs(dd) < 1e-6) break;
+      t -= d / dd;
+    }
+    return sy(clamp01(t));
+  };
+}
+const ease = bezier(...CONFIG.ease);
+const easeBack = bezier(...CONFIG.easeBack);
+const easeIn = bezier(...CONFIG.easeIn);
+const progress = (t, start, dur) => clamp01((t - start) / dur);
+
+/* ---------- håndlaget geometri ---------- */
+
+function catmull(pts, closed, perSeg) {
+  const n = pts.length, out = [];
+  const get = i => (closed ? pts[(i + n) % n] : pts[Math.max(0, Math.min(n - 1, i))]);
+  const segs = closed ? n : n - 1;
+  for (let i = 0; i < segs; i++) {
+    const p0 = get(i - 1), p1 = get(i), p2 = get(i + 1), p3 = get(i + 2);
+    for (let j = 0; j < perSeg; j++) {
+      const t = j / perSeg, t2 = t * t, t3 = t2 * t;
+      out.push([0, 1].map(k => 0.5 * (2 * p1[k] + (-p0[k] + p2[k]) * t +
+        (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t2 + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t3)));
+    }
+  }
+  if (!closed) out.push(pts[n - 1].slice());
+  return out;
+}
+
+function arcPoints(a, b, lift, n = 26) {
+  const c = [(a[0] + b[0]) / 2, Math.min(a[1], b[1]) - lift * 2];
+  const out = [];
+  for (let i = 0; i <= n; i++) {
+    const t = i / n, u = 1 - t;
+    out.push([u * u * a[0] + 2 * u * t * c[0] + t * t * b[0], u * u * a[1] + 2 * u * t * c[1] + t * t * b[1]]);
+  }
+  return out;
+}
+
+function samplePolyline(pts, p) {
+  if (!pts._len) {
+    pts._len = [0];
+    for (let i = 1; i < pts.length; i++) pts._len.push(pts._len[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+  }
+  const total = pts._len[pts.length - 1], target = clamp01(p) * total;
+  let i = 1;
+  while (i < pts.length - 1 && pts._len[i] < target) i++;
+  const seg = pts._len[i] - pts._len[i - 1] || 1, f = (target - pts._len[i - 1]) / seg;
+  return [lerp(pts[i - 1][0], pts[i][0], f), lerp(pts[i - 1][1], pts[i][1], f)];
+}
+
+const polyD = (pts, close) => 'M' + pts.map(p => fmt(p[0]) + ' ' + fmt(p[1])).join('L') + (close ? 'Z' : '');
+
+function roughRectD(w, h, amp, key, variant) {
+  const base = rngFor(key);
+  const nz = makeNoise(base, 14);
+  const corner = [0, 1, 2, 3].map(() => (base() * 2 - 1) * amp * 1.4);
+  const vz = makeNoise(rngFor(key + '#' + variant), 24);
+  const corners = [[-w / 2, -h / 2], [w / 2, -h / 2], [w / 2, h / 2], [-w / 2, h / 2]];
+  const per = 2 * (w + h), pts = [];
+  let acc = 0;
+  for (let s = 0; s < 4; s++) {
+    const [ax, ay] = corners[s], [bx, by] = corners[(s + 1) % 4];
+    const len = Math.hypot(bx - ax, by - ay), nx = (by - ay) / len, ny = -(bx - ax) / len;
+    const n = Math.max(2, Math.round(len / 10));
+    for (let i = 0; i < n; i++) {
+      const f = i / n, u = (acc + f * len) / per;
+      const off = nz(u) * amp + vz(u) * amp * CONFIG.jitter.boil * 0.6;
+      let x = lerp(ax, bx, f) + nx * off, y = lerp(ay, by, f) + ny * off;
+      if (i === 0) { x += corner[s]; y += corner[(s + 1) % 4]; }
+      pts.push([x, y]);
+    }
+    acc += len;
+  }
+  return polyD(pts, true);
+}
+
+function roughCircleD(r, amp, key, variant) {
+  const nz = makeNoise(rngFor(key), 7);
+  const vz = makeNoise(rngFor(key + '#' + variant), 9);
+  const ctrl = [];
+  for (let i = 0; i < 12; i++) {
+    const a = (i / 12) * Math.PI * 2, u = i / 12;
+    const rr = r + nz(u) * amp + vz(u) * amp * CONFIG.jitter.boil * 0.6;
+    ctrl.push([Math.cos(a) * rr, Math.sin(a) * rr]);
+  }
+  return polyD(catmull(ctrl, true, 4), true);
+}
+
+function inkD(pts, key, variant, offset) {
+  const base = makeNoise(rngFor(key), 10);
+  const vz = makeNoise(rngFor(key + '#' + variant), 16);
+  const amp = CONFIG.jitter.ink, n = pts.length;
+  return polyD(pts.map((p, i) => {
+    const a = pts[Math.max(0, i - 1)], b = pts[Math.min(n - 1, i + 1)];
+    const len = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
+    const nx = -(b[1] - a[1]) / len, ny = (b[0] - a[0]) / len;
+    const u = i / (n - 1), taper = Math.sin(Math.PI * u) * 0.8 + 0.2;
+    const off = (base(u * 0.97) * amp + vz(u * 0.97) * amp * CONFIG.jitter.boil) * taper + offset;
+    return [p[0] + nx * off, p[1] + ny * off];
+  }), false);
+}
+
+/* ---------- boiling: forhåndsgenererte varianter som byttes ---------- */
+
+const boilers = [];
+function boil(node, variants) {
+  boilers.push({ node, variants, offset: boilers.length % CONFIG.boilVariants });
+}
+function applyBoil(index) {
+  for (const b of boilers) b.node.setAttribute('d', b.variants[(index + b.offset) % b.variants.length]);
+}
+const variantsOf = fn => Array.from({ length: CONFIG.boilVariants }, (_, v) => fn(v));
+
+/* ---------- byggeklosser: tekst, papir, blekk, brikker ---------- */
+
+function text(parent, str, x, y, o = {}) {
+  const t = el('text', {
+    x, y,
+    'font-family': o.family || CONFIG.fonts.sans,
+    'font-size': o.size || 15,
+    'font-weight': o.weight || 400,
+    fill: o.fill || C.ink,
+    'text-anchor': o.anchor || 'start',
+    'letter-spacing': o.ls || 0,
+  }, parent);
+  if (o.opacity != null) t.setAttribute('opacity', o.opacity);
+  t.textContent = str;
+  if (o.maxW) fitText(t, o.maxW, o.size || 15);
+  return t;
+}
+function fitText(t, maxW, size) {
+  const w = t.getComputedTextLength();
+  if (w > maxW) t.setAttribute('font-size', (size * maxW / w).toFixed(2));
+}
+
+function makePaper(parent, o) {
+  const g = el('g', { opacity: 0 }, parent);
+  const rng = rngFor(o.key + ':rest');
+  const actor = {
+    g, cx: o.cx, cy: o.cy, w: o.w, h: o.h, cache: '',
+    restRot: (rng() * 2 - 1) * (o.restRot ?? CONFIG.jitter.restRotation),
+    dir: rng() < 0.5 ? -1 : 1,
+    phase: rng() * Math.PI * 2,
+  };
+  if (o.deck) {
+    for (let i = 2; i >= 1; i--) {
+      const back = el('path', { fill: o.deckFill || o.fill, filter: 'url(#paperShadow)', transform: `translate(${i * 5} ${i * 5}) rotate(${i * 1.2})` }, g);
+      boil(back, variantsOf(v => roughRectD(o.w, o.h, CONFIG.jitter.paperEdge, o.key + 'deck' + i, v)));
+    }
+  }
+  const shape = el('path', { fill: o.fill, filter: 'url(#paperShadow)' }, g);
+  boil(shape, variantsOf(v => roughRectD(o.w, o.h, CONFIG.jitter.paperEdge, o.key, v)));
+  actor.content = el('g', {}, g);
+  return actor;
+}
+
+function cardLabel(actor, lines, color) {
+  const [small, ...main] = lines;
+  const maxW = actor.w - 16;
+  const top = small ? 4 : -4;
+  if (small) {
+    text(actor.content, small.toUpperCase(), 0, -actor.h / 2 + 19, { size: 9.5, anchor: 'middle', fill: color, opacity: 0.7, ls: '0.12em', maxW });
+  }
+  main.forEach((line, i) => {
+    text(actor.content, line, 0, top + 5 + (i - (main.length - 1) / 2) * 18, { size: 15, weight: 600, anchor: 'middle', fill: color, maxW });
+  });
+}
+
+function setActor(a, s) {
+  if (!s) s = { dx: 0, dy: 0, rot: a.restRot, scale: 1, op: 0 };
+  const tr = `translate(${fmt(a.cx + s.dx)} ${fmt(a.cy + s.dy)}) rotate(${s.rot.toFixed(2)}) scale(${s.scale.toFixed(3)})`;
+  const op = s.op.toFixed(2);
+  const key = tr + op;
+  if (key === a.cache) return;
+  a.cache = key;
+  a.g.setAttribute('transform', tr);
+  a.g.setAttribute('opacity', op);
+}
+
+function setOpacity(node, op) {
+  const v = clamp01(op).toFixed(2);
+  if (node._op !== v) { node._op = v; node.setAttribute('opacity', v); }
+}
+
+function makeInk(parent, pts, o) {
+  const g = el('g', { opacity: 0 }, parent);
+  const common = { fill: 'none', stroke: o.color || C.ink, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', pathLength: 1, 'stroke-dasharray': '1 1', 'stroke-dashoffset': 1 };
+  const main = el('path', { ...common, 'stroke-width': o.width || 2.4 }, g);
+  const hair = el('path', { ...common, 'stroke-width': (o.width || 2.4) * 0.45, opacity: 0.7 }, g);
+  boil(main, variantsOf(v => inkD(pts, o.key, v, 0)));
+  boil(hair, variantsOf(v => inkD(pts, o.key + 'h', v, 0.9)));
+  let last = -1;
+  return {
+    g, pts,
+    draw(p) {
+      p = Math.round(clamp01(p) * 1000) / 1000;
+      if (p === last) return;
+      last = p;
+      const off = (1 - p).toFixed(3);
+      main.setAttribute('stroke-dashoffset', off);
+      hair.setAttribute('stroke-dashoffset', off);
+      g.setAttribute('opacity', p > 0 ? 1 : 0);
+    },
+  };
+}
+
+function makePaperDot(parent, key, fill, stroke, r = 8.5) {
+  const g = el('g', { opacity: 0 }, parent);
+  const dot = el('path', { fill, filter: 'url(#paperShadow)' }, g);
+  if (stroke) { dot.setAttribute('stroke', stroke); dot.setAttribute('stroke-width', 1.3); }
+  boil(dot, variantsOf(v => roughCircleD(r, 0.9, key, v)));
+  const rng = rngFor(key + ':rest');
+  return { g, cx: 0, cy: 0, cache: '', restRot: 0, phase: rng() * Math.PI * 2 };
+}
+
+function breath(a, ts) {
+  return Math.sin((ts / 1000) * Math.PI * 2 * CONFIG.motion.breathHz + a.phase) * CONFIG.motion.breathDeg;
+}
+
+/* Papir som legges ned på bordet: litt over, litt rotert, overshoot ned på plass. */
+function layIn(a, t, start, ts) {
+  const p = progress(t, start, CONFIG.dur.lay);
+  if (p <= 0) return null;
+  const e = easeBack(p);
+  return {
+    dx: 0,
+    dy: lerp(-CONFIG.motion.dropY, 0, e),
+    rot: lerp(a.restRot + a.dir * CONFIG.motion.dropRot, a.restRot, e) + breath(a, ts),
+    scale: lerp(1.07, 1, Math.min(e, 1)),
+    op: clamp01(p * 3),
+  };
+}
+
+/* ---------- oppsett av lag ---------- */
+
+const svgBg = document.getElementById('bg');
+const svg = document.getElementById('scene');
+const colX = i => L.x0 + i * (L.cardW + L.gap) + L.cardW / 2;
+
+const GENERIC = [
+  ['', 'Start'],
+  ['avventer', 'Infotrygd-', 'historikk'],
+  ['avventer', 'Inntekts-', 'melding'],
+  ['avventer', 'Blokkerende', 'periode'],
+  ['avventer', 'Vilkårs-', 'prøving'],
+  ['avventer', 'Historikk'],
+  ['avventer', 'Simulering'],
+  ['avventer', 'Godkjenning'],
+  ['', 'Til', 'utbetaling'],
+  ['', 'Avsluttet'],
+  ['6 tilstander', 'Revurdering'],
+];
+const DECK_COL = 10;
+const SELVSTENDIG_COLS = [0, 1, 3, 4, 5, 6, 7, 8, 9, 10];
+const FRILANS_COLS = [0, 1, 3];
+const WHEN_COLS = [1, 3, 7, 10];
+const PATH_ARBEIDSTAKER = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+const PATH_SELVSTENDIG = [0, 1, 3, 4, 5, 6, 7, 8, 9];
+
+function buildDefs(target, withDisplacement) {
+  const defs = el('defs', {}, target);
+  const shadow = el('filter', { id: 'paperShadow', x: '-20%', y: '-20%', width: '140%', height: '150%' }, defs);
+  el('feDropShadow', { dx: 0, dy: 1, stdDeviation: 0.6, 'flood-color': '#000', 'flood-opacity': 0.08, result: 's1' }, shadow);
+  el('feDropShadow', { in: 's1', dx: 0, dy: 3, stdDeviation: 3, 'flood-color': '#000', 'flood-opacity': 0.06 }, shadow);
+  if (withDisplacement) {
+    const cut = el('filter', { id: 'cutPaper', x: '-10%', y: '-20%', width: '120%', height: '150%' }, defs);
+    el('feTurbulence', { type: 'fractalNoise', baseFrequency: 0.045, numOctaves: 2, seed: 7, result: 'noise' }, cut);
+    el('feDisplacementMap', { in: 'SourceGraphic', in2: 'noise', scale: CONFIG.jitter.displacement, xChannelSelector: 'R', yChannelSelector: 'G', result: 'cut' }, cut);
+    el('feDropShadow', { in: 'cut', dx: 0, dy: 1, stdDeviation: 0.6, 'flood-color': '#000', 'flood-opacity': 0.08, result: 's1' }, cut);
+    el('feDropShadow', { in: 's1', dx: 0, dy: 3, stdDeviation: 3, 'flood-color': '#000', 'flood-opacity': 0.06 }, cut);
+  }
+}
+
+/* Statisk lag: displacement-filtrene ligger bare her, så de rendres én gang. */
+function buildStaticLayer() {
+  buildDefs(svgBg, true);
+  el('rect', { x: L.x0 - 10, y: 56, width: 360, height: 28, fill: C.sand, filter: 'url(#cutPaper)', transform: 'rotate(-1.2 100 70)' }, svgBg);
+  text(svgBg, 'SPLEIS · FORENKLET TILSTANDSMASKIN', L.x0 + 4, 76, { size: 12.5, weight: 600, ls: '0.16em', fill: C.ink });
+
+  const lx = 1250, ly = 52;
+  el('rect', { x: lx, y: ly, width: 254, height: 104, fill: C.paper, filter: 'url(#cutPaper)', transform: `rotate(1.1 ${lx + 127} ${ly + 52})` }, svgBg);
+  [['arbeidstaker', C.sage, null], ['selvstendig', C.terra, null], ['frilans · arbeidsledig', C.sand, C.ink]].forEach(([label, fill, stroke], i) => {
+    const y = ly + 28 + i * 26;
+    const dot = el('path', { d: roughCircleD(7, 0.8, 'legend' + i, 0), fill, transform: `translate(${lx + 26} ${y - 5})` }, svgBg);
+    if (stroke) { dot.setAttribute('stroke', stroke); dot.setAttribute('stroke-width', 1.2); }
+    text(svgBg, label, lx + 44, y, { size: 14.5, fill: C.ink });
+  });
+}
+
+function buildGrain() {
+  const noise = `<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'>
+    <filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='4' stitchTiles='stitch'/>
+      <feColorMatrix values='0 0 0 0 .12  0 0 0 0 .11  0 0 0 0 .1  1.6 0 0 0 -.45'/></filter>
+    <filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.006 .11' numOctaves='2' seed='9' stitchTiles='stitch'/>
+      <feColorMatrix values='0 0 0 0 .2  0 0 0 0 .17  0 0 0 0 .13  2.4 0 0 0 -1.25'/></filter>
+    <rect width='100%' height='100%' filter='url(#g)'/><rect width='100%' height='100%' filter='url(#f)'/></svg>`;
+  const div = document.querySelector('.grain');
+  div.style.backgroundImage = `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(noise)}")`;
+  div.style.opacity = CONFIG.grainOpacity;
+}
+
+const S = {};
+
+function buildScene() {
+  buildDefs(svg, false);
+  S.root = el('g', {}, svg);
+  const layer = name => (S[name] = el('g', {}, S.root));
+  layer('trails'); layer('layerF'); layer('layerS'); layer('layerA'); layer('overlay'); layer('headerLayer'); layer('statsLayer');
+
+  buildHeader();
+  buildRows();
+  buildFrilansParts();
+  buildFlowParts();
+  buildStats();
+}
+
+function buildHeader() {
+  const P = CONFIG.phases;
+  const items = [
+    [P.intro + 100, 'Før: fire tilstandsmaskiner i én', 'Arbeidstaker, selvstendig, frilans og arbeidsledig hadde hver sine tilstander. 46 i alt.'],
+    [P.frilans, 'Trinn 1: frilans og arbeidsledig', 'Periodene opprettes i felles Start og forkastes der med RV_SØ_39. Seks tilstander forsvinner.'],
+    [P.merge, 'Trinn 2–7: selvstendig blir generisk', 'Forskjellene blir uttømmende when (yrkesaktivitetstype) i tilstandene, ikke egne tilstander.'],
+    [P.flow, 'Etter: én felles flyt', 'Selvstendige perioder går gjennom de samme tilstandene som arbeidstakere, bare uten inntektsmelding.'],
+    [P.stats, 'Mindre kode å holde styr på', 'Sju commits i spleis, 19.–20. oktober 2026.'],
+  ];
+  S.headers = items.map(([start, title, sub], i) => {
+    const g = el('g', { opacity: 0 }, S.headerLayer);
+    text(g, title, 0, 0, { family: CONFIG.fonts.serif, size: 42, fill: C.ink, maxW: 1100 });
+    text(g, sub, 2, 36, { size: 17.5, fill: C.inkSoft, maxW: 1100 });
+    const end = i + 1 < items.length ? items[i + 1][0] : Infinity;
+    return { g, start, end, cache: '' };
+  });
+}
+
+function buildRows() {
+  S.rowA = GENERIC.map((lines, i) => {
+    const a = makePaper(S.layerA, { key: 'A' + i, cx: colX(i), cy: L.rowA + L.cardH / 2, w: L.cardW, h: L.cardH, fill: C.paper, deck: i === DECK_COL, deckFill: '#efe9de' });
+    cardLabel(a, lines, C.ink);
+    a.col = i;
+    a.layStart = CONFIG.phases.intro + 150 + i * CONFIG.stagger;
+    if (SELVSTENDIG_COLS.includes(i)) {
+      a.strip = el('g', { opacity: 0 }, a.g);
+      const stripShape = el('path', { fill: C.terra, transform: `translate(${(L.cardW - 22) / 2} 0)` }, a.strip);
+      boil(stripShape, variantsOf(v => roughRectD(L.cardW - 22, 5, 0.6, 'strip' + i, v)));
+      a.stripPos = `translate(${-L.cardW / 2 + 11} ${L.cardH / 2 - 11})`;
+    }
+    if (WHEN_COLS.includes(i)) a.sticker = buildSticker(a, i);
+    return a;
+  });
+
+  S.rowS = SELVSTENDIG_COLS.map((col, k) => {
+    const a = makePaper(S.layerS, { key: 'S' + col, cx: colX(col), cy: L.rowS + L.cardH / 2, w: L.cardW, h: L.cardH, fill: C.terra, deck: col === DECK_COL, deckFill: '#c96c4e' });
+    cardLabel(a, GENERIC[col], C.onTerra);
+    a.col = col;
+    a.weight = col === DECK_COL ? 6 : 1;
+    a.layStart = CONFIG.phases.intro + 650 + k * CONFIG.stagger;
+    a.slideStart = CONFIG.phases.merge + 1200 + k * 80;
+    a.arrive = a.slideStart + CONFIG.dur.slide * 0.8;
+    a.target = S.rowA[col];
+    a.target.arrive = a.arrive;
+    return a;
+  });
+
+  S.rowF = [];
+  [['arbeidsledig', 8], ['frilans', 0]].forEach(([kind, off], layer) => {
+    FRILANS_COLS.forEach((col, k) => {
+      const a = makePaper(S.layerF, { key: kind + col, cx: colX(col) + off, cy: L.rowF + L.cardH / 2 + off, w: L.cardW, h: L.cardH, fill: layer ? C.sand : '#d9cfbf' });
+      if (layer) cardLabel(a, GENERIC[col], C.ink);
+      a.layStart = CONFIG.phases.intro + 1150 + (layer * 3 + k) * CONFIG.stagger;
+      a.flyStart = CONFIG.phases.frilans + 200 + (layer ? k : 3 + k) * CONFIG.stagger;
+      S.rowF.push(a);
+    });
+  });
+
+  const label = (str, y, start) => {
+    const t = text(S.overlay, str, L.x0 + 2, y, { size: 12, weight: 600, ls: '0.14em', fill: C.inkSoft });
+    t.setAttribute('opacity', 0);
+    return { node: t, start };
+  };
+  S.labelA = label('ARBEIDSTAKER', L.rowA + L.cardH + 30, 600);
+  S.labelA2 = label('ARBEIDSTAKER OG SELVSTENDIG · FELLES TILSTANDER', L.rowA + L.cardH + 30, CONFIG.phases.merge + 2700);
+  S.labelS = label('SELVSTENDIG · 15 EGNE TILSTANDER', L.rowS + L.cardH + 30, 1100);
+  S.labelF = label('FRILANS OG ARBEIDSLEDIG · 6 EGNE TILSTANDER', L.rowF + L.cardH + 38, 1600);
+}
+
+function buildSticker(card, i) {
+  const g = el('g', { opacity: 0 }, card.g);
+  const inner = el('g', {}, g);
+  const shape = el('path', { fill: C.paper, stroke: C.terra, 'stroke-width': 1.4, filter: 'url(#paperShadow)' }, inner);
+  boil(shape, variantsOf(v => roughRectD(48, 20, 0.7, 'sticker' + i, v)));
+  text(inner, 'when', 0, 4.5, { family: CONFIG.fonts.mono, size: 12, weight: 600, anchor: 'middle', fill: C.terra });
+  return { g, pos: `translate(${card.w / 2 - 12} ${-card.h / 2 - 2}) rotate(${i % 2 ? -7 : 6})`, start: 0, cache: '' };
+}
+
+function buildFrilansParts() {
+  const F = CONFIG.phases.frilans;
+  S.tilInfotrygd = makePaper(S.layerF, { key: 'tilInfotrygd', cx: colX(0), cy: L.rowF + L.cardH / 2, w: L.cardW, h: L.cardH, fill: C.paper });
+  cardLabel(S.tilInfotrygd, ['', 'Til', 'Infotrygd'], C.ink);
+  S.tilInfotrygd.layStart = F + 1300;
+
+  const x = L.x0, yA = L.rowA + L.cardH * 0.62, yF = L.rowF + L.cardH * 0.42;
+  const pts = catmull([[x + 2, yA], [x - 30, yA + 34], [x - 46, (yA + yF) / 2], [x - 32, yF - 30], [x - 6, yF]], false, 10);
+  S.frilansArrow = makeInk(S.overlay, pts, { key: 'frilansArrow', width: 2.4 });
+  S.frilansArrow.start = F + 1600;
+  const end = pts[pts.length - 1], prev = pts[pts.length - 4];
+  const ang = Math.atan2(end[1] - prev[1], end[0] - prev[0]);
+  const head = s => [[end[0] - Math.cos(ang + s) * 11, end[1] - Math.sin(ang + s) * 11], end];
+  S.arrowHeads = [0.5, -0.5].map((s, i) => makeInk(S.overlay, catmull(head(s), false, 4), { key: 'head' + i, width: 2.2 }));
+
+  S.frilansToken = makePaperDot(S.overlay, 'frilansToken', C.sand, C.ink, 8);
+  S.frilansToken.start = F + 1450;
+  S.frilansToken.moveStart = F + 1750;
+  S.frilansToken.path = pts;
+
+  S.stamp = el('g', { opacity: 0 }, S.overlay);
+  S.stampPos = `translate(${x + L.cardW + 74} ${L.rowF + 28}) rotate(-5)`;
+  const stampInner = el('g', {}, S.stamp);
+  const stampShape = el('path', { fill: 'none', stroke: C.terra, 'stroke-width': 1.8 }, stampInner);
+  boil(stampShape, variantsOf(v => roughRectD(104, 26, 0.8, 'stamp', v)));
+  text(stampInner, 'RV_SØ_39', 0, 5, { family: CONFIG.fonts.mono, size: 14, weight: 700, anchor: 'middle', fill: C.terra });
+  S.stampNote = text(S.overlay, 'forkastes i Start', x + L.cardW + 22, L.rowF + 66, { size: 13.5, fill: C.inkSoft });
+  S.stampNote.setAttribute('opacity', 0);
+  S.stampStart = F + 2450;
+}
+
+function tokenSeat(col, side) {
+  return [colX(col) + side * 15, L.rowA - 3];
+}
+
+function buildFlowParts() {
+  const FL = CONFIG.phases.flow;
+  const make = (key, path, side, lift, color, start, layStart) => {
+    const hops = [];
+    for (let k = 0; k < path.length - 1; k++) {
+      const a = tokenSeat(path[k], side), b = tokenSeat(path[k + 1], side);
+      const big = path[k + 1] - path[k] > 1;
+      const pts = arcPoints(a, b, big ? lift * 1.5 : lift);
+      hops.push({ pts, ink: makeInk(S.trails, pts, { key: key + 'hop' + k, color, width: 2.2 }), start: start + k * (CONFIG.dur.hop + CONFIG.dur.hopPause) });
+    }
+    const token = makePaperDot(S.overlay, key + 'token', side < 0 ? C.sage : C.terra, null, 9);
+    token.home = tokenSeat(path[0], side);
+    token.layStart = layStart;
+    return { hops, token };
+  };
+  S.flowA = make('arbeidstaker', PATH_ARBEIDSTAKER, -1, 26, C.ink, FL + 500, FL);
+  S.flowS = make('selvstendig', PATH_SELVSTENDIG, 1, 44, C.terra, FL + 700, FL + 120);
+}
+
+function buildStats() {
+  const N = CONFIG.numbers;
+  const w = L.slipW, h = L.slipH, lx = -w / 2 + 22, ty = -h / 2;
+  const slip = (i, key, title) => {
+    const a = makePaper(S.statsLayer, { key, cx: L.x0 + w / 2 + i * (w + L.slipGap), cy: L.stats + h / 2, w, h, fill: C.paper, restRot: 1.2 });
+    text(a.content, title, lx, ty + 30, { size: 11.5, weight: 600, ls: '0.14em', fill: C.inkSoft });
+    return a;
+  };
+  const bar = (parent, key, y, len, fill) => {
+    const g = el('g', {}, parent);
+    const shape = el('path', { fill }, g);
+    boil(shape, variantsOf(v => roughRectD(len, 7, 0.6, key, v)));
+    shape.setAttribute('transform', `translate(${len / 2} 0)`);
+    return { g, base: `translate(${lx} ${y})`, cache: '' };
+  };
+
+  S.counter = slip(0, 'slipCounter', 'TILSTANDTYPE');
+  S.counter.layStart = 1700;
+  S.counterNumber = text(S.counter.content, String(N.before), lx, ty + 96, { family: CONFIG.fonts.serif, size: 58, fill: C.ink });
+  S.counterValue = N.before;
+  text(S.counter.content, 'tilstander i Spleis', lx, ty + 128, { size: 14, fill: C.inkSoft });
+  S.oldCount = el('g', { opacity: 0 }, S.counter.content);
+  text(S.oldCount, String(N.before), lx + 96, ty + 96, { family: CONFIG.fonts.serif, size: 34, fill: C.inkSoft });
+  S.strike = makeInk(S.oldCount, catmull([[lx + 90, ty + 88], [lx + 116, ty + 84], [lx + 142, ty + 79]], false, 6), { key: 'strike', color: C.terra, width: 2.6 });
+
+  const P = CONFIG.phases.stats;
+  S.code = slip(1, 'slipCode', 'SRC/MAIN I SPLEIS');
+  S.code.layStart = P;
+  text(S.code.content, '−' + N.mainDeleted.toLocaleString('nb-NO'), lx, ty + 82, { family: CONFIG.fonts.serif, size: 44, fill: C.terra });
+  text(S.code.content, `linjer slettet · ${N.mainAdded} lagt til`, lx, ty + 106, { size: 14, fill: C.inkSoft, maxW: w - 44 });
+  const full = w - 44;
+  S.codeBars = [
+    bar(S.code.content, 'barDel', ty + 122, full, C.terra),
+    bar(S.code.content, 'barAdd', ty + 136, full * N.mainAdded / N.mainDeleted, C.sage),
+  ];
+
+  S.vp = slip(2, 'slipVp', 'VEDTAKSPERIODE.KT');
+  S.vp.layStart = P + 80;
+  text(S.vp.content, `${N.vpBefore} → ${N.vpAfter}`, lx, ty + 78, { family: CONFIG.fonts.serif, size: 40, fill: C.ink });
+  text(S.vp.content, 'linjer som nevner Selvstendig,', lx, ty + 100, { size: 13.5, fill: C.inkSoft, maxW: full });
+  text(S.vp.content, 'Frilans eller Arbeidsledig', lx, ty + 117, { size: 13.5, fill: C.inkSoft, maxW: full });
+  bar(S.vp.content, 'vpTrack', ty + 134, full, C.sand).g.setAttribute('transform', `translate(${lx} ${ty + 134})`);
+  S.vpBar = bar(S.vp.content, 'vpBar', ty + 134, full, C.terra);
+
+  S.files = slip(3, 'slipFiles', 'TILSTANDSKLASSER');
+  S.files.layStart = P + 160;
+  text(S.files.content, '−' + N.filesDeleted, lx, ty + 82, { family: CONFIG.fonts.serif, size: 44, fill: C.terra });
+  text(S.files.content, 'filer slettet', lx, ty + 106, { size: 14, fill: C.inkSoft });
+  text(S.files.content, '15 selvstendig · 6 frilans/arbeidsledig', lx, ty + 132, { size: 13, fill: C.inkSoft, maxW: full });
+  S.tally = [];
+  for (let i = 0; i < N.filesDeleted; i++) {
+    const group = Math.floor(i / 5), inGroup = i % 5;
+    const gx = lx + 104 + group * 34, top = ty + 50, bottom = ty + 86;
+    const pts = inGroup < 4
+      ? catmull([[gx + inGroup * 6, top], [gx + inGroup * 6 + 0.6, (top + bottom) / 2], [gx + inGroup * 6 - 0.4, bottom]], false, 5)
+      : catmull([[gx - 5, bottom - 4], [gx + 9, (top + bottom) / 2], [gx + 24, top + 4]], false, 5);
+    const ink = makeInk(S.files.content, pts, { key: 'tally' + i, width: 2 });
+    ink.start = P + 700 + i * 45;
+    S.tally.push(ink);
+  }
+}
+
+/* ---------- faser ---------- */
+
+function sceneIntro(t, ts) {
+  const D = CONFIG.dur;
+  for (const h of S.headers) {
+    const pin = progress(t, h.start, D.header), pout = progress(t, h.end - D.fade, D.fade);
+    const e = easeBack(pin);
+    const tr = `translate(${L.x0} ${fmt(130 + lerp(-14, 0, e) + pout * 8)}) rotate(${lerp(-1.4, 0, e).toFixed(2)})`;
+    const op = (clamp01(pin * 2) * (1 - pout)).toFixed(2);
+    if (h.cache !== tr + op) { h.cache = tr + op; h.g.setAttribute('transform', tr); h.g.setAttribute('opacity', op); }
+  }
+  for (const a of S.rowA) a.state = layIn(a, t, a.layStart, ts);
+  S.counter.state = layIn(S.counter, t, S.counter.layStart, ts);
+
+  const fade = (lbl, outStart) => setOpacity(lbl.node, progress(t, lbl.start, 400) * (1 - progress(t, outStart, 400)));
+  fade(S.labelA, CONFIG.phases.merge + 2400);
+  fade(S.labelA2, Infinity);
+  fade(S.labelS, CONFIG.phases.merge + 1200);
+  fade(S.labelF, CONFIG.phases.frilans + 200);
+}
+
+function sceneFrilans(t, ts) {
+  const D = CONFIG.dur;
+  for (const a of S.rowF) {
+    if (t < a.flyStart) { a.state = layIn(a, t, a.layStart, ts); continue; }
+    const p = progress(t, a.flyStart, D.fly), e = easeIn(p);
+    a.state = { dx: -40 * e, dy: 260 * e, rot: a.restRot - a.dir * 16 * e, scale: 1 - 0.05 * e, op: 1 - clamp01((p - 0.35) / 0.65) };
+  }
+  S.tilInfotrygd.state = layIn(S.tilInfotrygd, t, S.tilInfotrygd.layStart, ts);
+
+  S.frilansArrow.draw(ease(progress(t, S.frilansArrow.start, D.draw)));
+  S.arrowHeads.forEach(h => h.draw(ease(progress(t, S.frilansArrow.start + D.draw - 60, 200))));
+
+  const tok = S.frilansToken;
+  const drop = progress(t, tok.start, 500);
+  const move = ease(progress(t, tok.moveStart, 800));
+  const [x, y] = samplePolyline(tok.path, move);
+  const bob = move >= 1 ? Math.sin(ts / 1000 * 4 + tok.phase) * CONFIG.motion.bobPx : 0;
+  setDot(tok, x, y + lerp(-30, 0, easeBack(drop)) + bob, clamp01(drop * 3));
+
+  const ps = progress(t, S.stampStart, D.stamp);
+  const stampTr = `${S.stampPos} scale(${lerp(1.6, 1, easeBack(ps)).toFixed(3)})`;
+  if (S.stamp._tr !== stampTr) { S.stamp._tr = stampTr; S.stamp.setAttribute('transform', stampTr); }
+  setOpacity(S.stamp, ps * 3);
+  setOpacity(S.stampNote, progress(t, S.stampStart + 200, 400));
+}
+
+function sceneMerge(t, ts) {
+  const D = CONFIG.dur;
+  WHEN_COLS.forEach((col, k) => {
+    const st = S.rowA[col].sticker;
+    const p = progress(t, CONFIG.phases.merge + 300 + k * 80, D.stamp);
+    const tr = `${st.pos} scale(${lerp(1.6, 1, easeBack(p)).toFixed(3)})`;
+    if (st.cache !== tr) { st.cache = tr; st.g.setAttribute('transform', tr); }
+    setOpacity(st.g, p * 3);
+  });
+
+  for (const a of S.rowS) {
+    if (t < a.slideStart) { a.state = layIn(a, t, a.layStart, ts); continue; }
+    const p = progress(t, a.slideStart, D.slide), e = ease(p);
+    a.state = {
+      dx: 0,
+      dy: -(L.rowS - L.rowA) * e,
+      rot: a.restRot * (1 - e) + Math.sin(Math.PI * p) * 2.4 * a.dir,
+      scale: 1 - 0.04 * e,
+      op: p < 0.78 ? 1 : 1 - (p - 0.78) / 0.22,
+    };
+  }
+
+  for (const a of S.rowA) {
+    if (!a.strip) continue;
+    const q = progress(t, a.arrive, 260);
+    if (a.state && q > 0 && q < 1) a.state.scale *= 1 + 0.045 * Math.sin(Math.PI * q);
+    const sq = ease(progress(ts, a.arrive, 420));
+    const tr = `${a.stripPos} scale(${sq.toFixed(3)} 1)`;
+    if (a.strip._tr !== tr) { a.strip._tr = tr; a.strip.setAttribute('transform', tr); }
+    setOpacity(a.strip, sq > 0 ? 1 : 0);
+  }
+}
+
+function sceneFlow(t, ts) {
+  for (const flow of [S.flowA, S.flowS]) {
+    const tok = flow.token;
+    const drop = progress(t, tok.layStart, 500);
+    let [x, y] = tok.home;
+    let moving = false;
+    for (const hop of flow.hops) {
+      const p = progress(t, hop.start, CONFIG.dur.hop);
+      hop.ink.draw(ease(p));
+      if (p > 0) {
+        [x, y] = samplePolyline(hop.pts, ease(p));
+        moving = moving || p < 1;
+      }
+    }
+    const bob = moving ? 0 : Math.sin(ts / 1000 * 3.2 + tok.phase) * CONFIG.motion.bobPx;
+    setDot(tok, x, y + lerp(-30, 0, easeBack(drop)) + bob, clamp01(drop * 3));
+  }
+}
+
+function removedStates(t) {
+  let n = 0;
+  for (const a of S.rowF) if (t >= a.flyStart + CONFIG.dur.fly * 0.5) n++;
+  for (const a of S.rowS) if (t >= a.arrive) n += a.weight;
+  return n;
+}
+
+function sceneStats(t, ts) {
+  const N = CONFIG.numbers, P = CONFIG.phases.stats;
+  for (const a of [S.code, S.vp, S.files]) a.state = layIn(a, t, a.layStart, ts);
+
+  const value = N.before - removedStates(t);
+  if (value !== S.counterValue) { S.counterValue = value; S.counterNumber.textContent = String(value); }
+  setOpacity(S.oldCount, progress(t, P + 500, 300));
+  S.strike.draw(ease(progress(ts, P + 750, 400)));
+
+  const grow = ease(progress(ts, P + 700, 900));
+  for (const b of S.codeBars) setBar(b, grow);
+  setBar(S.vpBar, lerp(1, N.vpAfter / N.vpBefore, ease(progress(ts, P + 900, 1100))));
+  for (const mark of S.tally) mark.draw(ease(progress(ts, mark.start, 160)));
+}
+
+function sceneOutro(t) {
+  setOpacity(S.root, 1 - ease(progress(t, CONFIG.phases.outro, 550)));
+}
+
+function setBar(b, sx) {
+  const tr = `${b.base} scale(${sx.toFixed(3)} 1)`;
+  if (b.cache !== tr) { b.cache = tr; b.g.setAttribute('transform', tr); }
+}
+
+function setDot(a, x, y, op) {
+  const tr = `translate(${fmt(x)} ${fmt(y)})`, key = tr + op.toFixed(2);
+  if (a.cache === key) return;
+  a.cache = key;
+  a.g.setAttribute('transform', tr);
+  a.g.setAttribute('opacity', op.toFixed(2));
+}
+
+function render(t) {
+  const tq = quant(t, CONFIG.mainFps), ts = quant(t, CONFIG.steppedFps);
+  sceneIntro(tq, ts);
+  sceneFrilans(tq, ts);
+  sceneMerge(tq, ts);
+  sceneFlow(tq, ts);
+  sceneStats(tq, ts);
+  sceneOutro(tq);
+  for (const a of S.papers) setActor(a, a.state);
+}
+
+/* ---------- oppstart og løkke ---------- */
+
+function start() {
+  buildStaticLayer();
+  buildGrain();
+  buildScene();
+  S.papers = [...S.rowA, ...S.rowS, ...S.rowF, S.tilInfotrygd, S.counter, S.code, S.vp, S.files];
+  applyBoil(0);
+
+  // ?t=<ms> fryser animasjonen på et gitt tidspunkt, nyttig for skjermbilder.
+  const frozen = new URLSearchParams(location.search).get('t');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (frozen !== null || reduced.matches) {
+    render(frozen !== null ? Number(frozen) : CONFIG.reducedMotionTime);
+    reduced.addEventListener('change', () => location.reload(), { once: true });
+    return;
+  }
+
+  let time = 0, last = null, boilClock = 0, boilIndex = 0;
+  let playing = true, speed = CONFIG.defaultSpeed;
+  const P = CONFIG.phases;
+  // Stopp rett før overskriften for neste trinn begynner å tone ut, så forrige trinn står ferdig.
+  const stops = [P.frilans, P.merge, P.flow, P.stats, P.outro].map(p => p - CONFIG.dur.fade - 50);
+
+  const controls = document.getElementById('controls');
+  const playBtn = document.getElementById('playPause');
+  const autoStop = document.getElementById('autoStop');
+  const speedSel = document.getElementById('speed');
+  const stepInfo = document.getElementById('stepInfo');
+  controls.hidden = false;
+  speedSel.value = String(speed);
+
+  const updateUi = () => {
+    const step = stops.filter(s => time > s).length + 1;
+    playBtn.textContent = playing ? 'Pause' : stops.includes(time) ? 'Neste trinn' : 'Spill av';
+    stepInfo.textContent = `Trinn ${Math.min(step, stops.length)} av ${stops.length}`;
+  };
+  const toggle = () => {
+    playing = !playing;
+    last = null;
+    updateUi();
+  };
+  playBtn.addEventListener('click', toggle);
+  speedSel.addEventListener('change', () => { speed = Number(speedSel.value); });
+  document.addEventListener('keydown', e => {
+    if (e.code === 'Space' && !(e.target instanceof HTMLButtonElement || e.target instanceof HTMLSelectElement || e.target instanceof HTMLInputElement)) {
+      e.preventDefault();
+      toggle();
+    }
+  });
+
+  const frame = now => {
+    if (playing) {
+      if (last === null) last = now;
+      const dt = Math.min(100, now - last);
+      last = now;
+      let next = time + dt * speed;
+      const stop = autoStop.checked ? stops.find(s => time < s && s <= next) : undefined;
+      if (stop !== undefined) {
+        next = stop;
+        playing = false;
+      } else if (next >= CONFIG.loopMs) {
+        next -= CONFIG.loopMs;
+      }
+      time = next;
+      boilClock += dt;
+      render(time);
+      const bi = Math.floor(boilClock / (1000 / CONFIG.boilFps)) % CONFIG.boilVariants;
+      if (bi !== boilIndex) { boilIndex = bi; applyBoil(bi); }
+      updateUi();
+    }
+    requestAnimationFrame(frame);
+  };
+  updateUi();
+  requestAnimationFrame(frame);
+  reduced.addEventListener('change', () => location.reload(), { once: true });
+}
+
+start();
+})();
+</script>
+</body>
+</html>
