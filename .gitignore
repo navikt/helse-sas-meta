@@ -67,3 +67,4 @@
 /web
 /arkitektur/**/node_modules/
 /arkitektur/viewer/dist/
+/.pnpm-store
