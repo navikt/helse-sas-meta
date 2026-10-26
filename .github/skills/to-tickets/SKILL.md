@@ -65,7 +65,9 @@ If tickets for the same feature already exist, read them first. Update existing 
 
 Work the **frontier**: any ticket whose blockers are all done. For a purely linear chain that means top to bottom.
 
-Do NOT modify the source spec. Tell the user the paths of the files when you're done.
+Also write `docs/tickets/<feature-slug>/index.md`, so the tickets can be navigated on GitHub Pages. It starts with `# Tickets: <feature>`, links to the spec, and has a table with number, linked title, repo and blockers, followed by a Mermaid `flowchart` of the blocking edges. Use relative links to the `.md` files; GitHub Pages turns them into `.html`. Then add a link to `tickets/<feature-slug>/` in `docs/index.html`, in the same section as the spec. Update both when you add or change tickets.
+
+Do NOT modify the source spec, except for adding a link to the ticket index right below its title. Tell the user the paths of the files when you're done.
 
 <local-ticket-template>
 

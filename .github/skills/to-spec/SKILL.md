@@ -18,7 +18,7 @@ Write the spec in Norwegian bokmål and follow the klarspråk principles (see th
 
 Check with the user that these seams match their expectations.
 
-3. Write the spec using the template below to `docs/specs/<kebab-case-name>.md` in the sas-meta repo. Create `docs/specs/` if it doesn't exist. Start the file with a `# <tittel>` heading. If a spec for the same feature already exists, update it instead of creating a new file. Tell the user the path of the file when you're done.
+3. Write the spec using the template below to `docs/specs/<kebab-case-name>.md` in the sas-meta repo. Create `docs/specs/` if it doesn't exist. Start the file with a `# <tittel>` heading. If a spec for the same feature already exists, update it instead of creating a new file. Add a link to the spec (`specs/<kebab-case-name>.html`) with a one-sentence description in `docs/index.html`, so it can be navigated on GitHub Pages. Tell the user the path of the file when you're done.
 
 <spec-template>
 

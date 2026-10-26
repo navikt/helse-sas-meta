@@ -1,5 +1,7 @@
 # Avklare rettighetskategori i sp-rettighetskategori
 
+[Tickets](../tickets/avklare-rettighetskategori/) · [ADR 0001](../adr/0001-spleis-lagrer-bare-id-for-rettighetskategori.md)
+
 ## Problem
 
 Spleis avgjør i dag ikke rettighetskategorien eksplisitt. Spleis utleder om en periode gjelder arbeidstaker eller selvstendig næringsdrivende fra yrkesaktivitetstypen på søknaden. Kombinasjoner av yrkesaktiviteter fanger Spleis opp i det søknaden kommer inn, og forkaster da perioden med RV_SØ_53. Avgjørelsen er spredt i sjekker ved søknadshåndteringen, er ikke lagret noe sted og kan ikke overstyres av saksbehandler.
@@ -23,8 +25,8 @@ I første versjon gir løsningen samme resultat som i dag. Kombinerte hovedkateg
 7. Som Spleis vil jeg få tilbake bare en ID, slik at sp-rettighetskategori er den eneste eieren av avgjørelsen.
 8. Som Spleis vil jeg lagre ID-en på behandlingen mens perioden venter på vilkårsprøving, slik at den er tilgjengelig når vilkårsgrunnlaget lages.
 9. Som Spleis vil jeg legge ID-en i vilkårsgrunnlaget ved vilkårsprøving, slik at den gjelder hele sykefraværstilfellet.
-10. Som Spleis vil jeg hoppe over `AvventerRettighetskategori` når skjæringstidspunktet allerede har en rettighetskategori, slik at forlengelser ikke spør på nytt.
-11. Som Spleis vil jeg gå gjennom `AvventerRettighetskategori` i revurdering når skjæringstidspunktet mangler rettighetskategori, slik at et flyttet skjæringstidspunkt får sin egen avgjørelse.
+10. Som Spleis vil jeg alltid gå gjennom `AvventerRettighetskategori` på vei til `AvventerVilkårsprøving`, og stole på at sp-rettighetskategori gir samme ID for samme søknadssett, slik at Spleis ikke trenger egen logikk for når den skal spørre.
+11. Som Spleis vil jeg gå gjennom `AvventerRettighetskategori` på vei til `AvventerVilkårsprøvingRevurdering`, slik at et flyttet skjæringstidspunkt får sin egen avgjørelse.
 12. Som Spleis vil jeg slå opp hovedkategorien med ID-en i `AvventerVilkårsprøving`, slik at jeg kan forkaste kombinerte kategorier før vilkårsprøvingen.
 13. Som Spleis vil jeg forkaste hele sykefraværstilfellet med RV_SØ_53 når hovedkategorien er en kombinasjon, slik at saken går til Infotrygd som i dag.
 14. Som Spleis vil jeg slå opp hovedkategorien med ID-en i `AvventerHistorikk`, slik at også forlengelser og revurderinger blir sjekket.
@@ -70,14 +72,17 @@ I første versjon gir løsningen samme resultat som i dag. Kombinerte hovedkateg
 
 ### Endringer i Spleis
 
-- Ny tilstand `AvventerRettighetskategori` mellom `AvventerBlokkerendePeriode` og `AvventerVilkårsprøving`, og tilsvarende før `AvventerVilkårsprøvingRevurdering`. Perioden går bare dit når skjæringstidspunktet ikke har rettighetskategori-ID.
+- Ny tilstand `AvventerRettighetskategori` mellom `AvventerBlokkerendePeriode` og `AvventerVilkårsprøving`, og tilsvarende før `AvventerVilkårsprøvingRevurdering`. Perioden går alltid gjennom tilstanden på vei til vilkårsprøving. Spleis sjekker ikke om skjæringstidspunktet allerede har rettighetskategori-ID, men stoler på at sp-rettighetskategori gir samme ID for samme søknadssett. Forlengelser går ikke til vilkårsprøving og kommer derfor aldri til tilstanden.
 - Tilstanden sender behovet `Rettighetskategori` med referanse-ID-ene til sendte søknader fra perioder som ikke er forkastet, overlapper skjæringstidspunktet og har samme skjæringstidspunkt, på tvers av yrkesaktiviteter.
 - Løsningen er bare en ID. Spleis lagrer ID-en på behandlingen og flytter den inn i vilkårsgrunnlaget ved vilkårsprøving, ved siden av `opptjeningsvurderingId`. Spleis lagrer aldri hovedkategorien (se ADR 0001).
 - `AvventerVilkårsprøving` slår opp hovedkategorien med `RettighetskategoriResultat`. Er hovedkategorien en kombinasjon, forkastes hele sykefraværstilfellet med RV_SØ_53.
 - `AvventerVilkårsprøving` sender rettighetskategori-ID-en med i opptjeningsbehovet.
 - `AvventerHistorikk` slår opp hovedkategorien med `RettighetskategoriResultat` sammen med ytelsene, slik opptjening gjør. Stemmer ikke hovedkategorien med periodens yrkesaktivitetstype, forkastes perioden med RV_SØ_53.
 - Mangler skjæringstidspunktet rettighetskategori-ID, hopper Spleis over oppslaget og konsistenssjekken og bruker yrkesaktivitetstypen som før.
-- En toggle styrer overgangen til `AvventerRettighetskategori`. Når togglen er på, kjører ikke RV_SØ_53 ved søknadshåndtering for perioder som ikke har rettighetskategori. Når skjæringstidspunktet allerede har rettighetskategori, forkaster RV_SØ_53 fortsatt bare den nye perioden, som i dag.
+- En toggle styrer overgangen til `AvventerRettighetskategori`. Togglen styrer også RV_SØ_53 når en søknad kommer inn og en annen yrkesaktivitet har en periode som overlapper eller ligger inntil:
+  - **Før rettighetskategorien er avgjort** for skjæringstidspunktet, kjører ikke RV_SØ_53. Begge periodene kommer da til `AvventerRettighetskategori`, sp-rettighetskategori ser kombinasjonen, og Spleis forkaster hele sykefraværstilfellet i `AvventerVilkårsprøving`. Eksempel: AT 1.–31. januar står i `AvventerBlokkerendePeriode`, og en søknad for SN 1.–31. januar kommer inn.
+  - **Etter at rettighetskategorien er avgjort**, kjører RV_SØ_53 som i dag og forkaster bare den nye perioden. Eksempel: AT 1.–31. januar er utbetalt, og en søknad for SN 1.–31. januar kommer inn.
+  - **Når togglen er av**, kjører RV_SØ_53 som i dag i begge tilfellene.
 - `andreInntektskilder` og RV_SØ_39 i `Start` er uendret.
 - Ubesvarte behov sendes på nytt ved påminnelse.
 
@@ -93,7 +98,8 @@ I første versjon gir løsningen samme resultat som i dag. Kombinerte hovedkateg
   - Arbeidstaker og selvstendig næringsdrivende som overlapper skjæringstidspunktet.
   - Selvstendig forlengelse av et arbeidstakertilfelle.
   - En søknad fra en annen yrkesaktivitet etter at kategorien er avgjort og perioden er utbetalt.
-  - Forlengelse som hopper over `AvventerRettighetskategori`.
+  - Forlengelse som ikke går gjennom `AvventerRettighetskategori`.
+  - Ny vilkårsprøving med samme søknadssett, som gir samme rettighetskategori-ID.
   - Revurdering som flytter skjæringstidspunktet.
   - En periode fra før togglen uten rettighetskategori-ID.
   - Ubesvart behov og påminnelse.
@@ -119,3 +125,4 @@ I første versjon gir løsningen samme resultat som i dag. Kombinerte hovedkateg
 - `docs/forenkle-tilstandsmaskin.md` er oppdatert med ny plassering av `AvventerRettighetskategori`. Tilstanden kommer etter at tilstandsmaskinen er slått sammen.
 - I dag forkaster RV_SØ_53 også perioder som ligger inntil hverandre. Med løsningen fanger konsistenssjekken i `AvventerHistorikk` dem opp. Resultatet blir det samme: perioden fra den andre yrkesaktiviteten forkastes, mens den første behandles videre.
 - Forkastingen av kombinerte tilfeller skjer senere enn i dag. I dag forkaster RV_SØ_53 perioden i det søknaden kommer inn. Andre søknader som forlenger eller overlapper perioden, forkastes deretter når de kommer inn (RV_SØ_31 til RV_SØ_38). Med løsningen forkaster Spleis først i `AvventerVilkårsprøving`. Søknader som kommer inn før det, blir vanlige aktive perioder og fanges ikke av sjekken mot forkastede perioder. Når Spleis forkaster hele sykefraværstilfellet, må den derfor også ta med disse periodene.
+- Åpent spørsmål for overstyringsflyten: Et endret søknadssett gir en ny automatisk avgjørelse. Når saksbehandler kan overstyre, vil en korrigert søknad dermed kunne erstatte en overstyring uten at noen ser det. Vi må avklare hva som skal skje før overstyring tas i bruk.
