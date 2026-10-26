@@ -3,3 +3,10 @@
 ## Logging
 
 Når du skriver, endrer eller gjennomgår kode som bruker `sykepenger-libs/logging`, les og følg [skillen for sykepenger-logging](.github/skills/sykepenger-logging/SKILL.md).
+
+## Skills fra mattpocock/skills
+
+Disse skillene er hentet fra [mattpocock/skills](https://github.com/mattpocock/skills) og er i bruk i sas-meta. De startes eksplisitt av brukeren:
+
+- [grill-with-docs](.github/skills/grill-with-docs/SKILL.md): grundig utspørring av en plan eller et design som samtidig oppdaterer `GLOSSARY.md` og ADR-er. Bruker [grilling](.github/skills/grilling/SKILL.md) og [domain-modeling](.github/skills/domain-modeling/SKILL.md).
+- [to-spec](.github/skills/to-spec/SKILL.md): gjør samtalen om til en spec. Specen skrives som Markdown-fil i [`docs/specs/`](docs/specs/) i sas-meta.
