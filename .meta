@@ -57,7 +57,6 @@
     "spregulering": "git@github.com:navikt/helse-spregulering.git",
     "sprinter": "git@github.com:navikt/helse-sprinter.git",
     "sprute": "git@github.com:navikt/helse-sprute.git",
-    "spurtedu": "git@github.com:navikt/helse-spurtedu.git",
     "spydig": "git@github.com:navikt/helse-spydig.git",
     "tbd-libs": "git@github.com:navikt/tbd-libs.git",
     "vedtaksfeed": "git@github.com:navikt/helse-vedtaksfeed.git",

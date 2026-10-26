@@ -60,11 +60,7 @@
 /spregulering
 /sprinter
 /sprute
-/spurtedu
 /spydig
 /tbd-libs
 /vedtaksfeed
 /web
-/arkitektur/**/node_modules/
-/arkitektur/viewer/dist/
-/.pnpm-store
