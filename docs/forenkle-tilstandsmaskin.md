@@ -2,20 +2,20 @@
 
 Dette dokumentet er planen for å fjerne tilstandene i Spleis som er spesifikke for selvstendig næringsdrivende, frilansere og arbeidsledige. Arbeidstakertilstandene blir de generiske tilstandene for alle.
 
-Når tilstandene er slått sammen, innfører vi en ny tilstand, `AvventerRettighetskategori`, som avklarer rettighetskategorien for sykefraværstilfellet. Den er beskrevet i [avklare-rettighetskategori.md](avklare-rettighetskategori.md).
+Når tilstandene er slått sammen, innfører vi en ny tilstand, `AvventerRettighetskategori`, som avklarer rettighetskategorien for sykefraværstilfellet.
 
 ## Sammendrag
 
 - Vi får én tilstandsmaskin for arbeidstakere og selvstendig næringsdrivende. De 15 Selvstendig-tilstandene forsvinner. Forskjellene uttrykker vi som uttømmende `when (yrkesaktivitetstype)` i de generiske tilstandene, ikke som egne tilstander.
 - Mange Selvstendig-tilstander har lite egen kode, men hendelseshåndteringen i `Vedtaksperiode.kt` skiller mellom tilstandene. Før sammenslåing må vi bevare forskjellene i forkasting, overstyring, korrigerte søknader og andre hendelser.
 - Frilans- og Arbeidsledig-tilstandene fjerner vi helt. Vi oppretter vedtaksperiodene i felles `Start` (`START`) og forkaster dem direkte der med `RV_SØ_39` ut fra yrkesaktivitetstypen. Vi beholder `vedtaksperiode_forkastet`, som brukes til å opprette oppgaver i Gosys.
-- Vi slår sammen tilstandene først. Når det er gjort, innfører vi `AvventerRettighetskategori` i den felles flyten, se [avklare-rettighetskategori.md](avklare-rettighetskategori.md).
+- Vi slår sammen tilstandene først. Når det er gjort, innfører vi `AvventerRettighetskategori` i den felles flyten.
 - Vi flytter periodene ut av Selvstendig-tilstandene uten en JSON-migrering per tilstand. Ingen overganger går lenger til en Selvstendig-tilstand, og påminnelser sender periodene gjennom overgangene på nytt. Bare `SELVSTENDIG_AVSLUTTET` JSON-migreres. Deretter fjerner vi tilstandene.
 ## Beslutninger
 
 | # | Beslutning |
 |---|---|
-| B1 | Vi slår sammen tilstandene først. Avklaringen av rettighetskategori kommer etterpå, i den felles flyten ([avklare-rettighetskategori.md](avklare-rettighetskategori.md)). |
+| B1 | Vi slår sammen tilstandene først. Avklaringen av rettighetskategori kommer etterpå, i den felles flyten. |
 | B2 | Den felles flyten gjelder bare arbeidstaker og selvstendig næringsdrivende. |
 | B3 | Frilans- og Arbeidsledig-tilstandene fjernes helt. Periodene opprettes i felles `Start` og forkastes direkte der med `RV_SØ_39` ut fra yrkesaktivitetstypen, før de går videre i den felles flyten. |
 | B4 | Loggingen «skatt på direkten» i `AvventerGodkjenning` gjelder bare arbeidstakere. Selvstendig næringsdrivende bruker fortsatt inntektene fra søknaden. |
@@ -126,7 +126,7 @@ stateDiagram-v2
     TilUtbetaling --> Avsluttet
 ```
 
-Bare arbeidstaker og selvstendig går videre fra `Start`. Frilans og arbeidsledig forkastes i `Start`. Revurderings- og annulleringstilstandene er generiske på samme måte, men er utelatt fra figuren. Senere kommer `AvventerRettighetskategori` mellom Infotrygd-historikken og inntektsmeldingen eller den blokkerende perioden, se [avklare-rettighetskategori.md](avklare-rettighetskategori.md#målbilde).
+Bare arbeidstaker og selvstendig går videre fra `Start`. Frilans og arbeidsledig forkastes i `Start`. Revurderings- og annulleringstilstandene er generiske på samme måte, men er utelatt fra figuren. Senere kommer `AvventerRettighetskategori` mellom Infotrygd-historikken og inntektsmeldingen eller den blokkerende perioden.
 
 ### Forskjellene blir sjekker, ikke tilstander
 
@@ -346,7 +346,7 @@ Deretter:
 - Vi fjerner `starttilstander` og det som er igjen av valget av starttilstand ut fra yrkesaktivitetstype.
 - Vi fjerner de gamle navnene hos konsumentene: `spesialist`, `spock`, `spetakkel`, `spammer`, `bomlo-cli`, `spaghet` og modellene i `bomlo-dbt`. Historiske data i `spaghet` og BigQuery beholder de gamle navnene, så rapporter som går bakover i tid, må fortsatt kjenne dem.
 
-Etter dette trinnet har Spleis én tilstandsmaskin. Neste steg er [avklaringen av rettighetskategori](avklare-rettighetskategori.md).
+Etter dette trinnet har Spleis én tilstandsmaskin. Neste steg er avklaringen av rettighetskategori.
 
 ## Senere faser
 
