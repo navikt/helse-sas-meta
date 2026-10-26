@@ -6,7 +6,7 @@ Når du skriver, endrer eller gjennomgår kode som bruker `sykepenger-libs/loggi
 
 ## Språk i domenedokumentasjon
 
-Skriv `GLOSSARY.md`, ADR-er i `docs/adr/` og specer i `docs/specs/` på norsk bokmål. Følg klarspråk-prinsippene.
+Skriv `GLOSSARY.md`, ADR-er i `docs/adr/`, specer i `docs/specs/` og tickets i `docs/tickets/` på norsk bokmål. Følg klarspråk-prinsippene.
 
 ## Skills fra mattpocock/skills
 
@@ -14,3 +14,4 @@ Disse skillene er hentet fra [mattpocock/skills](https://github.com/mattpocock/s
 
 - [grill-with-docs](.github/skills/grill-with-docs/SKILL.md): grundig utspørring av en plan eller et design som samtidig oppdaterer `GLOSSARY.md` og ADR-er. Bruker [grilling](.github/skills/grilling/SKILL.md) og [domain-modeling](.github/skills/domain-modeling/SKILL.md).
 - [to-spec](.github/skills/to-spec/SKILL.md): gjør samtalen om til en spec. Specen skrives som Markdown-fil i [`docs/specs/`](docs/specs/) i sas-meta.
+- [to-tickets](.github/skills/to-tickets/SKILL.md): deler en plan, en spec eller samtalen opp i vertikale tickets med avhengigheter. Hver ticket skrives som en egen Markdown-fil i [`docs/tickets/<feature>/`](docs/tickets/) i sas-meta.
