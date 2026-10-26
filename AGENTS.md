@@ -4,6 +4,10 @@
 
 Når du skriver, endrer eller gjennomgår kode som bruker `sykepenger-libs/logging`, les og følg [skillen for sykepenger-logging](.github/skills/sykepenger-logging/SKILL.md).
 
+## Språk i domenedokumentasjon
+
+Skriv `GLOSSARY.md`, ADR-er i `docs/adr/` og specer i `docs/specs/` på norsk bokmål. Følg klarspråk-prinsippene.
+
 ## Skills fra mattpocock/skills
 
 Disse skillene er hentet fra [mattpocock/skills](https://github.com/mattpocock/skills) og er i bruk i sas-meta. De startes eksplisitt av brukeren:

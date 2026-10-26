@@ -8,6 +8,8 @@ This skill takes the current conversation context and codebase understanding and
 
 Specs are written as Markdown files in `docs/specs/` at the root of the sas-meta repo (helse-sas-meta), even when the work concerns one of the app repos checked out underneath it. Do not publish the spec to an issue tracker.
 
+Write the spec in Norwegian bokmål and follow the klarspråk principles (see the `klarsprak` skill). Use the Norwegian headings from the template below. Keep code identifiers, state names and API fields unchanged.
+
 ## Process
 
 1. Explore the repo to understand the current state of the codebase, if you haven't already. Use the project's domain glossary vocabulary throughout the spec, and respect any ADRs in the area you're touching.
@@ -16,31 +18,31 @@ Specs are written as Markdown files in `docs/specs/` at the root of the sas-meta
 
 Check with the user that these seams match their expectations.
 
-3. Write the spec using the template below to `docs/specs/<kebab-case-name>.md` in the sas-meta repo. Create `docs/specs/` if it doesn't exist. Start the file with a `# <title>` heading. If a spec for the same feature already exists, update it instead of creating a new file. Tell the user the path of the file when you're done.
+3. Write the spec using the template below to `docs/specs/<kebab-case-name>.md` in the sas-meta repo. Create `docs/specs/` if it doesn't exist. Start the file with a `# <tittel>` heading. If a spec for the same feature already exists, update it instead of creating a new file. Tell the user the path of the file when you're done.
 
 <spec-template>
 
-## Problem Statement
+## Problem
 
 The problem that the user is facing, from the user's perspective.
 
-## Solution
+## Løsning
 
 The solution to the problem, from the user's perspective.
 
-## User Stories
+## Brukerhistorier
 
 A LONG, numbered list of user stories. Each user story should be in the format of:
 
-1. As an <actor>, I want a <feature>, so that <benefit>
+1. Som <aktør> vil jeg <funksjon>, slik at <nytte>
 
 <user-story-example>
-1. As a mobile bank customer, I want to see balance on my accounts, so that I can make better informed decisions about my spending
+1. Som saksbehandler vil jeg se skjæringstidspunktet for perioden, slik at jeg vet hvilket sykefraværstilfelle den hører til
 </user-story-example>
 
 This list of user stories should be extremely extensive and cover all aspects of the feature.
 
-## Implementation Decisions
+## Beslutninger om implementasjon
 
 A list of implementation decisions that were made. This can include:
 
@@ -56,7 +58,7 @@ Do NOT include specific file paths or code snippets. They may end up being outda
 
 Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it within the relevant decision and note briefly that it came from a prototype. Trim to the decision-rich parts, not a working demo, just the important bits.
 
-## Testing Decisions
+## Beslutninger om testing
 
 A list of testing decisions that were made. Include:
 
@@ -64,11 +66,11 @@ A list of testing decisions that were made. Include:
 - Which modules will be tested
 - Prior art for the tests (i.e. similar types of tests in the codebase)
 
-## Out of Scope
+## Utenfor omfang
 
 A description of the things that are out of scope for this spec.
 
-## Further Notes
+## Andre merknader
 
 Any further notes about the feature.
 

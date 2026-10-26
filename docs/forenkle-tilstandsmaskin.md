@@ -126,7 +126,7 @@ stateDiagram-v2
     TilUtbetaling --> Avsluttet
 ```
 
-Bare arbeidstaker og selvstendig går videre fra `Start`. Frilans og arbeidsledig forkastes i `Start`. Revurderings- og annulleringstilstandene er generiske på samme måte, men er utelatt fra figuren. Senere kommer `AvventerRettighetskategori` mellom Infotrygd-historikken og inntektsmeldingen eller den blokkerende perioden.
+Bare arbeidstaker og selvstendig går videre fra `Start`. Frilans og arbeidsledig forkastes i `Start`. Revurderings- og annulleringstilstandene er generiske på samme måte, men er utelatt fra figuren. Senere kommer `AvventerRettighetskategori` mellom `AvventerBlokkerendePeriode` og `AvventerVilkårsprøving`. Da har alle nye søknader i sykefraværstilfellet blitt sendte søknader.
 
 ### Forskjellene blir sjekker, ikke tilstander
 
