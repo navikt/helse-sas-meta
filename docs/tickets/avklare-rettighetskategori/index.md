@@ -1,24 +1,47 @@
 # Tickets: avklare rettighetskategori
 
-Tickets for [Avklare rettighetskategori i sp-rettighetskategori](../../specs/avklare-rettighetskategori.md). Status står i hver ticket.
+Tickets for [Avklare rettighetskategori i sp-rettighetskategori](../../specs/avklare-rettighetskategori.md). Status står i hver ticket. Fasene står i specen. Hver fase rulles ut i dev før prod, og bare én toggle er i bruk om gangen.
 
-| # | Ticket | Repo | Blokkeres av |
-|---|---|---|---|
-| 01 | [Skjelett for sp-rettighetskategori som svarer på behov](01-skjelett-sp-rettighetskategori.md) | sp-rettighetskategori | Ingen |
-| 02 | [Alle søknadstyper, kombinasjoner og idempotens i sp-rettighetskategori](02-alle-soknadstyper-kombinasjoner-og-idempotens.md) | sp-rettighetskategori | 01 |
-| 03 | [`AvventerRettighetskategori` i Spleis bak toggle](03-spleis-avventer-rettighetskategori.md) | spleis | Ingen |
-| 04 | [Forkaste kombinerte rettighetskategorier i Spleis](04-forkaste-kombinerte-kategorier.md) | spleis | 03 |
-| 05 | [Konsistenssjekk av rettighetskategori i `AvventerHistorikk`](05-konsistenssjekk-i-avventer-historikk.md) | spleis | 03 |
-| 06 | [Rettighetskategori-ID i opptjeningsbehovet](06-rettighetskategori-id-til-opptjening.md) | spleis, sp-vilkarsproving | 03 |
-| 07 | [Skru på togglen for rettighetskategori](07-skru-pa-togglen.md) | spleis, sp-rettighetskategori | 02, 04, 05 |
+| # | Ticket | Fase | Repo | Blokkeres av |
+|---|---|---|---|---|
+| 01 | [Skjelett for sp-rettighetskategori som svarer på behov](01-skjelett-sp-rettighetskategori.md) | 1 | sp-rettighetskategori | Ingen |
+| 02 | [Alle søknadstyper, kombinasjoner og idempotens i sp-rettighetskategori](02-alle-soknadstyper-kombinasjoner-og-idempotens.md) | 1 | sp-rettighetskategori | 01 |
+| 03 | [Rettighetskategori-ID på alle vilkårsgrunnlag i Spleis](03-rettighetskategori-id-pa-alle-vilkarsgrunnlag.md) | 1 | spleis | Ingen |
+| 04 | [`AvventerRettighetskategori` i Spleis bak toggle](04-spleis-avventer-rettighetskategori.md) | 1 | spleis | 03 |
+| 05 | [Rettighetskategori-ID i opptjeningsbehovet](05-rettighetskategori-id-til-opptjening.md) | 1 | spleis, sp-vilkarsproving | 04 |
+| 06 | [Rulle ut fase 1](06-rulle-ut-fase-1.md) | 1 | spleis, sp-rettighetskategori | 02, 04, 05 |
+| 07 | [Endepunkt for rettighetskategorier i spleis-api](07-spleis-api-rettighetskategorier.md) | 2 | spleis | 03 |
+| 08 | [Innfylling av historikken i sp-rettighetskategori](08-innfylling-i-sp-rettighetskategori.md) | 2 | sp-rettighetskategori | 01, 07 |
+| 09 | [Forkaste kombinerte rettighetskategorier i Spleis](09-forkaste-kombinerte-kategorier.md) | 3 | spleis | 06, 08 |
+| 10 | [Konsistenssjekk av rettighetskategori i `AvventerHistorikk`](10-konsistenssjekk-i-avventer-historikk.md) | 3 | spleis | 06, 08 |
+| 11 | [Skru på togglen for fase 3](11-skru-pa-togglen-for-fase-3.md) | 3 | spleis, sp-rettighetskategori | 09, 10 |
+| 12 | [Fjerne innfyllingen](12-fjerne-innfyllingen.md) | 4 | sp-rettighetskategori, spleis | 11 |
 
 ```mermaid
 flowchart LR
-    T01[01 Skjelett] --> T02[02 Søknadstyper og idempotens]
-    T03[03 AvventerRettighetskategori] --> T04[04 Forkaste kombinerte]
-    T03 --> T05[05 Konsistenssjekk]
-    T03 --> T06[06 ID til opptjening]
-    T02 --> T07[07 Skru på togglen]
-    T04 --> T07
-    T05 --> T07
+    subgraph F1[Fase 1]
+        T01[01 Skjelett] --> T02[02 Søknadstyper og idempotens]
+        T03[03 ID på alle vilkårsgrunnlag] --> T04[04 AvventerRettighetskategori]
+        T04 --> T05[05 ID til opptjening]
+        T02 --> T06[06 Rulle ut fase 1]
+        T04 --> T06
+        T05 --> T06
+    end
+    subgraph F2[Fase 2]
+        T07[07 Endepunkt i spleis-api] --> T08[08 Innfylling]
+    end
+    subgraph F3[Fase 3]
+        T09[09 Forkaste kombinerte] --> T11[11 Skru på togglen for fase 3]
+        T10[10 Konsistenssjekk] --> T11
+    end
+    subgraph F4[Fase 4]
+        T12[12 Fjerne innfyllingen]
+    end
+    T03 --> T07
+    T01 --> T08
+    T06 --> T09
+    T06 --> T10
+    T08 --> T09
+    T08 --> T10
+    T11 --> T12
 ```

@@ -2,6 +2,8 @@
 
 **Spec:** [Avklare rettighetskategori i sp-rettighetskategori](../../specs/avklare-rettighetskategori.md)
 
+**Fase:** 1
+
 **Repo:** `sp-rettighetskategori`
 
 **Hva skal lages:** sp-rettighetskategori avgjør riktig hovedkategori for alle søknadstyper og alle kombinasjoner av yrkesaktiviteter i sykefraværstilfellet. Samme søknadssett gir samme ID, slik at Spleis kan spørre så ofte den vil. Midlertidige feil hos Spedisjon gir ubesvart behov, slik at Spleis prøver igjen ved påminnelse.

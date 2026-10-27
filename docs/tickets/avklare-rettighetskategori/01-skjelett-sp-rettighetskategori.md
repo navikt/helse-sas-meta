@@ -2,6 +2,8 @@
 
 **Spec:** [Avklare rettighetskategori i sp-rettighetskategori](../../specs/avklare-rettighetskategori.md)
 
+**Fase:** 1
+
 **Repo:** `sp-rettighetskategori` (nytt), `spedisjon` (bare tilgang)
 
 **Hva skal lages:** En ny app, sp-rettighetskategori, svarer på behovet `Rettighetskategori` for et sykefraværstilfelle med én sendt søknad fra arbeidstaker eller selvstendig næringsdrivende. Appen henter søknaden fra Spedisjon med referanse-ID-en (`@id`), avgjør hovedkategorien, lagrer avgjørelsen og svarer med en rettighetskategori-ID. Appen svarer også på `RettighetskategoriResultat`, som slår opp hovedkategorien for en ID.

@@ -11,4 +11,4 @@ Grunnen er at saksbehandler senere skal kunne overstyre rettighetskategorien. Da
 ## Konsekvenser
 
 - Spleis kan ikke bruke rettighetskategorien uten å spørre sp-rettighetskategori. Hvis tjenesten ikke svarer, blir behovet liggende, og en påminnelse sender det på nytt.
-- Perioder som gikk gjennom vilkårsprøving før vi skrudde på `AvventerRettighetskategori`, har ingen ID. Spleis behandler dem ut fra yrkesaktivitetstypen, som før. Vi fyller ikke inn ID-er i ettertid.
+- Perioder som gikk gjennom vilkårsprøving før vi skrudde på `AvventerRettighetskategori`, får en deterministisk ID fra en JSON-migrering i Spleis. sp-rettighetskategori fyller inn avgjørelsene bak dem i ettertid. Se ADR 0002.
