@@ -14,12 +14,12 @@
 
 ## Akseptansekriterier
 
-- [ ] `AvventerVilkårsprøving` slår opp hovedkategorien med behovet `RettighetskategoriResultat`.
+- [ ] `AvventerVilkårsprøving` slår opp hovedkategorien med behovet `RettighetskategoriResultat`, med ID-en fra det minimale vilkårsgrunnlaget.
 - [ ] Er hovedkategorien en kombinasjon, forkaster Spleis hele sykefraværstilfellet med RV_SØ_53, på tvers av yrkesaktiviteter.
 - [ ] Forkastingen tar også med perioder som kom inn etter søknaden, men før `AvventerVilkårsprøving`. Sjekken mot forkastede perioder fanger dem ikke.
-- [ ] Med togglen på kjører ikke RV_SØ_53 når søknaden kommer inn, så lenge skjæringstidspunktet ikke har et vilkårsgrunnlag.
-- [ ] Når skjæringstidspunktet har et vilkårsgrunnlag, kjører RV_SØ_53 som i dag og forkaster bare den nye perioden.
+- [ ] Med togglen på kjører ikke RV_SØ_53 når søknaden kommer inn, så lenge skjæringstidspunktet ikke har et fullt vilkårsgrunnlag. Et minimalt vilkårsgrunnlag teller ikke.
+- [ ] Når skjæringstidspunktet har et fullt vilkårsgrunnlag, kjører RV_SØ_53 som i dag og forkaster bare den nye perioden.
 - [ ] Med togglen av kjører RV_SØ_53 som i dag, og Spleis slår ikke opp hovedkategorien.
 - [ ] Sjekken av `andreInntektskilder` og RV_SØ_39 i `Start` er uendret.
 - [ ] `RettighetskategoriResultat` er lagt inn i `BehovkontraktTest`.
-- [ ] E2e-tester dekker: AT og SN som overlapper skjæringstidspunktet, en søknad som kommer inn mens perioden står i `AvventerRettighetskategori`, en ny yrkesaktivitet etter utbetaling, og togglen av. Tester å bygge videre på: `KombinertTest`.
+- [ ] E2e-tester dekker: AT og SN som overlapper skjæringstidspunktet, en søknad som kommer inn mens perioden står i `AvventerRettighetskategori`, en søknad som kommer inn mens perioden står i `AvventerVilkårsprøving` med et minimalt vilkårsgrunnlag, en ny yrkesaktivitet etter utbetaling, og togglen av. Tester å bygge videre på: `KombinertTest`.

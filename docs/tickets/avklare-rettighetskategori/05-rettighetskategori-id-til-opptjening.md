@@ -15,6 +15,6 @@
 ## Akseptansekriterier
 
 - [ ] sp-vilkarsproving tar imot et valgfritt felt med rettighetskategori-ID i opptjeningsbehovet og virker som før med og uten feltet.
-- [ ] Spleis sender ID-en i opptjeningsbehovet fra `AvventerVilkårsprøving` når perioden har fått rettighetskategori-ID i `AvventerRettighetskategori`.
+- [ ] Spleis sender ID-en fra det minimale vilkårsgrunnlaget i opptjeningsbehovet fra `AvventerVilkårsprøving`. Finnes det ikke noe minimalt vilkårsgrunnlag, sendes ikke feltet.
 - [ ] sp-vilkarsproving er deployet før Spleis begynner å sende feltet.
 - [ ] Feltet er lagt inn i `BehovkontraktTest` i Spleis og i river-testene i sp-vilkarsproving.

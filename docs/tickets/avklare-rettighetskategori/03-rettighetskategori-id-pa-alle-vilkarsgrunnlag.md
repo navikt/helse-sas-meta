@@ -17,6 +17,7 @@
 - [ ] En JSON-migrering setter `rettighetskategoriId` til `UUID.nameUUIDFromBytes("$vilkårsgrunnlagId:Rettighetskategori")` på alle vilkårsgrunnlag i historikken, både fra Spleis og fra Infotrygd. Den følger V345 og V346 for `opptjeningsvurderingId`.
 - [ ] Nye vilkårsgrunnlag, også fra Infotrygd, får samme deterministiske ID når Spleis ikke har en ID fra sp-rettighetskategori.
 - [ ] Et kopiert vilkårsgrunnlag beholder ID-en.
+- [ ] Feltet ligger i `VilkårsgrunnlagElement` og ikke i undertypene, slik at også det minimale vilkårsgrunnlaget i [04](04-spleis-avventer-rettighetskategori.md) får det.
 - [ ] Feltet er med i DTO-ene og i serialiseringen av personen, og det er ikke nullbart.
 - [ ] En migreringstest sjekker at ID-en fra migreringen er den samme som Spleis lager for et nytt vilkårsgrunnlag med samme `vilkårsgrunnlagId`.
 - [ ] Migreringen har kjørt for alle personer i dev og prod.
