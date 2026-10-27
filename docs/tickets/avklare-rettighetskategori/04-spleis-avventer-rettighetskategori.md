@@ -29,6 +29,9 @@
 - [ ] Et ubesvart behov sendes på nytt ved påminnelse.
 - [ ] Med togglen av går perioden rett til `AvventerVilkårsprøving`, som i dag. Spleis lager ikke minimalt vilkårsgrunnlag, og det fulle vilkårsgrunnlaget får deterministisk ID.
 - [ ] RV_SØ_53 ved søknadshåndtering er uendret uansett toggle.
-- [ ] Tilstanden er med i `vedtaksperiode_endret`, og konsumentene som filtrerer på tilstandsnavn, tåler det nye navnet.
+- [ ] Tilstanden heter `AVVENTER_RETTIGHETSKATEGORI` i `TilstandType`, `TilstandTypeData`, `VedtaksperiodetilstandDto` og `SpannerPersonDto`, og den er med i `vedtaksperiode_endret`. Det er én tilstand for både førstegangsbehandling og revurdering.
+- [ ] Tilstanden er med i serde i samme deploy som støtten for det minimale vilkårsgrunnlaget, før togglen skrus på. Eldre versjoner av Spleis kan ikke lese person-JSON med tilstanden.
+- [ ] spleis-api mapper tilstanden til `Periodetilstand.ForberederGodkjenning` for Speil, som `AVVENTER_VILKÅRSPRØVING`.
+- [ ] Spock og spammer håndterer tilstandsnavnet, se [13: `AVVENTER_RETTIGHETSKATEGORI` i Spock og spammer](13-tilstanden-i-spock-og-spammer.md). De andre konsumentene av tilstandsnavnene trenger ingen endringer, se «Andre merknader» i specen.
 - [ ] Behovet er lagt inn i `BehovkontraktTest`.
 - [ ] E2e-tester i sykepenger-model dekker: bare arbeidstaker, bare selvstendig næringsdrivende, forlengelse som ikke går gjennom tilstanden, revurdering som flytter skjæringstidspunktet, at det fulle vilkårsgrunnlaget erstatter det minimale med samme ID, et sykefraværstilfelle som forkastes før vilkårsprøving der det minimale vilkårsgrunnlaget forsvinner, ubesvart behov med påminnelse og togglen av.

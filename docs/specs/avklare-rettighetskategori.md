@@ -72,6 +72,9 @@ Vi ruller ut i fire faser. Hver fase rulles ut i dev før prod, med én toggle i
 43. Som utvikler vil jeg fjerne innfyllingen når alle personer er fylt inn, slik at sp-rettighetskategori ikke lenger er avhengig av spleis-api.
 44. Som Spleis vil jeg skille det minimale vilkårsgrunnlaget fra de fulle med det eksisterende feltet `type` i JSON-en, slik at eksisterende vilkårsgrunnlag kan leses uten migrering.
 45. Som Spleis vil jeg at bare `AvventerVilkårsprøving` og `AvventerVilkårsprøvingRevurdering` ser det minimale vilkårsgrunnlaget, slik at all annen kode som spør etter vilkårsgrunnlaget, virker som i dag.
+46. Som Spock vil jeg påminne perioder i `AVVENTER_RETTIGHETSKATEGORI` etter én time, som i `AVVENTER_VILKÅRSPRØVING`, slik at Spleis sender ubesvarte behov på nytt like raskt som andre behov.
+47. Som utvikler vil jeg få melding i Slack fra spammer når en periode er påminnet mange ganger i `AVVENTER_RETTIGHETSKATEGORI`, slik at vi oppdager perioder som står fast fordi sp-rettighetskategori ikke svarer.
+48. Som saksbehandler vil jeg se perioder i `AvventerRettighetskategori` som «Forbereder godkjenning» i Speil, som perioder i `AvventerVilkårsprøving`.
 
 ## Beslutninger om implementasjon
 
@@ -122,7 +125,18 @@ Vi ruller ut i fire faser. Hver fase rulles ut i dev før prod, med én toggle i
   - **Når skjæringstidspunktet har et fullt vilkårsgrunnlag**, kjører RV_SØ_53 som i dag og forkaster bare den nye perioden. Eksempel: AT 1.–31. januar er utbetalt, og en søknad for SN 1.–31. januar kommer inn.
   - **Når togglen for fase 3 er av**, kjører RV_SØ_53 som i dag i begge tilfellene, og Spleis slår ikke opp hovedkategorien.
 - `andreInntektskilder` og RV_SØ_39 i `Start` er uendret.
-- Ubesvarte behov sendes på nytt ved påminnelse.
+- Ubesvarte behov sendes på nytt ved påminnelse. Spock bestemmer når påminnelsen kommer, se under.
+- Tilstanden heter `AVVENTER_RETTIGHETSKATEGORI` i `TilstandType`, i `TilstandTypeData` i person-JSON, i `VedtaksperiodetilstandDto` og i `SpannerPersonDto`. Det er én tilstand for både førstegangsbehandling og revurdering.
+- Eldre versjoner av Spleis kan ikke lese person-JSON med den nye tilstanden, på samme måte som med `type: Rettighetskategori`. Tilstanden må derfor være med i serde i samme deploy som støtten for det minimale vilkårsgrunnlaget, før togglen for fase 1 skrus på.
+- spleis-api mapper tilstanden til `Periodetilstand.ForberederGodkjenning` for Speil, som `AVVENTER_VILKÅRSPRØVING`. I mappingen av utbetalingstatus havner den i grenen som kaster feil, sammen med `AVVENTER_VILKÅRSPRØVING`. Kompilatoren krever begge, fordi `when` er uttømmende.
+
+### Endringer i Spock og spammer
+
+Spock og spammer lister tilstandsnavnene fra `vedtaksperiode_endret` og `påminnelse` eksplisitt. Kompilatoren i Spleis fanger ikke disse listene, så de må endres for hånd.
+
+- **Spock.** `nestePåminnelsetidspunkt` i `Tilstandsendringer.kt` velger påminnelsesintervall ut fra tilstandsnavnet. En ukjent tilstand havner i `else`: Spock logger en advarsel for hver tilstandsendring og påminner først etter 12 til 30 timer. Det betyr at et ubesvart behov `Rettighetskategori` blir liggende i opptil et døgn før Spleis sender det på nytt. `AVVENTER_RETTIGHETSKATEGORI` legges i gruppen med én time, sammen med `AVVENTER_VILKÅRSPRØVING`.
+- **spammer.** `PåminnelseMonitor` sender melding til Slack for hver 20. påminnelse, men bare for tilstandene i `interessanteTilstander`. `AVVENTER_RETTIGHETSKATEGORI` legges til, slik at perioder som står fast fordi sp-rettighetskategori ikke svarer, gir alarm. Det skjer for eksempel når Spedisjon feiler eller mangler en søknad.
+- Begge må være deployet før togglen for fase 1 skrus på i dev.
 
 ### Minimalt vilkårsgrunnlag i Spleis
 
@@ -171,6 +185,7 @@ Vi ruller ut i fire faser. Hver fase rulles ut i dev før prod, med én toggle i
 
   Tester å bygge videre på: `OpptjeningsvurderingRiverTest`, `OpptjeningsvurderingResultatRiverCallthroughTest` og `PersonAvstemmingRiverTest` i sp-vilkarsproving.
 - **Behovkontrakt i Spleis.** De nye behovene og det nye feltet i opptjeningsbehovet legges inn i `BehovkontraktTest` i sykepenger-mediators.
+- **Spock.** En test i `PåminnelseplanleggerTest` sjekker at `AVVENTER_RETTIGHETSKATEGORI` gir påminnelse etter én time.
 
 ## Utenfor omfang
 
@@ -187,6 +202,10 @@ Vi ruller ut i fire faser. Hver fase rulles ut i dev før prod, med én toggle i
 - Begrepene følger `GLOSSARY.md`, og hovedkategoriene følger `docs/abstraksjoner-kap8.md`.
 - ADR 0001 forklarer hvorfor Spleis bare lagrer ID-en. ADR 0002 forklarer hvorfor alle vilkårsgrunnlag får ID, og hvorfor sp-rettighetskategori fyller inn historikken. ADR 0003 forklarer hvorfor ID-en lagres i et minimalt vilkårsgrunnlag og ikke på behandlingen.
 - `docs/forenkle-tilstandsmaskin.md` er oppdatert med ny plassering av `AvventerRettighetskategori`. Tilstanden kommer etter at tilstandsmaskinen er slått sammen.
+- Vi har gått gjennom de andre konsumentene av tilstandsnavnene. De trenger ikke endringer:
+  - spetakkel, spaghet, `spre/oppgaver`, `VedtaksperiodeReberegnetRiver` i Spesialist og modellene i bomlo-dbt filtrerer på enkelttilstander som ikke berøres.
+  - `OverlappendeInfotrygdperioderRiver` i spoiler regner revurderingstilstandene som «tidligere avsluttet». En revurdering som står i `AVVENTER_RETTIGHETSKATEGORI` når Infotrygd-perioden kommer, blir derfor ikke regnet som tidligere avsluttet i Slack-meldingen. Perioden står der i kort tid, så vi godtar det.
+  - `GraphvizFormatter` i sporing farger tilstander i grafen. Listene er utdaterte allerede, og en ukjent tilstand tegnes utenfor fargegruppene.
 - I dag forkaster RV_SØ_53 også perioder som ligger inntil hverandre. Med løsningen fanger konsistenssjekken i `AvventerHistorikk` dem opp. Resultatet blir det samme: perioden fra den andre yrkesaktiviteten forkastes, mens den første behandles videre.
 - Forkastingen av kombinerte tilfeller skjer senere enn i dag. I dag forkaster RV_SØ_53 perioden i det søknaden kommer inn. Andre søknader som forlenger eller overlapper perioden, forkastes deretter når de kommer inn (RV_SØ_31 til RV_SØ_38). Med løsningen forkaster Spleis først i `AvventerVilkårsprøving`. Søknader som kommer inn før det, blir vanlige aktive perioder og fanges ikke av sjekken mot forkastede perioder. Når Spleis forkaster hele sykefraværstilfellet, må den derfor også ta med disse periodene.
 - Åpent spørsmål for overstyringsflyten: Et endret søknadssett gir en ny automatisk avgjørelse. Når saksbehandler kan overstyre, vil en korrigert søknad dermed kunne erstatte en overstyring uten at noen ser det. Vi må avklare hva som skal skje før overstyring tas i bruk.

@@ -9,13 +9,14 @@ Tickets for [Avklare rettighetskategori i sp-rettighetskategori](../../specs/avk
 | 03 | [Rettighetskategori-ID på alle vilkårsgrunnlag i Spleis](03-rettighetskategori-id-pa-alle-vilkarsgrunnlag.md) | 1 | spleis | Ingen |
 | 04 | [`AvventerRettighetskategori` i Spleis bak toggle](04-spleis-avventer-rettighetskategori.md) | 1 | spleis | 03 |
 | 05 | [Rettighetskategori-ID i opptjeningsbehovet](05-rettighetskategori-id-til-opptjening.md) | 1 | spleis, sp-vilkarsproving | 04 |
-| 06 | [Rulle ut fase 1](06-rulle-ut-fase-1.md) | 1 | spleis, sp-rettighetskategori | 02, 04, 05 |
+| 06 | [Rulle ut fase 1](06-rulle-ut-fase-1.md) | 1 | spleis, sp-rettighetskategori | 02, 04, 05, 13 |
 | 07 | [Endepunkt for rettighetskategorier i spleis-api](07-spleis-api-rettighetskategorier.md) | 2 | spleis | 03 |
 | 08 | [Innfylling av historikken i sp-rettighetskategori](08-innfylling-i-sp-rettighetskategori.md) | 2 | sp-rettighetskategori | 01, 07 |
 | 09 | [Forkaste kombinerte rettighetskategorier i Spleis](09-forkaste-kombinerte-kategorier.md) | 3 | spleis | 06, 08 |
 | 10 | [Konsistenssjekk av rettighetskategori i `AvventerHistorikk`](10-konsistenssjekk-i-avventer-historikk.md) | 3 | spleis | 06, 08 |
 | 11 | [Skru på togglen for fase 3](11-skru-pa-togglen-for-fase-3.md) | 3 | spleis, sp-rettighetskategori | 09, 10 |
 | 12 | [Fjerne innfyllingen](12-fjerne-innfyllingen.md) | 4 | sp-rettighetskategori, spleis | 11 |
+| 13 | [`AVVENTER_RETTIGHETSKATEGORI` i Spock og spammer](13-tilstanden-i-spock-og-spammer.md) | 1 | spock, spammer | Ingen |
 
 ```mermaid
 flowchart LR
@@ -26,6 +27,7 @@ flowchart LR
         T02 --> T06[06 Rulle ut fase 1]
         T04 --> T06
         T05 --> T06
+        T13[13 Spock og spammer] --> T06
     end
     subgraph F2[Fase 2]
         T07[07 Endepunkt i spleis-api] --> T08[08 Innfylling]
