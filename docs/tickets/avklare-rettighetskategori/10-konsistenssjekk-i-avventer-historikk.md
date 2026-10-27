@@ -6,7 +6,7 @@
 
 **Repo:** `spleis`
 
-**Hva skal lages:** Med togglen for fase 3 på forkaster Spleis perioder der hovedkategorien ikke stemmer med periodens yrkesaktivitetstype. Det gjelder også forlengelser og revurderinger, som ikke går gjennom vilkårsprøving, og perioder med vilkårsgrunnlag fra før fase 1. En selvstendig forlengelse av et sykefraværstilfelle med hovedkategorien Arbeidstaker blir forkastet med RV_SØ_53, som i dag.
+**Hva skal lages:** Med togglen for fase 3 på forkaster Spleis perioder der hovedkategorien ikke stemmer med periodens yrkesaktivitetstype. Det gjelder også forlengelser og revurderinger, som ikke går gjennom vilkårsprøving, og perioder med vilkårsgrunnlag fra før fase 1. En selvstendig forlengelse av et sykefraværstilfelle med hovedkategorien Arbeidstaker blir forkastet med det nye varselet RV_RK_2. I dag forkastes den med RV_SØ_53.
 
 **Blokkeres av:** [06: Rulle ut fase 1](06-rulle-ut-fase-1.md), [08: Innfylling av historikken i sp-rettighetskategori](08-innfylling-i-sp-rettighetskategori.md)
 
@@ -15,7 +15,8 @@
 ## Akseptansekriterier
 
 - [ ] `AvventerHistorikk` slår opp hovedkategorien med `RettighetskategoriResultat` sammen med ytelsene, slik opptjening gjør.
-- [ ] Stemmer ikke hovedkategorien med periodens yrkesaktivitetstype, forkastes perioden med RV_SØ_53.
+- [ ] Ny varselkode `RV_RK_2("Perioden har en annen yrkesaktivitetstype enn rettighetskategorien")`.
+- [ ] Stemmer ikke hovedkategorien med periodens yrkesaktivitetstype, forkastes perioden med RV_RK_2.
 - [ ] Spleis slår alltid opp hovedkategorien når togglen er på. Det finnes ingen vei utenom sjekken for perioder uten rettighetskategori-ID.
 - [ ] Er `RettighetskategoriResultat` ubesvart, står perioden i `AvventerHistorikk` og sender behovet på nytt ved påminnelse.
-- [ ] E2e-tester dekker: AT 1.–31. januar og SN 1.–28. februar med samme skjæringstidspunkt, der SN forkastes og AT behandles videre, og en forlengelse av et vilkårsgrunnlag fra før fase 1 med deterministisk ID.
+- [ ] E2e-tester dekker: AT 1.–31. januar og SN 1.–28. februar med samme skjæringstidspunkt, der SN forkastes med RV_RK_2 og AT behandles videre, og en forlengelse av et vilkårsgrunnlag fra før fase 1 med deterministisk ID.

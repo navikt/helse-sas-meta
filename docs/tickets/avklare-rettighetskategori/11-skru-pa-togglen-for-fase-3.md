@@ -18,6 +18,6 @@
 - [ ] Vi har tall for forkastinger med RV_SØ_53 før togglen skrus på i prod.
 - [ ] Innfyllingen er rullet ut i prod, og det åpne spørsmålet om forkastede perioder i specen er avklart.
 - [ ] Togglen er på i prod.
-- [ ] Forkastinger med RV_SØ_53 etter togglen er sammenlignet med tallene fra før, og avvikene er forklart.
+- [ ] Forkastinger med RV_RK_1, RV_RK_2 og RV_SØ_53 til sammen etter togglen er sammenlignet med forkastingene med RV_SØ_53 fra før, og avvikene er forklart.
 - [ ] Vi følger med på `RettighetskategoriResultat` som går til spleis-api, og på behov som ikke blir besvart.
 - [ ] Vi vet hvordan vi skrur av togglen hvis noe går galt, og perioder som venter på `RettighetskategoriResultat` når togglen skrus av, går videre.
