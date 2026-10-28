@@ -19,7 +19,7 @@
 - [x] En avgjørelse fra backfill blir ikke gjeldende når det finnes en automatisk avgjørelse med nyere vurderingstidspunkt for samme person og skjæringstidspunkt.
 - [x] `RettighetskategoriResultat` for en ukjent ID henter historikken for personen, lagrer ID-ene som mangler og svarer. Finnes ID-en heller ikke i Spleis, svarer ikke tjenesten, og feilen logges.
 - [x] `person_avstemming` henter historikken hver gang og lagrer ID-ene som mangler, også for personer som står i migreringsloggen.
-- [x] Hver backfill føres i migreringsloggen med fødselsnummer, tidspunkt, antall ID-er fra Spleis og antall nye.
+- [x] Hver backfill som lagrer minst én ny ID, føres i migreringsloggen med fødselsnummer, tidspunkt, antall ID-er fra Spleis og antall nye. En backfill uten nye ID-er føres ikke.
 - [x] Rapid-tester dekker ukjent ID, ID som ikke finnes i Spleis, to avstemminger etter hverandre og hovedkategorien for de samme personene som i testene for spleis-api. spleis-api fakes i HTTP-klienten.
 - [ ] Backfill er rullet ut i dev og så i prod.
 - [ ] Vi har sjekket et utvalg personer i prod der hovedkategorien fra backfill er sammenlignet med hva Spleis gjorde, også for vilkårsgrunnlag der bare forkastede perioder finnes.

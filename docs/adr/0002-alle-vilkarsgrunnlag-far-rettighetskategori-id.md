@@ -4,7 +4,7 @@ Alle vilkårsgrunnlag i Spleis får en rettighetskategori-ID, også de som fante
 
 Grunnen er at valideringen flyttes fra søknadshåndteringen. Spleis hopper over RV_SØ_53 når søknaden kommer inn og stoler på at konsistenssjekken tar kombinasjonene senere. Mangler skjæringstidspunktet ID, kan ikke konsistenssjekken kjøre, og en kombinasjon slipper gjennom begge sjekkene. Med ID på alle vilkårsgrunnlag finnes det ingen vei utenom sjekken.
 
-Vi ruller ut i faser. Først lager vi ID-er uten å bruke dem, så kjører vi backfill av historikken, og så flytter vi valideringen. Valideringen venter ikke på backfill for alle personer, fordi oppslaget kjører backfill for ID-en med en gang. Backfill fjernes når migreringsloggen viser at alle personer har fått backfill.
+Vi ruller ut i faser. Først lager vi ID-er uten å bruke dem, så kjører vi backfill av historikken, og så flytter vi valideringen. Valideringen venter ikke på backfill for alle personer, fordi oppslaget kjører backfill for ID-en med en gang. Backfill fjernes når migreringsloggen ikke får nye rader etter en full runde med `person_avstemming`.
 
 ## Vurderte alternativer
 

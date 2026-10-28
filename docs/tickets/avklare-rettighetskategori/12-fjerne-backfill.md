@@ -14,7 +14,7 @@
 
 ## Akseptansekriterier
 
-- [ ] Migreringsloggen viser at alle personer med vilkårsgrunnlag i Spleis har fått backfill etter at fase 3 ble rullet ut i prod.
+- [ ] Migreringsloggen har ikke fått nye rader i en full runde med `person_avstemming` etter at fase 3 ble rullet ut i prod. En backfill uten nye ID-er føres ikke i loggen.
 - [ ] Den siste runden med `person_avstemming` fant ingen nye ID-er.
 - [ ] Ingen `RettighetskategoriResultat` har gått til spleis-api den siste tiden, og vi har tall for det.
 - [ ] Fallbacken til spleis-api, avstemmingsriveren og klienten mot spleis-api er fjernet fra sp-rettighetskategori.

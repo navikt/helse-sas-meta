@@ -23,7 +23,7 @@ Vi ruller ut i fire faser. Hver fase rulles ut i dev før prod, med én toggle i
 1. **Lage ID-er uten å bruke dem.** Alle vilkårsgrunnlag får rettighetskategori-ID. sp-rettighetskategori avgjør og lagrer nye rettighetskategorier, og Spleis går gjennom `AvventerRettighetskategori` og lagrer ID-en i et minimalt vilkårsgrunnlag. Spleis bruker ikke kategorien, heller ikke hovedkategorien i løsningen, og RV_SØ_53 kjører når søknaden kommer inn, som i dag.
 2. **Backfill av historikken.** sp-rettighetskategori lager avgjørelser for ID-er som bare finnes i Spleis. Det skjer ved `person_avstemming` og når tjenesten får et oppslag på en ID den ikke kjenner.
 3. **Flytte valideringen.** Valideringen flyttes fra søknadshåndteringen til `AvventerRettighetskategori` og `AvventerHistorikk`, med de nye varslene RV_RK_1 og RV_RK_2. RV_SØ_53 kjører bare når skjæringstidspunktet har fullt vilkårsgrunnlag. Fase 3 krever ikke at fase 2 er ferdig for alle personer, fordi oppslag på ukjente ID-er kjører backfill med en gang.
-4. **Rydde opp.** Når migreringsloggen viser at alle personer har fått backfill, fjerner vi backfill i sp-rettighetskategori og endepunktet i spleis-api.
+4. **Rydde opp.** Når migreringsloggen ikke får nye rader etter en full runde med `person_avstemming`, fjerner vi backfill i sp-rettighetskategori og endepunktet i spleis-api.
 
 ## Brukerhistorier
 
@@ -118,7 +118,7 @@ Vi ruller ut i fire faser. Hver fase rulles ut i dev før prod, med én toggle i
 - Avgjørelser fra backfill lagres med ID-en fra Spleis, kilde `spleis`, vurderingstidspunktet fra opprettet i Spleis og uten søknads-ID-er. Lagringen er idempotent på ID.
 - `RettighetskategoriResultat` slår først opp lokalt. Finnes ikke ID-en, henter tjenesten historikken for personen synkront, lagrer ID-ene som mangler, fører migreringsloggen og svarer. Finnes ID-en heller ikke i Spleis, svarer ikke tjenesten, og feilen logges.
 - `person_avstemming` henter historikken hver gang og lagrer ID-ene som mangler. sp-vilkarsproving hopper over personer som står i migreringsloggen. Det gjør ikke sp-rettighetskategori, fordi Spleis kan lage nye deterministiske ID-er etter forrige avstemming, for eksempel for vilkårsgrunnlag fra Infotrygd.
-- Migreringsloggen har én rad per backfill med fødselsnummer, tidspunkt, antall ID-er fra Spleis og antall nye. Når alle personer med vilkårsgrunnlag står i loggen, og nye ID-er ikke lenger dukker opp, kan vi fjerne backfill (fase 4).
+- Migreringsloggen har én rad per backfill som lagrer minst én ny ID, med fødselsnummer, tidspunkt, antall ID-er fra Spleis og antall nye. En backfill uten nye ID-er føres ikke. Når nye rader ikke lenger dukker opp i loggen etter en full runde med `person_avstemming`, kan vi fjerne backfill (fase 4).
 - Spleis sender `person_avstemming` for hver person én gang i måneden. Fase 3 venter ikke på en full runde, fordi `RettighetskategoriResultat` kjører backfill for ID-en med en gang. Fase 4 venter på den.
 
 ### Endringer i Spleis
