@@ -10,16 +10,25 @@
 
 **Blokkeres av:** [01: Skjelett for sp-rettighetskategori som svarer på behov](01-skjelett-sp-rettighetskategori.md), [07: Endepunkt for rettighetskategorier i spleis-api](07-spleis-api-rettighetskategorier.md)
 
-**Status:** klar
+**Status:** pågår
 
 ## Akseptansekriterier
 
-- [ ] Hovedkategorien avgjøres slik specen beskriver, ut fra den første perioden for hver yrkesaktivitet: aktive perioder først, så forkastede perioder, så inntektsgrunnlaget. Vilkårsgrunnlag fra Infotrygd gir Arbeidstaker.
-- [ ] Innfylte avgjørelser lagres med ID-en fra Spleis, kilde `spleis`, vurderingstidspunktet fra opprettet i Spleis og uten søknads-ID-er. Lagringen er idempotent på ID.
-- [ ] En innfylt avgjørelse blir ikke gjeldende når det finnes en automatisk avgjørelse med nyere vurderingstidspunkt for samme person og skjæringstidspunkt.
-- [ ] `RettighetskategoriResultat` for en ukjent ID henter historikken for personen, lagrer ID-ene som mangler og svarer. Finnes ID-en heller ikke i Spleis, svarer ikke tjenesten, og feilen logges.
-- [ ] `person_avstemming` henter historikken hver gang og lagrer ID-ene som mangler, også for personer som står i migreringsloggen.
-- [ ] Hver innfylling føres i migreringsloggen med fødselsnummer, tidspunkt, antall ID-er fra Spleis og antall nye.
-- [ ] Rapid-tester dekker ukjent ID, ID som ikke finnes i Spleis, to avstemminger etter hverandre og hovedkategorien for de samme personene som i testene for spleis-api. spleis-api fakes i HTTP-klienten.
+- [x] Hovedkategorien avgjøres slik specen beskriver, ut fra den første perioden for hver yrkesaktivitet: aktive perioder først, så forkastede perioder, så inntektsgrunnlaget. Vilkårsgrunnlag fra Infotrygd gir Arbeidstaker.
+- [x] Innfylte avgjørelser lagres med ID-en fra Spleis, kilde `spleis`, vurderingstidspunktet fra opprettet i Spleis og uten søknads-ID-er. Lagringen er idempotent på ID.
+- [x] En innfylt avgjørelse blir ikke gjeldende når det finnes en automatisk avgjørelse med nyere vurderingstidspunkt for samme person og skjæringstidspunkt.
+- [x] `RettighetskategoriResultat` for en ukjent ID henter historikken for personen, lagrer ID-ene som mangler og svarer. Finnes ID-en heller ikke i Spleis, svarer ikke tjenesten, og feilen logges.
+- [x] `person_avstemming` henter historikken hver gang og lagrer ID-ene som mangler, også for personer som står i migreringsloggen.
+- [x] Hver innfylling føres i migreringsloggen med fødselsnummer, tidspunkt, antall ID-er fra Spleis og antall nye.
+- [x] Rapid-tester dekker ukjent ID, ID som ikke finnes i Spleis, to avstemminger etter hverandre og hovedkategorien for de samme personene som i testene for spleis-api. spleis-api fakes i HTTP-klienten.
 - [ ] Innfyllingen er rullet ut i dev og så i prod.
 - [ ] Vi har sjekket et utvalg personer i prod der hovedkategorien fra innfyllingen er sammenlignet med hva Spleis gjorde, også for vilkårsgrunnlag der bare forkastede perioder finnes.
+
+## Merknader
+
+- Innfyllingen er laget i sp-rettighetskategori (commit `3ca2770`). Utrullingen og sjekken i prod gjenstår. Tilgangen til spleis-api i `.nais/sp-rettighetskategori.yaml` og tilgangen for sp-rettighetskategori i `.nais/spleis-api.yaml` i spleis må være deployet før innfyllingen virker.
+- Får en ID fra Spleis yrkesaktivitetstypen `FRILANS` eller `ARBEIDSLEDIG` blant periodene som brukes, feiler innfyllingen for hele personen, og feilen logges. Ingenting lagres, og ingenting føres i migreringsloggen.
+- Feiler innfyllingen ved `person_avstemming`, logges feilen, og meldingen hoppes over. Neste avstemming prøver igjen.
+- En ID som allerede er lagret, blir ikke endret, heller ikke når den er avgjort automatisk. Er ID-en lagret for en annen person, feiler innfyllingen for personen.
+- Migreringsloggen har kolonnene `fødselsnummer`, `opprettet`, `antall_fra_spleis` og `antall_nye`. Om en avgjørelse er fylt inn fra Spleis eller avgjort i sp-rettighetskategori, står i kolonnen `kilde` i `rettighetskategori`.
+- `opprydding-dev` sletter også migreringsloggen til personen.
