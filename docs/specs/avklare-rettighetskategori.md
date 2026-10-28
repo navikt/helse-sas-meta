@@ -94,7 +94,7 @@ Vi ruller ut i fire faser. Hver fase rulles ut i dev før prod, med én toggle i
 - Feltene i behovene og løsningene:
   - `Rettighetskategori`: `fødselsnummer`, `Rettighetskategori.skjæringstidspunkt` og `Rettighetskategori.søknader` (liste med referanse-ID-er). Løsningen er `@løsning.Rettighetskategori.id` og `@løsning.Rettighetskategori.hovedkategori`.
   - `RettighetskategoriResultat`: `fødselsnummer` og `RettighetskategoriResultat.rettighetskategoriId`. Løsningen er `@løsning.RettighetskategoriResultat.hovedkategori`.
-  - Hovedkategorien er `Arbeidstaker`, `SelvstendigNæringsdrivende` eller `ArbeidstakerOgSelvstendigNæringsdrivende`.
+  - Hovedkategorien er `ARBEIDSTAKER`, `SELVSTENDIG_NÆRINGSDRIVENDE` eller `ARBEIDSTAKER_OG_SELVSTENDIG_NÆRINGSDRIVENDE`.
 - Tjenesten henter søknadene synkront fra Spedisjons API for meldinger med de interne dokument-ID-ene. Spleis trenger ikke den eksterne søknads-ID-en.
 - Hver søknad mappes til yrkesaktivitet på samme måte som Spleis gjør i dag, ut fra søknadstypen og `arbeidssituasjon`. Dette gjelder også fisker, jordbruker, barnepasser og «annet».
 - Hovedkategoriene følger `abstraksjoner-kap8.md`. Første versjon gir bare Arbeidstaker, Selvstendig næringsdrivende og Arbeidstaker og selvstendig næringsdrivende, og ingen tilleggskategorier. De andre hovedkategoriene legges til i kontrakten når Spleis kan få dem.
