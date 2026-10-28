@@ -25,6 +25,7 @@
 - [ ] Løsningen på `Rettighetskategori` lagrer et minimalt vilkårsgrunnlag i et nytt innslag i vilkårsgrunnlagshistorikken. Det erstatter et eldre minimalt vilkårsgrunnlag for samme skjæringstidspunkt, men aldri et fullt.
 - [ ] `AvventerVilkårsprøving` og `AvventerVilkårsprøvingRevurdering` henter ID-en fra det minimale vilkårsgrunnlaget, og det fulle vilkårsgrunnlaget erstatter det med samme ID.
 - [ ] `vilkårsgrunnlagFor` og annen eksisterende kode som spør etter vilkårsgrunnlaget, ser bare fulle vilkårsgrunnlag. Byggerne for Speil, `OpptjeningApi`, `MedlemskapApi`, `UtkastTilVedtakBuilder` og Spanner-DTO-en hopper over den nye typen.
+- [ ] `POST /api/rettighetskategorier` i spleis-api hopper over den nye typen, og `RettighetskategoriApiTest` har en test med en person med minimalt vilkårsgrunnlag. Se [07](07-spleis-api-rettighetskategorier.md).
 - [ ] JSON-en bruker det eksisterende feltet `type` med den nye verdien `Rettighetskategori`. Eksisterende vilkårsgrunnlag leses uten migrering. I `VilkårsgrunnlagElementData` er `inntektsgrunnlag`, `opptjeningsvurderingId` og `medlemskapsvurderingId` nullbare bare for den nye typen.
 - [ ] Støtten for den nye typen i modellen og serde er deployet med togglen av før togglen skrus på. Eldre versjoner av Spleis kan ikke lese typen, så når den er tatt i bruk, går vi tilbake ved å skru av togglen, ikke ved å rulle tilbake koden.
 - [ ] En serde-test sjekker at en person med minimalt vilkårsgrunnlag kan lagres og leses igjen, og at eksisterende JSON leses som før.
