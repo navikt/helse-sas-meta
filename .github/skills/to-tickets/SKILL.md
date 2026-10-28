@@ -26,6 +26,8 @@ Look for opportunities to prefactor the code to make the implementation easier. 
 
 ### 3. Draft vertical slices
 
+Before slicing, check that every contract between apps the tickets will touch (behov, events, HTTP APIs) is named field by field in the spec. If a field name, type or allowed value is missing, stop and settle it with the user, then add it to the spec. This is the one change to the source spec this skill makes besides the ticket-index link.
+
 Break the work into **tracer bullet** tickets.
 
 <vertical-slice-rules>
@@ -67,7 +69,7 @@ Work the **frontier**: any ticket whose blockers are all done. For a purely line
 
 Also write `docs/tickets/<feature-slug>/index.md`, so the tickets can be navigated on GitHub Pages. It starts with `# Tickets: <feature>`, links to the spec, and has a table with number, linked title, repo and blockers, followed by a Mermaid `flowchart` of the blocking edges. Use relative links to the `.md` files; GitHub Pages turns them into `.html`. Then add a link to `tickets/<feature-slug>/` in `docs/index.html`, in the same section as the spec. Update both when you add or change tickets.
 
-Do NOT modify the source spec, except for adding a link to the ticket index right below its title. Tell the user the paths of the files when you're done.
+Do NOT modify the source spec, except for adding a link to the ticket index right below its title and completing contracts in step 3. Tell the user the paths of the files when you're done.
 
 <local-ticket-template>
 
