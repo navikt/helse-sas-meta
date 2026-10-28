@@ -37,3 +37,17 @@ _Unngå_: Kombinert (bruk den presise kombinasjonen)
 **Backfill**:
 Når sp-rettighetskategori lager avgjørelser for rettighetskategori-ID-er som bare finnes i Spleis, med data fra spleis-api. Avgjørelser fra backfill har kilden `spleis`.
 _Unngå_: Innfylling, migrering (migreringsloggen er bare loggen over backfill per person)
+
+### Saksbehandling
+
+**Aktiv oppgave**:
+Oppgaven som venter på at en saksbehandler skal vurdere en vedtaksperiode. En person har høyst én aktiv oppgave.
+_Unngå_: Sak, periodeoppgave
+
+**Tildeling**:
+At en bestemt saksbehandler har ansvaret for personen. Tildelingen gjelder personen, ikke én bestemt oppgave.
+_Unngå_: Reservasjon, tildelt oppgave
+
+**Totrinnsvurdering**:
+Kontrollen der en beslutter må godkjenne saksbehandlerens vurdering før vedtaket fattes. En person har høyst én aktiv totrinnsvurdering. Den har bare betydning når personen har en aktiv oppgave, men blir liggende til neste oppgave.
+_Unngå_: Totrinnskontroll, beslutterkontroll
