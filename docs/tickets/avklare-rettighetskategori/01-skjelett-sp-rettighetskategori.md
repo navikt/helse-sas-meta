@@ -10,15 +10,15 @@
 
 **Blokkeres av:** Ingen (kan starte med en gang)
 
-**Status:** klar
+**Status:** pågår
 
 ## Akseptansekriterier
 
 - [ ] Appen er satt opp med sykepenger-gradle-plugins, standard workflows og Nais-manifester i `.nais/`, og er deployet til dev.
-- [ ] Appen har egen Postgres-database med Flyway-migreringer.
-- [ ] Appen har tilgang til Spedisjons API for meldinger, og Spedisjon tillater kall fra appen.
-- [ ] Behovet `Rettighetskategori` med person, skjæringstidspunkt og én søknads-ID gir en løsning med en rettighetskategori-ID og hovedkategorien. Spleis bruker hovedkategorien til å forkaste kategorier den ikke støtter i mottaket av løsningen, men lagrer den ikke.
-- [ ] En søknad fra arbeidstaker gir hovedkategorien Arbeidstaker, og en søknad fra selvstendig næringsdrivende gir Selvstendig næringsdrivende.
-- [ ] Hver avgjørelse lagres som en ny rad med ID, person, skjæringstidspunkt, hovedkategori, kilde `automatisk`, tidspunkt og søknads-ID-ene som ble brukt.
-- [ ] Behovet `RettighetskategoriResultat` med en ID gir hovedkategorien i løsningen.
-- [ ] Rapid-tester sender behov inn og sjekker løsningen, med Spedisjon faket i HTTP-klienten og ekte Postgres. Tester å bygge videre på: `OpptjeningsvurderingRiverTest` og `OpptjeningsvurderingResultatRiverTest` i sp-vilkarsproving.
+- [x] Appen har egen Postgres-database med Flyway-migreringer.
+- [x] Appen har tilgang til Spedisjons API for meldinger, og Spedisjon tillater kall fra appen.
+- [x] Behovet `Rettighetskategori` med person, skjæringstidspunkt og én søknads-ID gir en løsning med en rettighetskategori-ID og hovedkategorien. Spleis bruker hovedkategorien til å forkaste kategorier den ikke støtter i mottaket av løsningen, men lagrer den ikke.
+- [x] En søknad fra arbeidstaker gir hovedkategorien Arbeidstaker, og en søknad fra selvstendig næringsdrivende gir Selvstendig næringsdrivende.
+- [x] Hver avgjørelse lagres som en ny rad med ID, person, skjæringstidspunkt, hovedkategori, kilde `automatisk`, tidspunkt og søknads-ID-ene som ble brukt.
+- [x] Behovet `RettighetskategoriResultat` med en ID gir hovedkategorien i løsningen.
+- [x] Rapid-tester sender behov inn og sjekker løsningen, med Spedisjon faket i HTTP-klienten og ekte Postgres. Tester å bygge videre på: `OpptjeningsvurderingRiverTest` og `OpptjeningsvurderingResultatRiverTest` i sp-vilkarsproving.
