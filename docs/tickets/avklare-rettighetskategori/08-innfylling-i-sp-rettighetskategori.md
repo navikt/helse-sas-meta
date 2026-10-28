@@ -14,7 +14,7 @@
 
 ## Akseptansekriterier
 
-- [ ] Hovedkategorien avgjøres slik specen beskriver: aktive perioder først, så forkastede perioder, så inntektsgrunnlaget. Vilkårsgrunnlag fra Infotrygd gir Arbeidstaker.
+- [ ] Hovedkategorien avgjøres slik specen beskriver, ut fra den første perioden for hver yrkesaktivitet: aktive perioder først, så forkastede perioder, så inntektsgrunnlaget. Vilkårsgrunnlag fra Infotrygd gir Arbeidstaker.
 - [ ] Innfylte avgjørelser lagres med ID-en fra Spleis, kilde `spleis`, tidspunktet fra opprettet og uten søknads-ID-er. Lagringen er idempotent på ID.
 - [ ] `RettighetskategoriResultat` for en ukjent ID henter historikken for personen, lagrer ID-ene som mangler og svarer. Finnes ID-en heller ikke i Spleis, svarer ikke tjenesten, og feilen logges.
 - [ ] `person_avstemming` henter historikken hver gang og lagrer ID-ene som mangler, også for personer som står i migreringsloggen.

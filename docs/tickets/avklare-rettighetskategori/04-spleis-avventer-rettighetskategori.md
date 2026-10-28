@@ -17,7 +17,9 @@
 - [ ] Med togglen på går perioden fra `AvventerBlokkerendePeriode` til `AvventerRettighetskategori` og videre til `AvventerVilkårsprøving` når løsningen kommer.
 - [ ] Med togglen på går revurdering gjennom `AvventerRettighetskategori` før `AvventerVilkårsprøvingRevurdering`.
 - [ ] Perioden går alltid gjennom tilstanden på vei til vilkårsprøving. Spleis sjekker ikke om skjæringstidspunktet allerede har rettighetskategori-ID.
-- [ ] Behovet `Rettighetskategori` har person, skjæringstidspunkt og referanse-ID-ene til sendte søknader fra perioder som ikke er forkastet, overlapper skjæringstidspunktet og har samme skjæringstidspunkt, på tvers av yrkesaktiviteter.
+- [ ] Behovet `Rettighetskategori` har person, skjæringstidspunkt og én referanse-ID per yrkesaktivitet med samme skjæringstidspunkt. Hvert arbeidsforhold er en egen yrkesaktivitet.
+- [ ] For hver yrkesaktivitet velger Spleis den første perioden, det vil si perioden med tidligste fom blant periodene som ikke er forkastet og har samme skjæringstidspunkt. Perioden trenger ikke å overlappe skjæringstidspunktet.
+- [ ] For den første perioden sender Spleis referanse-ID-en til den siste sendte søknaden. Forlengelser er ikke med.
 - [ ] Spleis lagrer bare ID-en, ikke hovedkategorien (ADR 0001).
 - [ ] `VilkårsgrunnlagElement` har en ny undertype, `Rettighetskategorigrunnlag`, med bare `vilkårsgrunnlagId`, `skjæringstidspunkt` og `rettighetskategoriId`. `Grunnlagsdata` og `InfotrygdVilkårsgrunnlag` får en felles sealed overklasse med `inntektsgrunnlag`, `opptjeningsvurderingId` og `medlemskapsvurderingId`.
 - [ ] Løsningen på `Rettighetskategori` lagrer et minimalt vilkårsgrunnlag i et nytt innslag i vilkårsgrunnlagshistorikken. Det erstatter et eldre minimalt vilkårsgrunnlag for samme skjæringstidspunkt, men aldri et fullt.
@@ -34,4 +36,4 @@
 - [ ] spleis-api mapper tilstanden til `Periodetilstand.ForberederGodkjenning` for Speil, som `AVVENTER_VILKÅRSPRØVING`.
 - [ ] Spock og spammer håndterer tilstandsnavnet, se [13: `AVVENTER_RETTIGHETSKATEGORI` i Spock og spammer](13-tilstanden-i-spock-og-spammer.md). De andre konsumentene av tilstandsnavnene trenger ingen endringer, se «Andre merknader» i specen.
 - [ ] Behovet er lagt inn i `BehovkontraktTest`.
-- [ ] E2e-tester i sykepenger-model dekker: bare arbeidstaker, bare selvstendig næringsdrivende, forlengelse som ikke går gjennom tilstanden, revurdering som flytter skjæringstidspunktet, at det fulle vilkårsgrunnlaget erstatter det minimale med samme ID, et sykefraværstilfelle som forkastes før vilkårsprøving der det minimale vilkårsgrunnlaget forsvinner, ubesvart behov med påminnelse og togglen av.
+- [ ] E2e-tester i sykepenger-model dekker: bare arbeidstaker, bare selvstendig næringsdrivende, forlengelse som ikke går gjennom tilstanden, flere perioder for samme yrkesaktivitet der bare den siste søknaden for den første perioden er med i behovet, to arbeidsgivere der den andre starter etter skjæringstidspunktet, en korrigert søknad for den første perioden, revurdering som flytter skjæringstidspunktet, at det fulle vilkårsgrunnlaget erstatter det minimale med samme ID, et sykefraværstilfelle som forkastes før vilkårsprøving der det minimale vilkårsgrunnlaget forsvinner, ubesvart behov med påminnelse og togglen av.

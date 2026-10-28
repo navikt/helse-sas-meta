@@ -15,7 +15,7 @@
 ## Akseptansekriterier
 
 - [ ] Spock og spammer håndterer `AVVENTER_RETTIGHETSKATEGORI` i dev og prod før togglen skrus på. Spock logger ikke «Har ikke påminnelseregler for tilstand AVVENTER_RETTIGHETSKATEGORI».
-- [ ] Togglen for fase 1 er på i dev, og bare AT, bare SN og AT og SN som overlapper skjæringstidspunktet er verifisert ende til ende med ekte søknader. Kombinasjonen forkastes fortsatt med RV_SØ_53 når søknaden kommer inn.
+- [ ] Togglen for fase 1 er på i dev, og bare AT, bare SN og AT og SN med samme skjæringstidspunkt er verifisert ende til ende med ekte søknader. Kombinasjonen forkastes fortsatt med RV_SØ_53 når søknaden kommer inn.
 - [ ] Togglen er på i prod, og antall forkastinger med RV_SØ_53 er uendret.
 - [ ] Ingen perioder står fast i `AvventerRettighetskategori`.
 - [ ] Vilkårsgrunnlag som er laget i prod etter at togglen ble skrudd på, har rettighetskategori-ID-en fra det minimale vilkårsgrunnlaget, og ingen minimale vilkårsgrunnlag ligger igjen for perioder som er forbi vilkårsprøving.
