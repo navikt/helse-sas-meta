@@ -33,3 +33,7 @@ _Unngå_: Yrkesaktivitetstype, kategori
 **Hovedkategori**:
 Den delen av rettighetskategorien som velger hovedregelsettet, for eksempel Arbeidstaker, Selvstendig næringsdrivende eller Arbeidstaker og selvstendig næringsdrivende. «Ingen» når personen ikke passer i noen.
 _Unngå_: Kombinert (bruk den presise kombinasjonen)
+
+**Backfill**:
+Når sp-rettighetskategori lager avgjørelser for rettighetskategori-ID-er som bare finnes i Spleis, med data fra spleis-api. Avgjørelser fra backfill har kilden `spleis`.
+_Unngå_: Innfylling, migrering (migreringsloggen er bare loggen over backfill per person)

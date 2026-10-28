@@ -11,11 +11,11 @@ Tickets for [Avklare rettighetskategori i sp-rettighetskategori](../../specs/avk
 | 05 | [Rettighetskategori-ID i opptjeningsbehovet](05-rettighetskategori-id-til-opptjening.md) | 1 | spleis, sp-vilkarsproving | 04 | klar |
 | 06 | [Rulle ut fase 1](06-rulle-ut-fase-1.md) | 1 | spleis, sp-rettighetskategori | 02, 04, 05, 13 | klar |
 | 07 | [Endepunkt for rettighetskategorier i spleis-api](07-spleis-api-rettighetskategorier.md) | 2 | spleis | 03 | ferdig |
-| 08 | [Innfylling av historikken i sp-rettighetskategori](08-innfylling-i-sp-rettighetskategori.md) | 2 | sp-rettighetskategori | 01, 07 | pågår |
+| 08 | [Backfill av historikken i sp-rettighetskategori](08-backfill-i-sp-rettighetskategori.md) | 2 | sp-rettighetskategori | 01, 07 | pågår |
 | 09 | [Forkaste kombinerte rettighetskategorier i Spleis](09-forkaste-kombinerte-kategorier.md) | 3 | spleis | 06 | klar |
 | 10 | [Konsistenssjekk av rettighetskategori i `AvventerHistorikk`](10-konsistenssjekk-i-avventer-historikk.md) | 3 | spleis | 06, 08 | klar |
 | 11 | [Skru på togglen for fase 3](11-skru-pa-togglen-for-fase-3.md) | 3 | spleis, sp-rettighetskategori | 09, 10 | klar |
-| 12 | [Fjerne innfyllingen](12-fjerne-innfyllingen.md) | 4 | sp-rettighetskategori, spleis | 11 | klar |
+| 12 | [Fjerne backfill](12-fjerne-backfill.md) | 4 | sp-rettighetskategori, spleis | 11 | klar |
 | 13 | [`AVVENTER_RETTIGHETSKATEGORI` i Spock og spammer](13-tilstanden-i-spock-og-spammer.md) | 1 | spock, spammer | Ingen | ferdig |
 
 ```mermaid
@@ -30,14 +30,14 @@ flowchart LR
         T13[13 Spock og spammer] --> T06
     end
     subgraph F2[Fase 2]
-        T07[07 Endepunkt i spleis-api] --> T08[08 Innfylling]
+        T07[07 Endepunkt i spleis-api] --> T08[08 Backfill]
     end
     subgraph F3[Fase 3]
         T09[09 Forkaste kombinerte] --> T11[11 Skru på togglen for fase 3]
         T10[10 Konsistenssjekk] --> T11
     end
     subgraph F4[Fase 4]
-        T12[12 Fjerne innfyllingen]
+        T12[12 Fjerne backfill]
     end
     T03 --> T07
     T01 --> T08

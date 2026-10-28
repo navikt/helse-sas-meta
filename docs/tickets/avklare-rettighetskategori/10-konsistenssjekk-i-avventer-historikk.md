@@ -8,7 +8,7 @@
 
 **Hva skal lages:** Med togglen for fase 3 på forkaster Spleis perioder der hovedkategorien ikke stemmer med periodens yrkesaktivitetstype. Det gjelder også forlengelser og revurderinger, som ikke går gjennom vilkårsprøving, og perioder med vilkårsgrunnlag fra før fase 1. En selvstendig forlengelse av et sykefraværstilfelle med hovedkategorien Arbeidstaker blir forkastet med det nye varselet RV_RK_2. I dag forkastes den med RV_SØ_53.
 
-**Blokkeres av:** [06: Rulle ut fase 1](06-rulle-ut-fase-1.md), [08: Innfylling av historikken i sp-rettighetskategori](08-innfylling-i-sp-rettighetskategori.md)
+**Blokkeres av:** [06: Rulle ut fase 1](06-rulle-ut-fase-1.md), [08: Backfill av historikken i sp-rettighetskategori](08-backfill-i-sp-rettighetskategori.md)
 
 **Status:** klar
 

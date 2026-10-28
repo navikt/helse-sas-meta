@@ -14,16 +14,16 @@ En ny tjeneste, sp-rettighetskategori, avgjør rettighetskategorien én gang per
 
 I første versjon forkaster Spleis de samme periodene som i dag, men med egne varsler. sp-rettighetskategori gir bare hovedkategoriene Arbeidstaker, Selvstendig næringsdrivende og Arbeidstaker og selvstendig næringsdrivende, og avgjør dem like presist som Spleis gjør i dag. Hver hovedkategori Spleis ikke støtter, får sitt eget varsel. Arbeidstaker og selvstendig næringsdrivende forkastes med RV_RK_1. Når Spleis ser i løsningen i `AvventerRettighetskategori` at hovedkategorien ikke støttes, forkastes alle periodene i sykefraværstilfellet med en gang, og alle får varselet. Spleis vilkårsprøver ikke før den forkaster, og de andre periodene går ikke gjennom `AvventerHistorikk` først, så Spleis henter ikke ytelser og beregner ikke perioder som uansett skal forkastes. En periode der hovedkategorien ikke stemmer med yrkesaktivitetstypen, forkastes med RV_RK_2. RV_SØ_53 ved søknadshåndteringen blir værende for skjæringstidspunkter som har fullt vilkårsgrunnlag.
 
-Alle vilkårsgrunnlag skal ha en rettighetskategori-ID, også de som finnes fra før. Spleis gir eksisterende vilkårsgrunnlag en deterministisk ID med en JSON-migrering, slik den gjorde for `opptjeningsvurderingId`. sp-rettighetskategori fyller inn avgjørelsene bak disse ID-ene i ettertid, med data fra spleis-api. Uten dette ville Spleis hoppe over RV_SØ_53 når søknaden kommer inn, og så hoppe over konsistenssjekken senere fordi skjæringstidspunktet mangler ID. Da slipper kombinasjoner gjennom.
+Alle vilkårsgrunnlag skal ha en rettighetskategori-ID, også de som finnes fra før. Spleis gir eksisterende vilkårsgrunnlag en deterministisk ID med en JSON-migrering, slik den gjorde for `opptjeningsvurderingId`. sp-rettighetskategori lager avgjørelsene bak disse ID-ene i ettertid med backfill fra spleis-api. Uten dette ville Spleis hoppe over RV_SØ_53 når søknaden kommer inn, og så hoppe over konsistenssjekken senere fordi skjæringstidspunktet mangler ID. Da slipper kombinasjoner gjennom.
 
 ### Faser
 
 Vi ruller ut i fire faser. Hver fase rulles ut i dev før prod, med én toggle i Spleis per fase. Togglen fra én fase er fjernet før neste fase får sin.
 
 1. **Lage ID-er uten å bruke dem.** Alle vilkårsgrunnlag får rettighetskategori-ID. sp-rettighetskategori avgjør og lagrer nye rettighetskategorier, og Spleis går gjennom `AvventerRettighetskategori` og lagrer ID-en i et minimalt vilkårsgrunnlag. Spleis bruker ikke kategorien, heller ikke hovedkategorien i løsningen, og RV_SØ_53 kjører når søknaden kommer inn, som i dag.
-2. **Fylle inn historikken.** sp-rettighetskategori lager avgjørelser for ID-er som bare finnes i Spleis. Det skjer ved `person_avstemming` og når tjenesten får et oppslag på en ID den ikke kjenner.
-3. **Flytte valideringen.** Valideringen flyttes fra søknadshåndteringen til `AvventerRettighetskategori` og `AvventerHistorikk`, med de nye varslene RV_RK_1 og RV_RK_2. RV_SØ_53 kjører bare når skjæringstidspunktet har fullt vilkårsgrunnlag. Fase 3 krever ikke at fase 2 er ferdig for alle personer, fordi oppslag på ukjente ID-er fyller inn avgjørelsen med en gang.
-4. **Rydde opp.** Når migreringsloggen viser at alle personer er fylt inn, fjerner vi innfyllingen i sp-rettighetskategori og endepunktet i spleis-api.
+2. **Backfill av historikken.** sp-rettighetskategori lager avgjørelser for ID-er som bare finnes i Spleis. Det skjer ved `person_avstemming` og når tjenesten får et oppslag på en ID den ikke kjenner.
+3. **Flytte valideringen.** Valideringen flyttes fra søknadshåndteringen til `AvventerRettighetskategori` og `AvventerHistorikk`, med de nye varslene RV_RK_1 og RV_RK_2. RV_SØ_53 kjører bare når skjæringstidspunktet har fullt vilkårsgrunnlag. Fase 3 krever ikke at fase 2 er ferdig for alle personer, fordi oppslag på ukjente ID-er kjører backfill med en gang.
+4. **Rydde opp.** Når migreringsloggen viser at alle personer har fått backfill, fjerner vi backfill i sp-rettighetskategori og endepunktet i spleis-api.
 
 ## Brukerhistorier
 
@@ -64,12 +64,12 @@ Vi ruller ut i fire faser. Hver fase rulles ut i dev før prod, med én toggle i
 35. Som sp-rettighetskategori vil jeg svare på oppslag fra ID til hovedkategori, slik at Spleis kan bruke kategorien uten egen kopi.
 36. Som sp-vilkarsproving vil jeg få rettighetskategori-ID-en i opptjeningsbehovet, slik at jeg kan slå opp kategorien når vi tar den i bruk.
 37. Som utvikler vil jeg kunne sammenligne antall forkastinger med RV_SØ_53 før togglen for fase 3 med antall forkastinger med RV_RK_1, RV_RK_2 og RV_SØ_53 etter, slik at vi ser at løsningen virker like godt som i dag.
-38. Som Spleis vil jeg tilby et endepunkt i spleis-api som gir alle rettighetskategori-ID-ene til en person med skjæringstidspunkt og yrkesaktivitetstyper, slik at sp-rettighetskategori kan fylle inn historikken.
-39. Som sp-rettighetskategori vil jeg avgjøre hovedkategorien for en historisk ID ut fra yrkesaktivitetstypene til den første perioden for hver yrkesaktivitet som bruker vilkårsgrunnlaget, slik at innfyllingen bruker samme utvalg som nye avgjørelser, og resultatet blir det samme som Spleis kom fram til.
-40. Som sp-rettighetskategori vil jeg hente og lagre historikken for personen synkront når jeg får `RettighetskategoriResultat` for en ID jeg ikke kjenner, slik at Spleis får svar selv om personen ikke er fylt inn ennå.
-41. Som sp-rettighetskategori vil jeg hente historikken for personen ved hver `person_avstemming` og lagre ID-ene som mangler, slik at ID-er Spleis har laget siden sist også blir fylt inn.
-42. Som sp-rettighetskategori vil jeg føre en migreringslogg per person, slik at vi vet når alle er fylt inn og kan slutte å hente fra Spleis.
-43. Som utvikler vil jeg fjerne innfyllingen når alle personer er fylt inn, slik at sp-rettighetskategori ikke lenger er avhengig av spleis-api.
+38. Som Spleis vil jeg tilby et endepunkt i spleis-api som gir alle rettighetskategori-ID-ene til en person med skjæringstidspunkt og yrkesaktivitetstyper, slik at sp-rettighetskategori kan kjøre backfill av historikken.
+39. Som sp-rettighetskategori vil jeg avgjøre hovedkategorien for en historisk ID ut fra yrkesaktivitetstypene til den første perioden for hver yrkesaktivitet som bruker vilkårsgrunnlaget, slik at backfill bruker samme utvalg som nye avgjørelser, og resultatet blir det samme som Spleis kom fram til.
+40. Som sp-rettighetskategori vil jeg hente og lagre historikken for personen synkront når jeg får `RettighetskategoriResultat` for en ID jeg ikke kjenner, slik at Spleis får svar selv om personen ikke har fått backfill ennå.
+41. Som sp-rettighetskategori vil jeg hente historikken for personen ved hver `person_avstemming` og lagre ID-ene som mangler, slik at ID-er Spleis har laget siden sist også får backfill.
+42. Som sp-rettighetskategori vil jeg føre en migreringslogg per person, slik at vi vet når alle har fått backfill og kan slutte å hente fra Spleis.
+43. Som utvikler vil jeg fjerne backfill når alle personer har fått backfill, slik at sp-rettighetskategori ikke lenger er avhengig av spleis-api.
 44. Som Spleis vil jeg skille det minimale vilkårsgrunnlaget fra de fulle med det eksisterende feltet `type` i JSON-en, slik at eksisterende vilkårsgrunnlag kan leses uten migrering.
 45. Som Spleis vil jeg at bare `AvventerVilkårsprøving` og `AvventerVilkårsprøvingRevurdering` ser det minimale vilkårsgrunnlaget, slik at all annen kode som spør etter vilkårsgrunnlaget, virker som i dag.
 46. Som Spock vil jeg påminne perioder i `AVVENTER_RETTIGHETSKATEGORI` etter én time, som i `AVVENTER_VILKÅRSPRØVING`, slik at Spleis sender ubesvarte behov på nytt like raskt som andre behov.
@@ -103,23 +103,23 @@ Vi ruller ut i fire faser. Hver fase rulles ut i dev før prod, med én toggle i
 - Hovedkategoriene følger `abstraksjoner-kap8.md`. Første versjon gir bare Arbeidstaker, Selvstendig næringsdrivende og Arbeidstaker og selvstendig næringsdrivende, og ingen tilleggskategorier. De andre hovedkategoriene legges til i kontrakten når Spleis kan få dem.
 - Gir en søknad en annen yrkesaktivitet, for eksempel frilanser eller arbeidsledig, svarer ikke tjenesten på behovet, og feilen logges. Det skal ikke skje, fordi Spleis forkaster slike perioder i `Start` med RV_SØ_39 og ikke sender søknader fra forkastede perioder.
 - Tjenesten ser ikke på `andreInntektskilder`.
-- Lagring følger mønsteret fra `opptjeningsvurdering` i sp-vilkarsproving. Hver avgjørelse er en ny rad med egen ID, person, skjæringstidspunkt, hovedkategori, kilde (`automatisk`, `saksbehandler` eller `spleis`), vurderingstidspunkt og søknads-ID-ene som ble brukt. Vurderingstidspunktet er når avgjørelsen ble tatt, også når den er hentet fra Spleis. I tillegg har raden `opprettet`, som databasen setter når raden lagres. Applikasjonen leser og skriver ikke `opprettet`. Gjeldende avgjørelse er den med nyest vurderingstidspunkt for person og skjæringstidspunkt. En innfylt avgjørelse har vurderingstidspunktet fra Spleis. Fylles den inn etter en automatisk avgjørelse for samme skjæringstidspunkt, er den automatiske avgjørelsen fortsatt gjeldende. Det er riktig, fordi den automatiske avgjørelsen er den Spleis har spurt om sist.
-- Samme søknadssett gir gjeldende ID tilbake. Et nytt søknadssett gir en ny automatisk avgjørelse. En innfylt avgjørelse har ikke noe søknadssett, så det første behovet etter innfyllingen gir alltid en ny avgjørelse.
+- Lagring følger mønsteret fra `opptjeningsvurdering` i sp-vilkarsproving. Hver avgjørelse er en ny rad med egen ID, person, skjæringstidspunkt, hovedkategori, kilde (`automatisk`, `saksbehandler` eller `spleis`), vurderingstidspunkt og søknads-ID-ene som ble brukt. Vurderingstidspunktet er når avgjørelsen ble tatt, også når den er hentet fra Spleis. I tillegg har raden `opprettet`, som databasen setter når raden lagres. Applikasjonen leser og skriver ikke `opprettet`. Gjeldende avgjørelse er den med nyest vurderingstidspunkt for person og skjæringstidspunkt. En avgjørelse fra backfill har vurderingstidspunktet fra Spleis. Lagres den etter en automatisk avgjørelse for samme skjæringstidspunkt, er den automatiske avgjørelsen fortsatt gjeldende. Det er riktig, fordi den automatiske avgjørelsen er den Spleis har spurt om sist.
+- Samme søknadssett gir gjeldende ID tilbake. Et nytt søknadssett gir en ny automatisk avgjørelse. En avgjørelse fra backfill har ikke noe søknadssett, så det første behovet etter backfill gir alltid en ny avgjørelse.
 - Hvis Spedisjon feiler eller mangler en søknad, svarer ikke tjenesten på behovet.
 
-### Innfylling av historikken i sp-rettighetskategori
+### Backfill av historikken i sp-rettighetskategori
 
-- Innfyllingen følger mønsteret for opptjening i sp-vilkarsproving: `SpleisClient`, `PersonAvstemmingService` og fallbacken i `OpptjeningsvurderingResultatRiver`.
+- Backfill følger mønsteret for opptjening i sp-vilkarsproving: `SpleisClient`, `PersonAvstemmingService` og fallbacken i `OpptjeningsvurderingResultatRiver`.
 - Nytt endepunkt i spleis-api, `POST /api/rettighetskategorier`, med fødselsnummer inn. For hver rettighetskategori-ID i de fulle vilkårsgrunnlagene i historikken svarer det med ID, skjæringstidspunkt, opprettet, kilden til vilkårsgrunnlaget (`SPLEIS` eller `INFOTRYGD`), om inntektsgrunnlaget har selvstendig inntekt og yrkesaktivitetstypene til den første vedtaksperioden for hver yrkesaktivitet som bruker vilkårsgrunnlaget, delt i aktive og forkastede perioder. Spleis velger den første perioden slik den gjør i behovet `Rettighetskategori`, hver for seg blant de aktive og de forkastede periodene. Opprettet tas fra det første historikkinnslaget med ID-en, som i `OpptjeningApi`.
 - sp-rettighetskategori avgjør hovedkategorien slik Spleis gjorde:
   - Yrkesaktivitetstypene til de første periodene som ikke er forkastet, gir hovedkategorien. Arbeidstaker gir Arbeidstaker. Selvstendig, fisker, jordbruker og barnepasser gir Selvstendig næringsdrivende. Begge deler gir Arbeidstaker og selvstendig næringsdrivende.
   - Vilkårsgrunnlag fra Infotrygd gir Arbeidstaker, som for opptjening.
   - Bruker ingen aktive perioder vilkårsgrunnlaget, bruker vi de første forkastede periodene. Bruker ingen perioder det, gir selvstendig inntekt i inntektsgrunnlaget Selvstendig næringsdrivende og ellers Arbeidstaker.
-- Innfylte avgjørelser lagres med ID-en fra Spleis, kilde `spleis`, vurderingstidspunktet fra opprettet i Spleis og uten søknads-ID-er. Lagringen er idempotent på ID.
+- Avgjørelser fra backfill lagres med ID-en fra Spleis, kilde `spleis`, vurderingstidspunktet fra opprettet i Spleis og uten søknads-ID-er. Lagringen er idempotent på ID.
 - `RettighetskategoriResultat` slår først opp lokalt. Finnes ikke ID-en, henter tjenesten historikken for personen synkront, lagrer ID-ene som mangler, fører migreringsloggen og svarer. Finnes ID-en heller ikke i Spleis, svarer ikke tjenesten, og feilen logges.
 - `person_avstemming` henter historikken hver gang og lagrer ID-ene som mangler. sp-vilkarsproving hopper over personer som står i migreringsloggen. Det gjør ikke sp-rettighetskategori, fordi Spleis kan lage nye deterministiske ID-er etter forrige avstemming, for eksempel for vilkårsgrunnlag fra Infotrygd.
-- Migreringsloggen har én rad per innfylling med fødselsnummer, tidspunkt, antall ID-er fra Spleis og antall nye. Når alle personer med vilkårsgrunnlag står i loggen, og nye ID-er ikke lenger dukker opp, kan vi fjerne innfyllingen (fase 4).
-- Spleis sender `person_avstemming` for hver person én gang i måneden. Fase 3 venter ikke på en full runde, fordi `RettighetskategoriResultat` fyller inn ID-en med en gang. Fase 4 venter på den.
+- Migreringsloggen har én rad per backfill med fødselsnummer, tidspunkt, antall ID-er fra Spleis og antall nye. Når alle personer med vilkårsgrunnlag står i loggen, og nye ID-er ikke lenger dukker opp, kan vi fjerne backfill (fase 4).
+- Spleis sender `person_avstemming` for hver person én gang i måneden. Fase 3 venter ikke på en full runde, fordi `RettighetskategoriResultat` kjører backfill for ID-en med en gang. Fase 4 venter på den.
 
 ### Endringer i Spleis
 
@@ -174,7 +174,7 @@ Spock og spammer lister tilstandsnavnene fra `vedtaksperiode_endret` og `påminn
 - JSON-en bruker det eksisterende feltet `type` som diskriminator. I dag har feltet verdiene `Vilkårsprøving` og `Infotrygd`, og den nye typen får `Rettighetskategori`. Alle eksisterende vilkårsgrunnlag har allerede `type`, så de trenger ingen migrering. I `VilkårsgrunnlagElementData` blir `inntektsgrunnlag`, `opptjeningsvurderingId` og `medlemskapsvurderingId` nullbare, og de mangler bare for den nye typen. DTO-ene `VilkårsgrunnlagInnDto` og `VilkårsgrunnlagUtDto` får en ny undertype.
 - Eldre versjoner av Spleis kan ikke lese `type: Rettighetskategori`. Støtten for typen må derfor være deployet med togglen for fase 1 av før togglen skrus på. Etter det går vi tilbake ved å skru av togglen, ikke ved å rulle Spleis tilbake til en versjon uten støtten.
 - `vilkårsgrunnlagFor(skjæringstidspunkt)` og annen kode som spør etter vilkårsgrunnlaget, ser bare fulle vilkårsgrunnlag. Dermed virker sjekker som «trenger perioden vilkårsprøving?», beregning, overstyringer og RV_SØ_53 som i dag. Bare `AvventerVilkårsprøving` og `AvventerVilkårsprøvingRevurdering` henter det minimale vilkårsgrunnlaget, med et eget oppslag.
-- Konsumentene av historikken hopper over den nye typen: byggerne for Speil, `OpptjeningApi`, `MedlemskapApi`, `UtkastTilVedtakBuilder`, Spanner-DTO-en og endepunktet for rettighetskategorier i spleis-api. ID-ene i minimale vilkårsgrunnlag kommer fra sp-rettighetskategori og trenger ikke fylles inn.
+- Konsumentene av historikken hopper over den nye typen: byggerne for Speil, `OpptjeningApi`, `MedlemskapApi`, `UtkastTilVedtakBuilder`, Spanner-DTO-en og endepunktet for rettighetskategorier i spleis-api. ID-ene i minimale vilkårsgrunnlag kommer fra sp-rettighetskategori og trenger ikke backfill.
 - Ryddingen av vilkårsgrunnlag for skjæringstidspunkter som ikke lenger finnes (`oppdaterHistorikk`), gjelder også minimale vilkårsgrunnlag. Forkastes sykefraværstilfellet før vilkårsprøving, forsvinner det minimale vilkårsgrunnlaget med det.
 
 ### Endringer i sp-vilkarsproving
@@ -212,7 +212,7 @@ Spock og spammer lister tilstandsnavnene fra `vedtaksperiode_endret` og `påminn
   - at en søknad fra en annen yrkesaktivitet enn AT eller SN gir ubesvart behov
   - samme og endret søknadssett, der samme søknadssett gir samme ID og hovedkategori, og at en overstyring ikke overskrives
   - at Spedisjon-feil gir ubesvart behov
-  - `RettighetskategoriResultat` for en ukjent ID, som fyller inn personen og svarer
+  - `RettighetskategoriResultat` for en ukjent ID, som kjører backfill for personen og svarer
   - en ID som ikke finnes i Spleis heller, som gir ubesvart behov
   - `person_avstemming` to ganger, der andre gang bare lagrer nye ID-er og begge gangene føres i migreringsloggen
   - hovedkategorien for historiske ID-er, med de samme personene som i testene for spleis-api
@@ -235,7 +235,7 @@ Spock og spammer lister tilstandsnavnene fra `vedtaksperiode_endret` og `påminn
 ## Andre merknader
 
 - Begrepene følger `GLOSSARY.md`, og hovedkategoriene følger `docs/abstraksjoner-kap8.md`.
-- ADR 0001 forklarer hvorfor Spleis bare lagrer ID-en. ADR 0002 forklarer hvorfor alle vilkårsgrunnlag får ID, og hvorfor sp-rettighetskategori fyller inn historikken. ADR 0003 forklarer hvorfor ID-en lagres i et minimalt vilkårsgrunnlag og ikke på behandlingen.
+- ADR 0001 forklarer hvorfor Spleis bare lagrer ID-en. ADR 0002 forklarer hvorfor alle vilkårsgrunnlag får ID, og hvorfor sp-rettighetskategori kjører backfill av historikken. ADR 0003 forklarer hvorfor ID-en lagres i et minimalt vilkårsgrunnlag og ikke på behandlingen.
 - `docs/forenkle-tilstandsmaskin.md` er oppdatert med ny plassering av `AvventerRettighetskategori`. Tilstanden kommer etter at tilstandsmaskinen er slått sammen.
 - Vi har gått gjennom de andre konsumentene av tilstandsnavnene. De trenger ikke endringer:
   - spetakkel, spaghet, `spre/oppgaver`, `VedtaksperiodeReberegnetRiver` i Spesialist og modellene i bomlo-dbt filtrerer på enkelttilstander som ikke berøres.
@@ -253,4 +253,4 @@ Spock og spammer lister tilstandsnavnene fra `vedtaksperiode_endret` og `påminn
 - Konsistenssjekken i `AvventerHistorikk` (RV_RK_2) blir værende. Den sjekker om yrkesaktiviteten til en bestemt periode stemmer med rettighetskategorien, og fanger perioder som ikke går gjennom `AvventerRettighetskategori`, for eksempel forlengelser og perioder som kommer etter at skjæringstidspunktet har fått vilkårsgrunnlag.
 - Sammenligningen i brukerhistorie 37 teller forkastede sykefraværstilfeller, det vil si person og skjæringstidspunkt med minst én RV_RK_1, RV_RK_2 eller RV_SØ_53. Den teller ikke perioder eller varsler. Etter togglen får alle periodene i tilfellet RV_RK_1, mens RV_SØ_53 i dag bare kommer på søknaden som gir kombinasjonen, og de andre periodene forkastes med RV_SØ_31 til RV_SØ_38. Antall varsler kan derfor ikke sammenlignes direkte.
 - Åpent spørsmål for overstyringsflyten: Et endret søknadssett gir en ny automatisk avgjørelse. Når saksbehandler kan overstyre, vil en korrigert søknad dermed kunne erstatte en overstyring uten at noen ser det. Vi må avklare hva som skal skje før overstyring tas i bruk.
-- Åpent spørsmål for innfyllingen: Vi bruker forkastede perioder bare når ingen aktive perioder bruker vilkårsgrunnlaget. Vi må sjekke mot data i prod at det gir samme hovedkategori som Spleis kom fram til, før fase 3 rulles ut i prod. Spesielt gjelder det vilkårsgrunnlag der både arbeidstaker- og selvstendig-perioder er aktive. Etter dagens RV_SØ_53 skal det ikke finnes slike.
+- Åpent spørsmål for backfill: Vi bruker forkastede perioder bare når ingen aktive perioder bruker vilkårsgrunnlaget. Vi må sjekke mot data i prod at det gir samme hovedkategori som Spleis kom fram til, før fase 3 rulles ut i prod. Spesielt gjelder det vilkårsgrunnlag der både arbeidstaker- og selvstendig-perioder er aktive. Etter dagens RV_SØ_53 skal det ikke finnes slike.
