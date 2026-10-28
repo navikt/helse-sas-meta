@@ -10,11 +10,11 @@
 
 **Blokkeres av:** Ingen. Endringene kan deployes før Spleis sender tilstanden.
 
-**Status:** pågår
+**Status:** ferdig
 
 ## Akseptansekriterier
 
 - [x] `nestePåminnelsetidspunkt` i `Tilstandsendringer.kt` i Spock gir påminnelse etter én time for `AVVENTER_RETTIGHETSKATEGORI`, sammen med `AVVENTER_VILKÅRSPRØVING`.
 - [x] En test i `PåminnelseplanleggerTest` sjekker intervallet for `AVVENTER_RETTIGHETSKATEGORI`.
 - [x] `AVVENTER_RETTIGHETSKATEGORI` er med i `interessanteTilstander` i `PåminnelseMonitor` i spammer.
-- [ ] Spock og spammer er deployet i dev og prod før togglen for fase 1 skrus på i dev.
+- [x] Spock og spammer er deployet i dev og prod før togglen for fase 1 skrus på i dev.

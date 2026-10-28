@@ -16,7 +16,7 @@ Tickets for [Avklare rettighetskategori i sp-rettighetskategori](../../specs/avk
 | 10 | [Konsistenssjekk av rettighetskategori i `AvventerHistorikk`](10-konsistenssjekk-i-avventer-historikk.md) | 3 | spleis | 06, 08 | klar |
 | 11 | [Skru på togglen for fase 3](11-skru-pa-togglen-for-fase-3.md) | 3 | spleis, sp-rettighetskategori | 09, 10 | klar |
 | 12 | [Fjerne innfyllingen](12-fjerne-innfyllingen.md) | 4 | sp-rettighetskategori, spleis | 11 | klar |
-| 13 | [`AVVENTER_RETTIGHETSKATEGORI` i Spock og spammer](13-tilstanden-i-spock-og-spammer.md) | 1 | spock, spammer | Ingen | pågår |
+| 13 | [`AVVENTER_RETTIGHETSKATEGORI` i Spock og spammer](13-tilstanden-i-spock-og-spammer.md) | 1 | spock, spammer | Ingen | ferdig |
 
 ```mermaid
 flowchart LR
@@ -47,5 +47,5 @@ flowchart LR
     T11 --> T12
 
     classDef ferdig fill:#c8e6c9,stroke:#2e7d32,color:#1b5e20
-    class T01,T02 ferdig
+    class T01,T02,T13 ferdig
 ```
