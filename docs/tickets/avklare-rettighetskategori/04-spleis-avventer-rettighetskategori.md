@@ -1,0 +1,37 @@
+# 04: `AvventerRettighetskategori` i Spleis bak toggle
+
+**Spec:** [Avklare rettighetskategori i sp-rettighetskategori](../../specs/avklare-rettighetskategori.md)
+
+**Fase:** 1
+
+**Repo:** `spleis`
+
+**Hva skal lages:** Når togglen for fase 1 er på, går perioder gjennom den nye tilstanden `AvventerRettighetskategori` på vei til vilkårsprøving. Spleis spør sp-rettighetskategori og lagrer rettighetskategori-ID-en den får tilbake i et minimalt vilkårsgrunnlag for skjæringstidspunktet. Det fulle vilkårsgrunnlaget i `AvventerVilkårsprøving` erstatter det minimale og tar med seg ID-en i stedet for den deterministiske. Se ADR 0003. Spleis bruker ikke kategorien ennå, og RV_SØ_53 kjører når søknaden kommer inn, som i dag. Når togglen er av, virker Spleis som før, og vilkårsgrunnlaget får deterministisk ID.
+
+**Blokkeres av:** [03: Rettighetskategori-ID på alle vilkårsgrunnlag i Spleis](03-rettighetskategori-id-pa-alle-vilkarsgrunnlag.md). Behovkontrakten står i specen, og testene bruker testløsninger.
+
+**Status:** klar
+
+## Akseptansekriterier
+
+- [ ] Med togglen på går perioden fra `AvventerBlokkerendePeriode` til `AvventerRettighetskategori` og videre til `AvventerVilkårsprøving` når løsningen kommer.
+- [ ] Med togglen på går revurdering gjennom `AvventerRettighetskategori` før `AvventerVilkårsprøvingRevurdering`.
+- [ ] Perioden går alltid gjennom tilstanden på vei til vilkårsprøving. Spleis sjekker ikke om skjæringstidspunktet allerede har rettighetskategori-ID.
+- [ ] Behovet `Rettighetskategori` har person, skjæringstidspunkt og referanse-ID-ene til sendte søknader fra perioder som ikke er forkastet, overlapper skjæringstidspunktet og har samme skjæringstidspunkt, på tvers av yrkesaktiviteter.
+- [ ] Spleis lagrer bare ID-en, ikke hovedkategorien (ADR 0001).
+- [ ] `VilkårsgrunnlagElement` har en ny undertype, `Rettighetskategorigrunnlag`, med bare `vilkårsgrunnlagId`, `skjæringstidspunkt` og `rettighetskategoriId`. `Grunnlagsdata` og `InfotrygdVilkårsgrunnlag` får en felles sealed overklasse med `inntektsgrunnlag`, `opptjeningsvurderingId` og `medlemskapsvurderingId`.
+- [ ] Løsningen på `Rettighetskategori` lagrer et minimalt vilkårsgrunnlag i et nytt innslag i vilkårsgrunnlagshistorikken. Det erstatter et eldre minimalt vilkårsgrunnlag for samme skjæringstidspunkt, men aldri et fullt.
+- [ ] `AvventerVilkårsprøving` og `AvventerVilkårsprøvingRevurdering` henter ID-en fra det minimale vilkårsgrunnlaget, og det fulle vilkårsgrunnlaget erstatter det med samme ID.
+- [ ] `vilkårsgrunnlagFor` og annen eksisterende kode som spør etter vilkårsgrunnlaget, ser bare fulle vilkårsgrunnlag. Byggerne for Speil, `OpptjeningApi`, `MedlemskapApi`, `UtkastTilVedtakBuilder` og Spanner-DTO-en hopper over den nye typen.
+- [ ] JSON-en bruker det eksisterende feltet `type` med den nye verdien `Rettighetskategori`. Eksisterende vilkårsgrunnlag leses uten migrering. I `VilkårsgrunnlagElementData` er `inntektsgrunnlag`, `opptjeningsvurderingId` og `medlemskapsvurderingId` nullbare bare for den nye typen.
+- [ ] Støtten for den nye typen i modellen og serde er deployet med togglen av før togglen skrus på. Eldre versjoner av Spleis kan ikke lese typen, så når den er tatt i bruk, går vi tilbake ved å skru av togglen, ikke ved å rulle tilbake koden.
+- [ ] En serde-test sjekker at en person med minimalt vilkårsgrunnlag kan lagres og leses igjen, og at eksisterende JSON leses som før.
+- [ ] Et ubesvart behov sendes på nytt ved påminnelse.
+- [ ] Med togglen av går perioden rett til `AvventerVilkårsprøving`, som i dag. Spleis lager ikke minimalt vilkårsgrunnlag, og det fulle vilkårsgrunnlaget får deterministisk ID.
+- [ ] RV_SØ_53 ved søknadshåndtering er uendret uansett toggle.
+- [ ] Tilstanden heter `AVVENTER_RETTIGHETSKATEGORI` i `TilstandType`, `TilstandTypeData`, `VedtaksperiodetilstandDto` og `SpannerPersonDto`, og den er med i `vedtaksperiode_endret`. Det er én tilstand for både førstegangsbehandling og revurdering.
+- [ ] Tilstanden er med i serde i samme deploy som støtten for det minimale vilkårsgrunnlaget, før togglen skrus på. Eldre versjoner av Spleis kan ikke lese person-JSON med tilstanden.
+- [ ] spleis-api mapper tilstanden til `Periodetilstand.ForberederGodkjenning` for Speil, som `AVVENTER_VILKÅRSPRØVING`.
+- [ ] Spock og spammer håndterer tilstandsnavnet, se [13: `AVVENTER_RETTIGHETSKATEGORI` i Spock og spammer](13-tilstanden-i-spock-og-spammer.md). De andre konsumentene av tilstandsnavnene trenger ingen endringer, se «Andre merknader» i specen.
+- [ ] Behovet er lagt inn i `BehovkontraktTest`.
+- [ ] E2e-tester i sykepenger-model dekker: bare arbeidstaker, bare selvstendig næringsdrivende, forlengelse som ikke går gjennom tilstanden, revurdering som flytter skjæringstidspunktet, at det fulle vilkårsgrunnlaget erstatter det minimale med samme ID, et sykefraværstilfelle som forkastes før vilkårsprøving der det minimale vilkårsgrunnlaget forsvinner, ubesvart behov med påminnelse og togglen av.
