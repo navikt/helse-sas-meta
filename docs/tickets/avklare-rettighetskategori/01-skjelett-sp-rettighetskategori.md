@@ -10,11 +10,11 @@
 
 **Blokkeres av:** Ingen (kan starte med en gang)
 
-**Status:** pågår
+**Status:** ferdig
 
 ## Akseptansekriterier
 
-- [ ] Appen er satt opp med sykepenger-gradle-plugins, standard workflows og Nais-manifester i `.nais/`, og er deployet til dev.
+- [x] Appen er satt opp med sykepenger-gradle-plugins, standard workflows og Nais-manifester i `.nais/`, og er deployet til dev.
 - [x] Appen har egen Postgres-database med Flyway-migreringer.
 - [x] Appen har tilgang til Spedisjons API for meldinger, og Spedisjon tillater kall fra appen.
 - [x] Behovet `Rettighetskategori` med person, skjæringstidspunkt og én søknads-ID gir en løsning med en rettighetskategori-ID og hovedkategorien. Spleis bruker hovedkategorien til å forkaste kategorier den ikke støtter i mottaket av løsningen, men lagrer den ikke.
