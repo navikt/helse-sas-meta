@@ -96,7 +96,7 @@ Vi ruller ut i fire faser. Hver fase rulles ut i dev før prod, med én toggle i
   - `RettighetskategoriResultat`: `fødselsnummer` og `RettighetskategoriResultat.rettighetskategoriId`. Løsningen er `@løsning.RettighetskategoriResultat.hovedkategori`.
   - Hovedkategorien er `ARBEIDSTAKER`, `SELVSTENDIG_NÆRINGSDRIVENDE` eller `ARBEIDSTAKER_OG_SELVSTENDIG_NÆRINGSDRIVENDE`.
 - Tjenesten henter søknadene synkront fra Spedisjons API for meldinger med de interne dokument-ID-ene. Spleis trenger ikke den eksterne søknads-ID-en.
-- Hver søknad mappes til yrkesaktivitet på samme måte som Spleis gjør i dag, ut fra søknadstypen og `arbeidssituasjon`. Dette gjelder også fisker, jordbruker, barnepasser og «annet». En søknad fra arbeidsledig med `tidligereArbeidsgiverOrgnummer` gir arbeidstaker. I Spleis står mappingen tre steder:
+- Hver søknad mappes til yrkesaktivitet på samme måte som Spleis gjør i dag, ut fra søknadstypen og `arbeidssituasjon`. Dette gjelder også fisker, jordbruker, barnepasser og «annet». Unntaket er søknader fra arbeidsledig med `tidligereArbeidsgiverOrgnummer`, som Spleis behandler som arbeidstaker. De gjelder i praksis bare forlengelser, som Spleis ikke sender, så tjenesten behandler dem som andre søknader fra arbeidsledig. I Spleis står mappingen tre steder:
   - preconditions i `sykepenger-mediators/.../spleis/meldinger/Sendt*SøknaderRiver.kt`
   - kallet til `builder.arbeidstaker`, `selvstendig`, `frilans` eller `arbeidsledig` i `.../meldinger/model/SendtSøknad*Message.kt`
   - RV_SØ_39 for frilans og arbeidsledig i `sykepenger-model/.../person/Yrkesaktivitet.kt`
