@@ -3,7 +3,6 @@
 /build
 *.swp
 .pull-state
-.env
 /behovsakkumulator
 /bomlo-bigquery-terraform
 /bomlo-cli

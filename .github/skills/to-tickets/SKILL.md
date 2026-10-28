@@ -1,6 +1,6 @@
 ---
 name: to-tickets
-description: "Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges, written as Trello cards in docs/tickets/<feature>/trello.json in the sas-meta repo."
+description: "Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges, written as one Markdown file per ticket in docs/tickets in the sas-meta repo."
 disable-model-invocation: true
 ---
 
@@ -8,9 +8,9 @@ disable-model-invocation: true
 
 Break a plan, spec, or conversation into a set of **tickets**: tracer-bullet vertical slices, each declaring the tickets that **block** it.
 
-Tickets are written as Trello cards in `docs/tickets/<feature>/trello.json` at the root of the sas-meta repo (helse-sas-meta), even when the work concerns one of the app repos checked out underneath it. Do not publish the tickets to an issue tracker or to Trello yourself; the user pushes `trello.json` to Trello with a script (see step 6).
+Tickets are written as Markdown files in `docs/tickets/` at the root of the sas-meta repo (helse-sas-meta), even when the work concerns one of the app repos checked out underneath it. Do not publish the tickets to an issue tracker.
 
-Write the tickets in Norwegian bokmål and follow the klarspråk principles (see the `klarsprak` skill). Use the Norwegian field names from the JSON format below. Keep code identifiers, state names and API fields unchanged.
+Write the tickets in Norwegian bokmål and follow the klarspråk principles (see the `klarsprak` skill). Use the Norwegian headings and labels from the template below. Keep code identifiers, state names and API fields unchanged.
 
 ## Process
 
@@ -57,52 +57,39 @@ Ask the user:
 
 Iterate until the user approves the breakdown.
 
-### 5. Write the tickets to trello.json
+### 5. Write the tickets to docs/tickets
 
-We have no Trello MCP yet, so tickets reach Trello through a JSON file and a script. Write all tickets for a feature to `docs/tickets/<feature-slug>/trello.json` in the sas-meta repo, one card per ticket, numbered from `01` in dependency order (blockers first). Use kebab-case for `<feature-slug>`. If the tickets come from a spec in `docs/specs/`, use the same slug as the spec file. Create the directory if it doesn't exist. Don't write Markdown files for the tickets.
+Write one file per ticket under `docs/tickets/<feature-slug>/<NN>-<slug>.md` in the sas-meta repo, numbered from `01` in dependency order (blockers first). Use kebab-case for `<feature-slug>` and `<slug>`. If the tickets come from a spec in `docs/specs/`, use the same slug as the spec file. Create the directories if they don't exist. Use the per-ticket file template below: one ticket per file, never a single combined file.
 
-If `trello.json` already exists for the feature, read it first. Update existing cards instead of creating duplicates, and continue the numbering for new ones.
+If tickets for the same feature already exist, read them first. Update existing tickets instead of creating duplicates, and continue the numbering for new ones.
 
 Work the **frontier**: any ticket whose blockers are all done. For a purely linear chain that means top to bottom.
 
-The fields on each card follow Trello's REST API (`POST /1/cards`, `POST /1/cards/{id}/checklists`, `POST /1/checklists/{id}/checkItems`):
+Also write `docs/tickets/<feature-slug>/index.md`, so the tickets can be navigated on GitHub Pages. It starts with `# Tickets: <feature>`, links to the spec, and has a table with number, linked title, repo and blockers, followed by a Mermaid `flowchart` of the blocking edges. Use relative links to the `.md` files; GitHub Pages turns them into `.html`. Then add a link to `tickets/<feature-slug>/` in `docs/index.html`, in the same section as the spec. Update both when you add or change tickets.
 
-```json
-{
-  "feature": "<feature-slug>",
-  "label": { "name": "<Feature name, e.g. Avklare rettighetskategori>", "color": "purple" },
-  "cards": [
-    {
-      "id": "01",
-      "name": "01: <Tittel>",
-      "desc": "**Spec:** [<Spec title>](https://github.com/navikt/helse-sas-meta/blob/main/docs/specs/<feature-slug>.md)\n\n**Repo:** `spleis`\n\n**Hva skal lages:** ...",
-      "status": "klar",
-      "blokkeresAv": [],
-      "checklists": [
-        { "name": "Akseptansekriterier", "checkItems": [{ "name": "Kriterium 1", "checked": false }] }
-      ]
-    }
-  ]
-}
-```
+Do NOT modify the source spec, except for adding a link to the ticket index right below its title. Tell the user the paths of the files when you're done.
 
-- `label` is the tag every card in the feature gets. Choose the name when you write the tickets. The script creates the label on the board if it doesn't exist. `color` is one of Trello's label colours: `green`, `yellow`, `orange`, `red`, `purple`, `blue`, `sky`, `lime`, `pink` or `black`.
-- `id` is the two-digit ticket number, and `name` is `<NN>: <Tittel>`.
-- `desc` is Markdown with these fields, separated by blank lines:
-  - `**Spec:**` an absolute link to the source spec, `https://github.com/navikt/helse-sas-meta/blob/main/docs/specs/<feature-slug>.md`, if there is one. Otherwise omit it. Trello doesn't know the repo, so never use relative links.
-  - `**Fase:**` the phase, if the spec has phases. Otherwise omit it.
-  - `**Repo:**` the app repo(s) in sas-meta the ticket touches, for example `spleis` or `speil`.
-  - `**Hva skal lages:**` the end-to-end behaviour this ticket makes work, from the user's perspective, not a layer-by-layer implementation list.
+<local-ticket-template>
 
-  Don't put blocking edges or links to files in the repo (other than the spec) in `desc`; the script adds the blocking links.
-- `status` is `klar` (ready to be picked up), `pågår` (in progress) or `ferdig` (done). New tickets start as `klar`. The script doesn't select `ferdig` tickets by default.
-- `blokkeresAv` lists the `id`s of the blocking tickets. The script adds a «Blokkeres av i Trello» section to the card with links to the blocking cards, both those it creates and those already on the board.
-- `checklists` holds one checklist, `Akseptansekriterier`, with one check item per criterion and `checked: false`.
+# <NN>: <Tittel>
+
+**Spec:** a relative link to the source spec in `docs/specs/`, if there is one. Otherwise omit this line.
+
+**Repo:** the app repo(s) in sas-meta the ticket touches, for example `spleis` or `speil`.
+
+**Hva skal lages:** the end-to-end behaviour this ticket makes work, from the user's perspective, not a layer-by-layer implementation list.
+
+**Blokkeres av:** relative links to the tickets that gate this one, for example `[01: Tittel](01-slug.md)`, or "Ingen (kan starte med en gang)".
+
+**Status:** klar
+
+## Akseptansekriterier
+
+- [ ] Kriterium 1
+- [ ] Kriterium 2
+
+</local-ticket-template>
+
+Valid statuses are `klar` (ready to be picked up), `pågår` (in progress) and `ferdig` (done). New tickets start as `klar`.
 
 Avoid specific file paths or code snippets: they go stale fast. Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it and note briefly that it came from a prototype. Trim to the decision-rich parts, not a working demo, just the important bits.
-
-Do NOT modify the source spec. Tell the user the path of the file when you're done.
-
-### 6. Push to Trello
-
-Don't push to Trello yourself. Tell the user to run `node .bin/trello/push-tickets.mjs` from the sas-meta root. The script lets them pick a feature and which cards to create, and puts them in the list «Klar til spill». It reads the Trello credentials from `.bin/trello/.env`. `--dry-run` shows what would be created without writing to Trello.
