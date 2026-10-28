@@ -6,7 +6,7 @@
 
 **Repo:** `spleis`
 
-**Hva skal lages:** Når togglen for fase 1 er på, går perioder gjennom den nye tilstanden `AvventerRettighetskategori` på vei til vilkårsprøving. Spleis spør sp-rettighetskategori og lagrer rettighetskategori-ID-en den får tilbake i et minimalt vilkårsgrunnlag for skjæringstidspunktet. Det fulle vilkårsgrunnlaget i `AvventerVilkårsprøving` erstatter det minimale og tar med seg ID-en i stedet for den deterministiske. Se ADR 0003. Spleis bruker ikke kategorien ennå, og RV_SØ_53 kjører når søknaden kommer inn, som i dag. Når togglen er av, virker Spleis som før, og vilkårsgrunnlaget får deterministisk ID.
+**Hva skal lages:** Når togglen for fase 1 er på, går perioder gjennom den nye tilstanden `AvventerRettighetskategori` på vei til vilkårsprøving. Spleis spør sp-rettighetskategori og får tilbake en rettighetskategori-ID og hovedkategorien. Spleis lagrer bare ID-en, i et minimalt vilkårsgrunnlag for skjæringstidspunktet. Det fulle vilkårsgrunnlaget i `AvventerVilkårsprøving` erstatter det minimale og tar med seg ID-en i stedet for den deterministiske. Se ADR 0003. Spleis bruker ikke hovedkategorien i løsningen ennå, og RV_SØ_53 kjører når søknaden kommer inn, som i dag. Når togglen er av, virker Spleis som før, og vilkårsgrunnlaget får deterministisk ID.
 
 **Blokkeres av:** [03: Rettighetskategori-ID på alle vilkårsgrunnlag i Spleis](03-rettighetskategori-id-pa-alle-vilkarsgrunnlag.md). Behovkontrakten står i specen, og testene bruker testløsninger.
 
@@ -20,7 +20,7 @@
 - [ ] Behovet `Rettighetskategori` har person, skjæringstidspunkt og én referanse-ID per yrkesaktivitet med samme skjæringstidspunkt. Hvert arbeidsforhold er en egen yrkesaktivitet.
 - [ ] For hver yrkesaktivitet velger Spleis den første perioden, det vil si perioden med tidligste fom blant periodene som ikke er forkastet og har samme skjæringstidspunkt. Perioden trenger ikke å overlappe skjæringstidspunktet.
 - [ ] For den første perioden sender Spleis referanse-ID-en til den siste sendte søknaden. Forlengelser er ikke med.
-- [ ] Spleis lagrer bare ID-en, ikke hovedkategorien (ADR 0001).
+- [ ] Løsningen har ID-en og hovedkategorien. Spleis lagrer bare ID-en, ikke hovedkategorien (ADR 0001). Hovedkategorien finnes ikke i vilkårsgrunnlaget, på behandlingen eller noe annet sted i person-JSON-en, og Spleis bruker den ikke i denne ticketen.
 - [ ] `VilkårsgrunnlagElement` har en ny undertype, `Rettighetskategorigrunnlag`, med bare `vilkårsgrunnlagId`, `skjæringstidspunkt` og `rettighetskategoriId`. `Grunnlagsdata` og `InfotrygdVilkårsgrunnlag` får en felles sealed overklasse med `inntektsgrunnlag`, `opptjeningsvurderingId` og `medlemskapsvurderingId`.
 - [ ] Løsningen på `Rettighetskategori` lagrer et minimalt vilkårsgrunnlag i et nytt innslag i vilkårsgrunnlagshistorikken. Det erstatter et eldre minimalt vilkårsgrunnlag for samme skjæringstidspunkt, men aldri et fullt.
 - [ ] `AvventerVilkårsprøving` og `AvventerVilkårsprøvingRevurdering` henter ID-en fra det minimale vilkårsgrunnlaget, og det fulle vilkårsgrunnlaget erstatter det med samme ID.
@@ -35,5 +35,5 @@
 - [ ] Tilstanden er med i serde i samme deploy som støtten for det minimale vilkårsgrunnlaget, før togglen skrus på. Eldre versjoner av Spleis kan ikke lese person-JSON med tilstanden.
 - [ ] spleis-api mapper tilstanden til `Periodetilstand.ForberederGodkjenning` for Speil, som `AVVENTER_VILKÅRSPRØVING`.
 - [ ] Spock og spammer håndterer tilstandsnavnet, se [13: `AVVENTER_RETTIGHETSKATEGORI` i Spock og spammer](13-tilstanden-i-spock-og-spammer.md). De andre konsumentene av tilstandsnavnene trenger ingen endringer, se «Andre merknader» i specen.
-- [ ] Behovet er lagt inn i `BehovkontraktTest`.
+- [ ] Behovet og løsningen med ID og hovedkategori er lagt inn i `BehovkontraktTest`.
 - [ ] E2e-tester i sykepenger-model dekker: bare arbeidstaker, bare selvstendig næringsdrivende, forlengelse som ikke går gjennom tilstanden, flere perioder for samme yrkesaktivitet der bare den siste søknaden for den første perioden er med i behovet, to arbeidsgivere der den andre starter etter skjæringstidspunktet, en korrigert søknad for den første perioden, revurdering som flytter skjæringstidspunktet, at det fulle vilkårsgrunnlaget erstatter det minimale med samme ID, et sykefraværstilfelle som forkastes før vilkårsprøving der det minimale vilkårsgrunnlaget forsvinner, ubesvart behov med påminnelse og togglen av.

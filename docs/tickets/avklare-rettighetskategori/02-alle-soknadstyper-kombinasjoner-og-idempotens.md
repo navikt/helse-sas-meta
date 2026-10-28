@@ -18,7 +18,7 @@
 - [ ] Hovedkategoriene Arbeidstaker, Selvstendig næringsdrivende og Arbeidstaker og selvstendig næringsdrivende kan avgjøres. De andre hovedkategoriene fra `abstraksjoner-kap8.md` er ikke med i kontrakten ennå.
 - [ ] Gir en søknad en annen yrkesaktivitet, for eksempel frilanser eller arbeidsledig, svarer ikke tjenesten på behovet, og feilen logges. Det skal ikke skje, fordi Spleis forkaster slike perioder i `Start` med RV_SØ_39 og ikke sender søknader fra forkastede perioder.
 - [ ] Tjenesten ser ikke på `andreInntektskilder`.
-- [ ] Samme søknadssett for samme person og skjæringstidspunkt gir gjeldende ID tilbake, uten ny rad.
+- [ ] Samme søknadssett for samme person og skjæringstidspunkt gir gjeldende ID og hovedkategori tilbake, uten ny rad.
 - [ ] Et endret søknadssett gir en ny automatisk avgjørelse med ny ID.
 - [ ] En avgjørelse med kilde `saksbehandler` blir ikke overskrevet av en automatisk avgjørelse for samme søknadssett.
 - [ ] Når Spedisjon ikke svarer eller mangler en søknad, svarer ikke tjenesten på behovet, og feilen logges.

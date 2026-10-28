@@ -17,7 +17,8 @@
 - [ ] `AvventerHistorikk` slår opp hovedkategorien med `RettighetskategoriResultat` sammen med ytelsene, slik opptjening gjør.
 - [ ] Ny varselkode `RV_RK_2("Perioden har en annen yrkesaktivitetstype enn rettighetskategorien")`.
 - [ ] Stemmer ikke hovedkategorien med periodens yrkesaktivitetstype, forkastes perioden med RV_RK_2.
-- [ ] Konsistenssjekken er ikke det som forkaster de andre periodene i et kombinert sykefraværstilfelle. De forkastes sammen med perioden i `AvventerVilkårsprøving` (ticket 09) og kommer aldri til `AvventerHistorikk`.
-- [ ] Spleis slår alltid opp hovedkategorien når togglen er på. Det finnes ingen vei utenom sjekken for perioder uten rettighetskategori-ID.
+- [ ] Konsistenssjekken er ikke det som forkaster de andre periodene i et kombinert sykefraværstilfelle. De forkastes i mottaket av løsningen i `AvventerRettighetskategori` (ticket 09) og kommer aldri til `AvventerHistorikk`.
+- [ ] `AvventerHistorikk` er det eneste stedet Spleis slår opp hovedkategorien med `RettighetskategoriResultat`. Spleis slår alltid opp hovedkategorien når togglen er på. Det finnes ingen vei utenom sjekken for perioder uten rettighetskategori-ID.
+- [ ] `RettighetskategoriResultat` er lagt inn i `BehovkontraktTest`.
 - [ ] Er `RettighetskategoriResultat` ubesvart, står perioden i `AvventerHistorikk` og sender behovet på nytt ved påminnelse.
 - [ ] E2e-tester dekker: AT 1.–31. januar og SN 1.–28. februar med samme skjæringstidspunkt, der SN-søknaden kommer mens AT-perioden står i `AvventerVilkårsprøving` med et minimalt vilkårsgrunnlag. SN-perioden er ikke med i søknadssettet, venter til vilkårsgrunnlaget er fullt og forkastes med RV_RK_2, mens AT behandles videre. Testene dekker også en forlengelse av et vilkårsgrunnlag fra før fase 1 med deterministisk ID.

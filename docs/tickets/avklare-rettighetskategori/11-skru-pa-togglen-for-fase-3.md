@@ -20,4 +20,5 @@
 - [ ] Togglen er på i prod.
 - [ ] Forkastinger med RV_RK_1, RV_RK_2 og RV_SØ_53 til sammen etter togglen er sammenlignet med forkastingene med RV_SØ_53 fra før, og avvikene er forklart. Vi teller forkastede sykefraværstilfeller, ikke perioder eller varsler, fordi RV_RK_1 kommer på alle periodene i tilfellet, mens RV_SØ_53 bare kommer på søknaden som gir kombinasjonen. Avviket for perioder som ligger inntil hverandre, er beskrevet i specen.
 - [ ] Vi følger med på `RettighetskategoriResultat` som går til spleis-api, og på behov som ikke blir besvart.
+- [ ] Ingen hovedkategori er lagret i Spleis. Person-JSON-en har bare rettighetskategori-ID-en.
 - [ ] Vi vet hvordan vi skrur av togglen hvis noe går galt, og perioder som venter på `RettighetskategoriResultat` når togglen skrus av, går videre.
