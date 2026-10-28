@@ -1,5 +1,7 @@
 # Instruksjoner for sas-meta
 
+Alle repoer som nevnes i specer, tickets og ADR-er, er sjekket ut i `./<repo>` under sas-meta. Les dem der.
+
 ## Logging
 
 Når du skriver, endrer eller gjennomgår kode som bruker `sykepenger-libs/logging`, les og følg [skillen for sykepenger-logging](.github/skills/sykepenger-logging/SKILL.md).
