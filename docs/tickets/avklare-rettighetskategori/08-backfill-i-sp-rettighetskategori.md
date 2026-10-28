@@ -10,7 +10,7 @@
 
 **Blokkeres av:** [01: Skjelett for sp-rettighetskategori som svarer på behov](01-skjelett-sp-rettighetskategori.md), [07: Endepunkt for rettighetskategorier i spleis-api](07-spleis-api-rettighetskategorier.md)
 
-**Status:** pågår
+**Status:** ferdig
 
 ## Akseptansekriterier
 
@@ -21,12 +21,12 @@
 - [x] `person_avstemming` henter historikken hver gang og lagrer ID-ene som mangler, også for personer som står i migreringsloggen.
 - [x] Hver backfill som lagrer minst én ny ID, føres i migreringsloggen med fødselsnummer, tidspunkt, antall ID-er fra Spleis og antall nye. En backfill uten nye ID-er føres ikke.
 - [x] Rapid-tester dekker ukjent ID, ID som ikke finnes i Spleis, to avstemminger etter hverandre og hovedkategorien for de samme personene som i testene for spleis-api. spleis-api fakes i HTTP-klienten.
-- [ ] Backfill er rullet ut i dev og så i prod.
-- [ ] Vi har sjekket et utvalg personer i prod der hovedkategorien fra backfill er sammenlignet med hva Spleis gjorde, også for vilkårsgrunnlag der bare forkastede perioder finnes.
+- [x] Backfill er rullet ut i dev og så i prod.
+- [x] Vi har sjekket et utvalg personer i prod der hovedkategorien fra backfill er sammenlignet med hva Spleis gjorde, også for vilkårsgrunnlag der bare forkastede perioder finnes.
 
 ## Merknader
 
-- Backfill er laget i sp-rettighetskategori (commit `3ca2770`, omdøpt i `a122058`). Utrullingen og sjekken i prod gjenstår. Tilgangen til spleis-api i `.nais/sp-rettighetskategori.yaml` og tilgangen for sp-rettighetskategori i `.nais/spleis-api.yaml` i spleis må være deployet før backfill virker.
+- Backfill er laget i sp-rettighetskategori (commit `3ca2770`, omdøpt i `a122058`). Tilgangen til spleis-api i `.nais/sp-rettighetskategori.yaml` og tilgangen for sp-rettighetskategori i `.nais/spleis-api.yaml` i spleis må være deployet før backfill virker.
 - Får en ID fra Spleis yrkesaktivitetstypen `FRILANS` eller `ARBEIDSLEDIG` blant periodene som brukes, feiler backfill for hele personen, og feilen logges. Ingenting lagres, og ingenting føres i migreringsloggen.
 - Feiler backfill ved `person_avstemming`, logges feilen, og meldingen hoppes over. Neste avstemming prøver igjen.
 - En ID som allerede er lagret, blir ikke endret, heller ikke når den er avgjort automatisk. Er ID-en lagret for en annen person, feiler backfill for personen.
