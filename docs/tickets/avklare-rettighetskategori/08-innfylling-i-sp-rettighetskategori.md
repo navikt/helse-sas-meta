@@ -16,6 +16,7 @@
 
 - [ ] Hovedkategorien avgjøres slik specen beskriver, ut fra den første perioden for hver yrkesaktivitet: aktive perioder først, så forkastede perioder, så inntektsgrunnlaget. Vilkårsgrunnlag fra Infotrygd gir Arbeidstaker.
 - [ ] Innfylte avgjørelser lagres med ID-en fra Spleis, kilde `spleis`, vurderingstidspunktet fra opprettet i Spleis og uten søknads-ID-er. Lagringen er idempotent på ID.
+- [ ] En innfylt avgjørelse blir ikke gjeldende når det finnes en automatisk avgjørelse med nyere vurderingstidspunkt for samme person og skjæringstidspunkt.
 - [ ] `RettighetskategoriResultat` for en ukjent ID henter historikken for personen, lagrer ID-ene som mangler og svarer. Finnes ID-en heller ikke i Spleis, svarer ikke tjenesten, og feilen logges.
 - [ ] `person_avstemming` henter historikken hver gang og lagrer ID-ene som mangler, også for personer som står i migreringsloggen.
 - [ ] Hver innfylling føres i migreringsloggen med fødselsnummer, tidspunkt, antall ID-er fra Spleis og antall nye.
