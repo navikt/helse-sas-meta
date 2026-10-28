@@ -17,6 +17,7 @@
 - [ ] `AvventerHistorikk` slår opp hovedkategorien med `RettighetskategoriResultat` sammen med ytelsene, slik opptjening gjør.
 - [ ] Ny varselkode `RV_RK_2("Perioden har en annen yrkesaktivitetstype enn rettighetskategorien")`.
 - [ ] Stemmer ikke hovedkategorien med periodens yrkesaktivitetstype, forkastes perioden med RV_RK_2.
+- [ ] Konsistenssjekken er ikke det som forkaster de andre periodene i et kombinert sykefraværstilfelle. De forkastes sammen med perioden i `AvventerVilkårsprøving` (ticket 09) og kommer aldri til `AvventerHistorikk`.
 - [ ] Spleis slår alltid opp hovedkategorien når togglen er på. Det finnes ingen vei utenom sjekken for perioder uten rettighetskategori-ID.
 - [ ] Er `RettighetskategoriResultat` ubesvart, står perioden i `AvventerHistorikk` og sender behovet på nytt ved påminnelse.
 - [ ] E2e-tester dekker: AT 1.–31. januar og SN 1.–28. februar med samme skjæringstidspunkt, der SN forkastes med RV_RK_2 og AT behandles videre, og en forlengelse av et vilkårsgrunnlag fra før fase 1 med deterministisk ID.
