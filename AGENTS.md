@@ -10,6 +10,10 @@ Når du skriver, endrer eller gjennomgår kode som bruker `sykepenger-libs/loggi
 
 Skriv `GLOSSARY.md`, ADR-er i `docs/adr/`, specer i `docs/specs/` og tickets i `docs/tickets/` på norsk bokmål. Følg klarspråk-prinsippene.
 
+## Commits
+
+Følg [gitmoji-commit](.github/skills/gitmoji-commit/SKILL.md) når du skriver commit-meldinger, committer eller squasher commits.
+
 ## Skills fra mattpocock/skills
 
 Disse skillene er hentet fra [mattpocock/skills](https://github.com/mattpocock/skills) og er i bruk i sas-meta. De startes eksplisitt av brukeren:
