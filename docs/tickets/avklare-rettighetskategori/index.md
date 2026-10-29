@@ -7,7 +7,7 @@ Tickets for [Avklare rettighetskategori i sp-rettighetskategori](../../specs/avk
 | 01 | [Skjelett for sp-rettighetskategori som svarer på behov](01-skjelett-sp-rettighetskategori.md) | 1 | sp-rettighetskategori | Ingen | ferdig |
 | 02 | [Alle søknadstyper, kombinasjoner og idempotens i sp-rettighetskategori](02-alle-soknadstyper-kombinasjoner-og-idempotens.md) | 1 | sp-rettighetskategori | 01 | ferdig |
 | 03 | [Rettighetskategori-ID på alle vilkårsgrunnlag i Spleis](03-rettighetskategori-id-pa-alle-vilkarsgrunnlag.md) | 1 | spleis | Ingen | ferdig |
-| 04 | [`AvventerRettighetskategori` i Spleis bak toggle](04-spleis-avventer-rettighetskategori.md) | 1 | spleis | 03 | klar |
+| 04 | [`AvventerRettighetskategori` i Spleis bak toggle](04-spleis-avventer-rettighetskategori.md) | 1 | spleis | 03 | pågår |
 | 05 | [Rettighetskategori-ID i opptjeningsbehovet](05-rettighetskategori-id-til-opptjening.md) | 1 | spleis, sp-vilkarsproving | 04 | klar |
 | 06 | [Rulle ut fase 1](06-rulle-ut-fase-1.md) | 1 | spleis, sp-rettighetskategori | 02, 04, 05, 13 | klar |
 | 07 | [Endepunkt for rettighetskategorier i spleis-api](07-spleis-api-rettighetskategorier.md) | 2 | spleis | 03 | ferdig |
