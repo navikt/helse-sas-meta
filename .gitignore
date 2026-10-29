@@ -5,7 +5,6 @@
 .pull-state
 /behovsakkumulator
 /bomlo-bigquery-terraform
-/bomlo-cli
 /bomlo-data-analyse
 /bomlo-dbt
 /dataprodukter
