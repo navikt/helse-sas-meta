@@ -5,7 +5,6 @@
 .pull-state
 /behovsakkumulator
 /bomlo-bigquery-terraform
-/bomlo-dbt
 /dataprodukter
 /github-workflows
 /gradle-plugins
@@ -14,6 +13,7 @@
 /redteam
 /risk-mock
 /sp-data-analyse
+/sp-dbt
 /sp-forsikring
 /sp-forsikring-statistikk
 /sp-medlemskap
