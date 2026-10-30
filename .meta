@@ -2,7 +2,6 @@
   "projects": {
     "behovsakkumulator": "git@github.com:navikt/helse-behovsakkumulator.git",
     "bomlo-bigquery-terraform": "git@github.com:navikt/bomlo-bigquery-terraform.git",
-    "bomlo-data-analyse": "git@github.com:navikt/bomlo-data-analyse.git",
     "bomlo-dbt": "git@github.com:navikt/bomlo-dbt.git",
     "dataprodukter": "git@github.com:navikt/helse-dataprodukter.git",
     "github-workflows": "git@github.com:navikt/sykepenger-github-workflows.git",
@@ -11,6 +10,7 @@
     "libs": "git@github.com:navikt/sykepenger-libs.git",
     "redteam": "git@github.com:navikt/helse-redteam.git",
     "risk-mock": "git@github.com:navikt/helse-risk-mock.git",
+    "sp-data-analyse": "git@github.com:navikt/sp-data-analyse.git",
     "sp-forsikring": "git@github.com:navikt/helse-sp-forsikring.git",
     "sp-forsikring-statistikk": "git@github.com:navikt/helse-sp-forsikring-statistikk.git",
     "sp-medlemskap": "git@github.com:navikt/helse-sp-medlemskap.git",
