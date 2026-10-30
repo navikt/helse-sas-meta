@@ -4,7 +4,6 @@
 *.swp
 .pull-state
 /behovsakkumulator
-/bomlo-bigquery-terraform
 /dataprodukter
 /github-workflows
 /gradle-plugins
@@ -12,6 +11,7 @@
 /libs
 /redteam
 /risk-mock
+/sp-bigquery-terraform
 /sp-data-analyse
 /sp-dbt
 /sp-forsikring
