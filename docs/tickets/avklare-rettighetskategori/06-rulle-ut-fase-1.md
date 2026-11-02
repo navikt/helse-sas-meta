@@ -8,7 +8,7 @@
 
 **Hva skal lages:** Spleis går gjennom `AvventerRettighetskategori` i dev og prod. sp-rettighetskategori lager og lagrer avgjørelser, men Spleis bruker dem ikke. RV_SØ_53 kjører når søknaden kommer inn, som i dag. Togglen for fase 1 fjernes til slutt, slik at bare én toggle er i bruk om gangen.
 
-**Blokkeres av:** [02: Alle søknadstyper, kombinasjoner og idempotens i sp-rettighetskategori](02-alle-soknadstyper-kombinasjoner-og-idempotens.md), [04: `AvventerRettighetskategori` i Spleis bak toggle](04-spleis-avventer-rettighetskategori.md), [05: Rettighetskategori-ID i opptjeningsbehovet](05-rettighetskategori-id-til-opptjening.md), [13: `AVVENTER_RETTIGHETSKATEGORI` i Spock og spammer](13-tilstanden-i-spock-og-spammer.md)
+**Blokkeres av:** [02: Alle søknadstyper, kombinasjoner og idempotens i sp-rettighetskategori](02-alle-soknadstyper-kombinasjoner-og-idempotens.md), [04: `AvventerRettighetskategori` i Spleis bak toggle](04-spleis-avventer-rettighetskategori.md), [13: `AVVENTER_RETTIGHETSKATEGORI` i Spock og spammer](13-tilstanden-i-spock-og-spammer.md)
 
 **Status:** klar
 

@@ -18,12 +18,13 @@ Alle vilkårsgrunnlag skal ha en rettighetskategori-ID, også de som finnes fra 
 
 ### Faser
 
-Vi ruller ut i fire faser. Hver fase rulles ut i dev før prod, med én toggle i Spleis per fase. Togglen fra én fase er fjernet før neste fase får sin.
+Vi ruller ut i fem faser. Hver fase rulles ut i dev før prod, med én toggle i Spleis per fase som trenger toggle. Togglen fra én fase er fjernet før neste fase får sin.
 
 1. **Lage ID-er uten å bruke dem.** Alle vilkårsgrunnlag får rettighetskategori-ID. sp-rettighetskategori avgjør og lagrer nye rettighetskategorier, og Spleis går gjennom `AvventerRettighetskategori` og lagrer ID-en i et minimalt vilkårsgrunnlag. Spleis bruker ikke kategorien, heller ikke hovedkategorien i løsningen, og RV_SØ_53 kjører når søknaden kommer inn, som i dag.
 2. **Backfill av historikken.** sp-rettighetskategori lager avgjørelser for ID-er som bare finnes i Spleis. Det skjer ved `person_avstemming` og når tjenesten får et oppslag på en ID den ikke kjenner.
 3. **Flytte valideringen.** Valideringen flyttes fra søknadshåndteringen til `AvventerRettighetskategori` og `AvventerHistorikk`, med de nye varslene RV_RK_1 og RV_RK_2. RV_SØ_53 kjører bare når skjæringstidspunktet har fullt vilkårsgrunnlag. Fase 3 krever ikke at fase 2 er ferdig for alle personer, fordi oppslag på ukjente ID-er kjører backfill med en gang.
 4. **Rydde opp.** Når migreringsloggen ikke får nye rader etter en full runde med `person_avstemming`, fjerner vi backfill i sp-rettighetskategori og endepunktet i spleis-api.
+5. **Rettighetskategori-ID i opptjeningsbehovet.** Spleis sender rettighetskategori-ID-en med i opptjeningsbehovet til sp-vilkarsproving. Fasen starter når fase 1 er rullet ut, og kan gå parallelt med fase 2, 3 og 4. Den blokkerer ingen andre faser og trenger ingen toggle, fordi sp-vilkarsproving ikke bruker feltet ennå.
 
 ## Brukerhistorier
 
@@ -139,7 +140,7 @@ Vi ruller ut i fire faser. Hver fase rulles ut i dev før prod, med én toggle i
 - `AvventerVilkårsprøving` slår ikke opp hovedkategorien og forkaster ikke på grunnlag av den.
 - `AvventerVilkårsprøving` og `AvventerVilkårsprøvingRevurdering` henter rettighetskategori-ID-en fra det minimale vilkårsgrunnlaget for skjæringstidspunktet. Det fulle vilkårsgrunnlaget får samme ID, ved siden av `opptjeningsvurderingId`, og erstatter det minimale i et nytt historikkinnslag. Finnes det ikke noe minimalt vilkårsgrunnlag, for eksempel med togglen for fase 1 av, får det fulle vilkårsgrunnlaget den deterministiske ID-en.
 - Spleis gir ikke RV_RK_1 til perioder som kommer inn etter forkastingen. Når behandlingen gjenopptas for slike perioder, har Spleis ikke hovedkategorien, fordi den ikke er lagret, og vi vil ikke slå den opp på nytt bare for å velge varsel. Søknaden fanges av sjekken mot forkastede perioder og forkastes med et av varslene RV_SØ_31 til RV_SØ_38.
-- `AvventerVilkårsprøving` sender rettighetskategori-ID-en med i opptjeningsbehovet.
+- `AvventerVilkårsprøving` sender rettighetskategori-ID-en med i opptjeningsbehovet (fase 5).
 - `AvventerHistorikk` slår opp hovedkategorien med `RettighetskategoriResultat` sammen med ytelsene, slik opptjening gjør. Stemmer ikke hovedkategorien med periodens yrkesaktivitetstype, forkastes perioden med RV_RK_2.
 - Nye varselkoder i Spleis:
   - `RV_RK_1("Støtter ikke kombinasjonen arbeidstaker og selvstendig næringsdrivende")`
@@ -179,7 +180,7 @@ Spock og spammer lister tilstandsnavnene fra `vedtaksperiode_endret` og `påminn
 
 ### Endringer i sp-vilkarsproving
 
-- Opptjeningsbehovet får et nytt, valgfritt felt med rettighetskategori-ID. sp-vilkarsproving tar imot feltet, men bruker det ikke i første versjon.
+- Opptjeningsbehovet får et nytt, valgfritt felt med rettighetskategori-ID. sp-vilkarsproving tar imot feltet, men bruker det ikke i første versjon. Endringen hører til fase 5.
 
 ## Beslutninger om testing
 
