@@ -16,6 +16,7 @@
     "sp-medlemskap": "git@github.com:navikt/helse-sp-medlemskap.git",
     "sp-rettighetskategori": "git@github.com:navikt/sp-rettighetskategori.git",
     "sp-vilkarsproving": "git@github.com:navikt/helse-sp-vilkarsproving.git",
+    "sp-andre-ytelser": "git@github.com:navikt/sp-andre-ytelser.git",
     "spaghet": "git@github.com:navikt/helse-spaghet.git",
     "spalten": "git@github.com:navikt/helse-spalten.git",
     "spammer": "git@github.com:navikt/helse-spammer.git",
