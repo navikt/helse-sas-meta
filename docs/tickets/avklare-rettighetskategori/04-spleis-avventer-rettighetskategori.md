@@ -10,7 +10,7 @@
 
 **Blokkeres av:** [03: Rettighetskategori-ID på alle vilkårsgrunnlag i Spleis](03-rettighetskategori-id-pa-alle-vilkarsgrunnlag.md). Behovkontrakten står i specen, og testene bruker testløsninger.
 
-**Status:** pågår
+**Status:** ferdig
 
 ## Akseptansekriterier
 
@@ -26,7 +26,7 @@
 - [x] `AvventerVilkårsprøving` og `AvventerVilkårsprøvingRevurdering` henter ID-en fra det minimale vilkårsgrunnlaget, og det fulle vilkårsgrunnlaget erstatter det med samme ID.
 - [x] `vilkårsgrunnlagFor` og annen eksisterende kode som spør etter vilkårsgrunnlaget, ser bare fulle vilkårsgrunnlag. Byggerne for Speil, `OpptjeningApi`, `MedlemskapApi`, `UtkastTilVedtakBuilder` og Spanner-DTO-en hopper over den nye typen.
 - [x] `POST /api/rettighetskategorier` i spleis-api hopper over den nye typen, og `RettighetskategoriApiTest` har en test med en person med minimalt vilkårsgrunnlag. Se [07](07-spleis-api-rettighetskategorier.md).
-- [ ] JSON-en bruker det eksisterende feltet `type` med den nye verdien `Rettighetskategori`. Eksisterende vilkårsgrunnlag leses uten migrering. I `VilkårsgrunnlagElementData` er `inntektsgrunnlag`, `opptjeningsvurderingId` og `medlemskapsvurderingId` nullbare bare for den nye typen.
+- [x] JSON-en bruker det eksisterende feltet `type` med den nye verdien `Rettighetskategori`. Eksisterende vilkårsgrunnlag leses uten migrering. I `VilkårsgrunnlagElementData` er `inntektsgrunnlag`, `opptjeningsvurderingId` og `medlemskapsvurderingId` nullbare bare for den nye typen.
 - [x] Støtten for den nye typen i modellen og serde er deployet med togglen av før togglen skrus på. Eldre versjoner av Spleis kan ikke lese typen, så når den er tatt i bruk, går vi tilbake ved å skru av togglen, ikke ved å rulle tilbake koden.
 - [x] En serde-test sjekker at en person med minimalt vilkårsgrunnlag kan lagres og leses igjen, og at eksisterende JSON leses som før.
 - [x] Et ubesvart behov sendes på nytt ved påminnelse.
@@ -41,7 +41,5 @@
 
 ## Åpne spørsmål
 
-Vi er usikre på disse to valgene i implementeringen:
-
-- **Filteret i Speil-byggeren.** `VilkårsgrunnlagBuilder` i spleis-api (linje 208) tar bare med komplette vilkårsgrunnlag (`filterIsInstance<VilkårsgrunnlagUtDto.Komplett>()`). Speil ser derfor ikke det minimale vilkårsgrunnlaget. Et innslag som bare har et minimalt vilkårsgrunnlag, blir tomt i historikken som Speil får. Vi vet ikke om Speil skal se det minimale vilkårsgrunnlaget eller ID-en, eller om de tomme innslagene kan gi problemer.
-- **Når Spleis ikke lagrer det minimale vilkårsgrunnlaget.** `VilkårsgrunnlagHistorikk.lagre` for `Rettighetskategorigrunnlag` (linje 35–51) lagrer ikke det minimale vilkårsgrunnlaget hvis skjæringstidspunktet allerede har et komplett vilkårsgrunnlag. Spleis logger bare en info-melding. ID-en fra sp-rettighetskategori blir da borte, og det komplette vilkårsgrunnlaget beholder ID-en det hadde fra før. Vi vet ikke om det er riktig, eller om Spleis heller skal lagre det minimale vilkårsgrunnlaget eller gi det komplette den nye ID-en.
+- **Lukket: Filteret i Speil-byggeren.** `VilkårsgrunnlagBuilder` i spleis-api (linje 208) tar bare med komplette vilkårsgrunnlag (`filterIsInstance<VilkårsgrunnlagUtDto.Komplett>()`), så Speil ser ikke det minimale vilkårsgrunnlaget. Vi har bestemt at filteret blir. Speil trenger ikke vilkårsgrunnlaget før perioden er forbi `AvventerVilkårsprøving`, som i dag.
+- **Utsatt: Når Spleis ikke lagrer det minimale vilkårsgrunnlaget.** `VilkårsgrunnlagHistorikk.lagre` for `Rettighetskategorigrunnlag` (linje 35–51) lagrer ikke det minimale vilkårsgrunnlaget hvis skjæringstidspunktet allerede har et komplett vilkårsgrunnlag. Spleis logger bare en info-melding. ID-en fra sp-rettighetskategori blir da borte, og det komplette vilkårsgrunnlaget beholder ID-en det hadde fra før. Vi løser dette i fase 3, når Spleis bruker hovedkategorien i løsningen til å forkaste i stedet for RV_SØ_53, se [09: Forkaste kombinerte kategorier](09-forkaste-kombinerte-kategorier.md).

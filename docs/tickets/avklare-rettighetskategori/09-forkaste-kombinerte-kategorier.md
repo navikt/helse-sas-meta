@@ -29,3 +29,7 @@
 - [ ] Med togglen av kjører RV_SØ_53 som i dag, og Spleis bruker ikke hovedkategorien i løsningen.
 - [ ] Sjekken av `andreInntektskilder` og RV_SØ_39 i `Start` er uendret.
 - [ ] E2e-tester dekker: AT og SN som overlapper skjæringstidspunktet, der alle periodene forkastes med RV_RK_1 i samme hendelse som løsningen og ingen blir vilkårsprøvd eller ber om ytelser, AT 1.–31. januar og SN 1.–28. februar med samme skjæringstidspunkt der begge søknadene er sendt før AT-perioden spør, som også forkaster begge periodene med RV_RK_1, en søknad som overlapper eller forlenger tilfellet etter forkastingen og får et av varslene RV_SØ_31 til RV_SØ_38, en søknad som kommer inn mens perioden står i `AvventerRettighetskategori`, en søknad som overlapper skjæringstidspunktet og kommer inn mens perioden står i `AvventerVilkårsprøving` med et minimalt vilkårsgrunnlag, revurdering som flytter skjæringstidspunktet uten forkasting, at hovedkategorien ikke finnes i person-JSON-en, en ny yrkesaktivitet etter utbetaling, og togglen av. Tester å bygge videre på: `KombinertTest`.
+
+## Åpne spørsmål
+
+- **Fra ticket 04: Når Spleis ikke lagrer det minimale vilkårsgrunnlaget.** `VilkårsgrunnlagHistorikk.lagre` for `Rettighetskategorigrunnlag` lagrer ikke det minimale vilkårsgrunnlaget hvis skjæringstidspunktet allerede har et komplett vilkårsgrunnlag. Spleis logger bare en info-melding, og ID-en og hovedkategorien fra sp-rettighetskategori blir borte. Når Spleis forkaster på hovedkategorien i stedet for RV_SØ_53, må vi bestemme hva som skal skje i dette tilfellet.
