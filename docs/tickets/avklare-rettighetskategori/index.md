@@ -7,9 +7,9 @@ Tickets for [Avklare rettighetskategori i sp-rettighetskategori](../../specs/avk
 | 01 | [Skjelett for sp-rettighetskategori som svarer på behov](01-skjelett-sp-rettighetskategori.md) | 1 | sp-rettighetskategori | Ingen | ferdig |
 | 02 | [Alle søknadstyper, kombinasjoner og idempotens i sp-rettighetskategori](02-alle-soknadstyper-kombinasjoner-og-idempotens.md) | 1 | sp-rettighetskategori | 01 | ferdig |
 | 03 | [Rettighetskategori-ID på alle vilkårsgrunnlag i Spleis](03-rettighetskategori-id-pa-alle-vilkarsgrunnlag.md) | 1 | spleis | Ingen | ferdig |
-| 04 | [`AvventerRettighetskategori` i Spleis bak toggle](04-spleis-avventer-rettighetskategori.md) | 1 | spleis | 03 | pågår |
+| 04 | [`AvventerRettighetskategori` i Spleis bak toggle](04-spleis-avventer-rettighetskategori.md) | 1 | spleis | 03 | ferdig |
 | 05 | [Rettighetskategori-ID i opptjeningsbehovet](05-rettighetskategori-id-til-opptjening.md) | 5 | spleis, sp-vilkarsproving | 06 | klar |
-| 06 | [Rulle ut fase 1](06-rulle-ut-fase-1.md) | 1 | spleis, sp-rettighetskategori | 02, 04, 13 | klar |
+| 06 | [Rulle ut fase 1](06-rulle-ut-fase-1.md) | 1 | spleis, sp-rettighetskategori | 02, 04, 13 | ferdig |
 | 07 | [Endepunkt for rettighetskategorier i spleis-api](07-spleis-api-rettighetskategorier.md) | 2 | spleis | 03 | ferdig |
 | 08 | [Backfill av historikken i sp-rettighetskategori](08-backfill-i-sp-rettighetskategori.md) | 2 | sp-rettighetskategori | 01, 07 | ferdig |
 | 09 | [Forkaste kombinerte rettighetskategorier i Spleis](09-forkaste-kombinerte-kategorier.md) | 3 | spleis | 06 | klar |
@@ -49,5 +49,5 @@ flowchart LR
     T11 --> T12
 
     classDef ferdig fill:#c8e6c9,stroke:#2e7d32,color:#1b5e20
-    class T01,T02,T03,T07,T08,T13 ferdig
+    class T01,T02,T03,T04,T06,T07,T08,T13 ferdig
 ```

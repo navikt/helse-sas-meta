@@ -10,13 +10,13 @@
 
 **Blokkeres av:** [02: Alle søknadstyper, kombinasjoner og idempotens i sp-rettighetskategori](02-alle-soknadstyper-kombinasjoner-og-idempotens.md), [04: `AvventerRettighetskategori` i Spleis bak toggle](04-spleis-avventer-rettighetskategori.md), [13: `AVVENTER_RETTIGHETSKATEGORI` i Spock og spammer](13-tilstanden-i-spock-og-spammer.md)
 
-**Status:** klar
+**Status:** ferdig
 
 ## Akseptansekriterier
 
-- [ ] Spock og spammer håndterer `AVVENTER_RETTIGHETSKATEGORI` i dev og prod før togglen skrus på. Spock logger ikke «Har ikke påminnelseregler for tilstand AVVENTER_RETTIGHETSKATEGORI».
-- [ ] Togglen for fase 1 er på i dev, og bare AT, bare SN og AT og SN med samme skjæringstidspunkt er verifisert ende til ende med ekte søknader. Kombinasjonen forkastes fortsatt med RV_SØ_53 når søknaden kommer inn.
-- [ ] Togglen er på i prod, og antall forkastinger med RV_SØ_53 er uendret.
-- [ ] Ingen perioder står fast i `AvventerRettighetskategori`.
-- [ ] Vilkårsgrunnlag som er laget i prod etter at togglen ble skrudd på, har rettighetskategori-ID-en fra det minimale vilkårsgrunnlaget, og ingen minimale vilkårsgrunnlag ligger igjen for perioder som er forbi vilkårsprøving.
-- [ ] Togglen og koden for togglen-av er fjernet fra Spleis.
+- [x] Spock og spammer håndterer `AVVENTER_RETTIGHETSKATEGORI` i dev og prod før togglen skrus på. Spock logger ikke «Har ikke påminnelseregler for tilstand AVVENTER_RETTIGHETSKATEGORI».
+- [x] Togglen for fase 1 er på i dev, og bare AT, bare SN og AT og SN med samme skjæringstidspunkt er verifisert ende til ende med ekte søknader. Kombinasjonen forkastes fortsatt med RV_SØ_53 når søknaden kommer inn.
+- [x] Togglen er på i prod, og antall forkastinger med RV_SØ_53 er uendret.
+- [x] Ingen perioder står fast i `AvventerRettighetskategori`.
+- [x] Vilkårsgrunnlag som er laget i prod etter at togglen ble skrudd på, har rettighetskategori-ID-en fra det minimale vilkårsgrunnlaget, og ingen minimale vilkårsgrunnlag ligger igjen for perioder som er forbi vilkårsprøving.
+- [x] Togglen og koden for togglen-av er fjernet fra Spleis.
