@@ -24,17 +24,23 @@
 - [ ] Forkastingen gjelder bare perioder på vei til `AvventerVilkårsprøving`. På vei til `AvventerVilkårsprøvingRevurdering` bruker ikke Spleis hovedkategorien i løsningen.
 - [ ] Spleis gir ikke RV_RK_1 til søknader som kommer inn etter forkastingen, og slår ikke opp hovedkategorien for dem. De forkastes av sjekken mot forkastede perioder med et av varslene RV_SØ_31 til RV_SØ_38.
 - [ ] Spleis velger varselet med en uttømmende `when` over hovedkategoriene i løsningen. Kommer det en ny hovedkategori i kontrakten, kompilerer ikke Spleis før den har fått sitt eget varsel eller blir støttet.
-- [x] Med togglen på kjører ikke RV_SØ_53 når søknaden kommer inn, så lenge skjæringstidspunktet ikke har et fullt vilkårsgrunnlag. Et minimalt vilkårsgrunnlag teller ikke.
-- [x] Når skjæringstidspunktet har et fullt vilkårsgrunnlag, kjører RV_SØ_53 som i dag og forkaster bare den nye perioden.
+- [ ] Med togglen på kjører ikke RV_SØ_53 når søknaden kommer inn, så lenge skjæringstidspunktet ikke har et fullt vilkårsgrunnlag. Et minimalt vilkårsgrunnlag teller ikke.
+- [ ] Når skjæringstidspunktet har et fullt vilkårsgrunnlag, kjører RV_SØ_53 som i dag og forkaster bare den nye perioden.
 - [ ] Med togglen av kjører RV_SØ_53 som i dag, og Spleis bruker ikke hovedkategorien i løsningen.
 - [ ] Sjekken av `andreInntektskilder` og RV_SØ_39 i `Start` er uendret.
+- [ ] Med togglen på tar vilkårsprøvingen bare med inntekt fra periodens egen yrkesaktivitetstype. Ellers forkaster RV_IV_13 perioden som allerede er avgjort, når en periode av en annen type deler skjæringstidspunktet og fanges av konsistenssjekken i `AvventerHistorikk` (ticket 10).
+- [ ] E2e-tester for samspillet med konsistenssjekken fra ticket 10, flyttet fra ticket 10:
+  - AT 1.–31. januar og SN 1.–28. februar med samme skjæringstidspunkt, der SN-søknaden kommer mens AT-perioden står i `AvventerVilkårsprøving` med et minimalt vilkårsgrunnlag. SN-perioden er ikke med i søknadssettet, venter til vilkårsgrunnlaget er fullt og forkastes med RV_RK_2, mens AT behandles videre.
+  - Det samme med togglen av, der SN-perioden forkastes med RV_SØ_53 når søknaden kommer inn.
+  - Omvendt rekkefølge: SN 1.–31. januar står i `AvventerVilkårsprøving` med et minimalt vilkårsgrunnlag, og AT 1.–28. februar kommer inn. SN blir vilkårsprøvd uten RV_IV_13 og utbetalt, og AT forkastes med RV_RK_2.
 - [ ] E2e-tester dekker: AT og SN som overlapper skjæringstidspunktet, der alle periodene forkastes med RV_RK_1 i samme hendelse som løsningen og ingen blir vilkårsprøvd eller ber om ytelser, AT 1.–31. januar og SN 1.–28. februar med samme skjæringstidspunkt der begge søknadene er sendt før AT-perioden spør, som også forkaster begge periodene med RV_RK_1, en søknad som overlapper eller forlenger tilfellet etter forkastingen og får et av varslene RV_SØ_31 til RV_SØ_38, en søknad som kommer inn mens perioden står i `AvventerRettighetskategori`, en søknad som overlapper skjæringstidspunktet og kommer inn mens perioden står i `AvventerVilkårsprøving` med et minimalt vilkårsgrunnlag, revurdering som flytter skjæringstidspunktet uten forkasting, at hovedkategorien ikke finnes i person-JSON-en, en ny yrkesaktivitet etter utbetaling, og togglen av. Tester å bygge videre på: `KombinertTest`.
 
-## Gjort i ticket 10
+## Fra ticket 10
 
 - Togglen for fase 3 finnes allerede: `Toggle.ValidereRettighetskategori`.
-- Gatingen av RV_SØ_53 er gjort i ticket 10, i `Yrkesaktivitet.vurderOmSøknadIkkeKanHåndteres`. Med togglen på teller bare perioder med fullt vilkårsgrunnlag.
-- Med togglen på tar vilkårsprøvingen bare med inntekt fra periodens egen yrkesaktivitetstype (`Vedtaksperiode.avklarSykepengegrunnlag`).
+- Gatingen av RV_SØ_53 hører hit: filtrer de andre yrkesaktivitetenes perioder i `Yrkesaktivitet.vurderOmSøknadIkkeKanHåndteres`, slik at bare perioder med fullt vilkårsgrunnlag teller når togglen er på.
+- Inntektsfilteret hører hit: `Vedtaksperiode.avklarSykepengegrunnlag`.
+- Begge ble prøvd i ticket 10, men tatt ut igjen. De trengs først når RV_SØ_53 slipper gjennom perioder av en annen type før fullt vilkårsgrunnlag.
 
 ## Åpne spørsmål
 
