@@ -24,11 +24,17 @@
 - [ ] Forkastingen gjelder bare perioder på vei til `AvventerVilkårsprøving`. På vei til `AvventerVilkårsprøvingRevurdering` bruker ikke Spleis hovedkategorien i løsningen.
 - [ ] Spleis gir ikke RV_RK_1 til søknader som kommer inn etter forkastingen, og slår ikke opp hovedkategorien for dem. De forkastes av sjekken mot forkastede perioder med et av varslene RV_SØ_31 til RV_SØ_38.
 - [ ] Spleis velger varselet med en uttømmende `when` over hovedkategoriene i løsningen. Kommer det en ny hovedkategori i kontrakten, kompilerer ikke Spleis før den har fått sitt eget varsel eller blir støttet.
-- [ ] Med togglen på kjører ikke RV_SØ_53 når søknaden kommer inn, så lenge skjæringstidspunktet ikke har et fullt vilkårsgrunnlag. Et minimalt vilkårsgrunnlag teller ikke.
-- [ ] Når skjæringstidspunktet har et fullt vilkårsgrunnlag, kjører RV_SØ_53 som i dag og forkaster bare den nye perioden.
+- [x] Med togglen på kjører ikke RV_SØ_53 når søknaden kommer inn, så lenge skjæringstidspunktet ikke har et fullt vilkårsgrunnlag. Et minimalt vilkårsgrunnlag teller ikke.
+- [x] Når skjæringstidspunktet har et fullt vilkårsgrunnlag, kjører RV_SØ_53 som i dag og forkaster bare den nye perioden.
 - [ ] Med togglen av kjører RV_SØ_53 som i dag, og Spleis bruker ikke hovedkategorien i løsningen.
 - [ ] Sjekken av `andreInntektskilder` og RV_SØ_39 i `Start` er uendret.
 - [ ] E2e-tester dekker: AT og SN som overlapper skjæringstidspunktet, der alle periodene forkastes med RV_RK_1 i samme hendelse som løsningen og ingen blir vilkårsprøvd eller ber om ytelser, AT 1.–31. januar og SN 1.–28. februar med samme skjæringstidspunkt der begge søknadene er sendt før AT-perioden spør, som også forkaster begge periodene med RV_RK_1, en søknad som overlapper eller forlenger tilfellet etter forkastingen og får et av varslene RV_SØ_31 til RV_SØ_38, en søknad som kommer inn mens perioden står i `AvventerRettighetskategori`, en søknad som overlapper skjæringstidspunktet og kommer inn mens perioden står i `AvventerVilkårsprøving` med et minimalt vilkårsgrunnlag, revurdering som flytter skjæringstidspunktet uten forkasting, at hovedkategorien ikke finnes i person-JSON-en, en ny yrkesaktivitet etter utbetaling, og togglen av. Tester å bygge videre på: `KombinertTest`.
+
+## Gjort i ticket 10
+
+- Togglen for fase 3 finnes allerede: `Toggle.ValidereRettighetskategori`.
+- Gatingen av RV_SØ_53 er gjort i ticket 10, i `Yrkesaktivitet.vurderOmSøknadIkkeKanHåndteres`. Med togglen på teller bare perioder med fullt vilkårsgrunnlag.
+- Med togglen på tar vilkårsprøvingen bare med inntekt fra periodens egen yrkesaktivitetstype (`Vedtaksperiode.avklarSykepengegrunnlag`).
 
 ## Åpne spørsmål
 
