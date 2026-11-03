@@ -17,6 +17,7 @@ Tickets for [Avklare rettighetskategori i sp-rettighetskategori](../../specs/avk
 | 11 | [Skru på togglen for fase 3](11-skru-pa-togglen-for-fase-3.md) | 3 | spleis, sp-rettighetskategori | 09, 10 | klar |
 | 12 | [Fjerne backfill](12-fjerne-backfill.md) | 4 | sp-rettighetskategori, spleis | 11 | klar |
 | 13 | [`AVVENTER_RETTIGHETSKATEGORI` i Spock og spammer](13-tilstanden-i-spock-og-spammer.md) | 1 | spock, spammer | Ingen | ferdig |
+| 14 | [Påkrevd rettighetskategori-ID i opptjeningsbehovet](14-pakrevd-rettighetskategori-id-i-opptjening.md) | 5 | sp-vilkarsproving | 05 | klar |
 
 ```mermaid
 flowchart LR
@@ -38,7 +39,7 @@ flowchart LR
         T12[12 Fjerne backfill]
     end
     subgraph F5[Fase 5]
-        T05[05 ID til opptjening]
+        T05[05 ID til opptjening] --> T14[14 Påkrevd ID i opptjening]
     end
     T06 --> T05
     T03 --> T07
