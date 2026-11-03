@@ -52,6 +52,32 @@ _Unngå_: Avslått dag. «Avvist dag» er Spleis' ord for alle dager som ikke gi
 Saksbehandlerens vurdering av ett løpende vilkår for en mengde dager, med svar, utfall per vilkårskode, fritekstbegrunnelse og journalposter. Den gjeldende vurderingen for en dag er den nyeste som omfatter dagen. En omgjøring er en ny vurdering, og ingen vurdering slettes.
 _Unngå_: Overstyring (brukes om endringer i Spleis' tidslinje), avslag
 
+### Andre ytelser
+
+**Sykdomsgrad**:
+Hvor mye av dagen personen er sykmeldt fra én yrkesaktivitet, slik sykmeldingen og søknaden sier.
+_Unngå_: Utbetalingsgrad, grad
+
+**Justert sykdomsgrad**:
+Sykdomsgraden etter justering for andre forhold, blant annet graderte andre ytelser. Det er denne graden som gir sykepenger for dagen.
+_Unngå_: Ny sykdomsgrad, utbetalingsgrad
+
+**Annen ytelse**:
+En dag der en annen ytelse fra Nav dekker hele inntektstapet. Dagen regnes som arbeid, gir avslag på sykepenger og avslutter sykefraværstilfellet.
+_Unngå_: 100 % gradert annen ytelse
+
+**Gradert annen ytelse**:
+En annen ytelse fra Nav, for eksempel foreldrepenger eller omsorgspenger, som dekker en del av dagen for én yrkesaktivitet. Personen kan ha flere graderte andre ytelser samme dag.
+_Unngå_: Delvis annen ytelse, gradert ytelse
+
+**Fordeling av dagen**:
+Saksbehandlerens oppdeling av en dag for én yrkesaktivitet i sykdom, arbeid og graderte andre ytelser, til sammen 100 %. Saksbehandler velger om ytelsene tas fra sykdommen eller fra arbeidet. Det finnes høyst én gjeldende fordeling per dag og yrkesaktivitet.
+_Unngå_: Registrering, gradering
+
+**Trekk fra sykdomsgrad**:
+Den delen av de graderte andre ytelsene en dag som saksbehandler har tatt fra sykdommen, ikke fra arbeidet. Trekket gjør sykdomsgraden om til justert sykdomsgrad.
+_Unngå_: Sum andre ytelser, andre ytelser-grad
+
 ### Saksbehandling
 
 **Aktiv oppgave**:
