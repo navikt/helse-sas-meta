@@ -1,0 +1,20 @@
+# 04: Visning av vurderingen
+
+**Spec:** [Avslå dager etter oppholdskravet i sp-avslagsdager](../../specs/avslagsdager-oppholdskrav.md)
+
+**Repo:** `sp-avslagsdager`
+
+**Hva skal lages:** Saksbehandler og beslutter kan åpne en saksbehandlerhandling av typen `AVSLAGSDAGER_ENDRET` og se detaljene. `GET /api/personer/{personId}/saksbehandlerhandlinger/{handlingId}/visning` gir feltene for vurderingen i samme form som i sp-vilkarsproving.
+
+**Blokkeres av:** [02: Saksbehandler kan lagre en vurdering av oppholdskravet](02-lagre-vurdering-av-oppholdskravet.md)
+
+**Status:** klar
+
+## Akseptansekriterier
+
+- [ ] Endepunktet krever `Tilgang.Les` og bruker `KallKontekst.medPerson`.
+- [ ] `handlingId` er vurderings-ID-en. En ukjent ID eller en vurdering som gjelder en annen person, gir 404.
+- [ ] Svaret er `{ "felter": [...] }` med `TEKST` (`tittel`, `tekst`) og `LISTE` (`tittel`, `elementer`).
+- [ ] Feltene kommer i denne rekkefølgen: dagene som sammenhengende perioder, utfallet, vilkårsvurderingene med lovreferanse og utfall, fritekstbegrunnelsen og journalpostene.
+- [ ] Endepunktet er med i OpenAPI-spesifikasjonen, og `EKSPONER_OPENAPI` er på i dev, slik at Speil kan lage klienten.
+- [ ] REST-tester for avslag, omgjøring, ukjent `handlingId`, en annen person og manglende tilgang.

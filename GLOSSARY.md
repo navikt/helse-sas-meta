@@ -40,9 +40,17 @@ _Unngå_: Innfylling, migrering (migreringsloggen er bare loggen over backfill p
 
 ### Avslagsdager
 
-**Avslagsdager**:
-Dager i et sykefraværstilfelle der personen ikke får sykepenger fordi et vilkår ikke er oppfylt. Definisjonen er foreløpig og avklares når sp-avslagsdager får et domene.
-_Unngå_: Avviste dager
+**Løpende vilkår**:
+Et vilkår som vurderes for hver dag, ikke én gang per skjæringstidspunkt. Oppholdskravet i § 8-9 er det første.
+_Unngå_: Dagvilkår, inngangsvilkår (inngangsvilkår vurderes per skjæringstidspunkt)
+
+**Avslagsdag**:
+En dag der saksbehandler har vurdert et løpende vilkår som ikke oppfylt. Avslagsdagen gjelder personen, ikke én yrkesaktivitet, og har en lovreferanse og en begrunnelse. Dager som Spleis avviser etter egne regler, for eksempel etter maksdato, er ikke avslagsdager.
+_Unngå_: Avslått dag. «Avvist dag» er Spleis' ord for alle dager som ikke gir utbetaling, også avslagsdager
+
+**Vurdering av løpende vilkår**:
+Saksbehandlerens vurdering av ett løpende vilkår for en mengde dager, med svar, utfall per vilkårskode, fritekstbegrunnelse og journalposter. Den gjeldende vurderingen for en dag er den nyeste som omfatter dagen. En omgjøring er en ny vurdering, og ingen vurdering slettes.
+_Unngå_: Overstyring (brukes om endringer i Spleis' tidslinje), avslag
 
 ### Saksbehandling
 
