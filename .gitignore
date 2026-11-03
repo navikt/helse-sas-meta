@@ -12,6 +12,7 @@
 /redteam
 /risk-mock
 /sp-andre-ytelser
+/sp-avslagsdager
 /sp-bigquery-terraform
 /sp-data-analyse
 /sp-dbt
@@ -63,5 +64,6 @@
 /sprute
 /spydig
 /tbd-libs
+/trygdhetens-voktere
 /vedtaksfeed
 /web

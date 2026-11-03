@@ -9,6 +9,7 @@
     "redteam": "git@github.com:navikt/helse-redteam.git",
     "risk-mock": "git@github.com:navikt/helse-risk-mock.git",
     "sp-andre-ytelser": "git@github.com:navikt/sp-andre-ytelser.git",
+    "sp-avslagsdager": "git@github.com:navikt/sp-avslagsdager.git",
     "sp-bigquery-terraform": "git@github.com:navikt/sp-bigquery-terraform.git",
     "sp-data-analyse": "git@github.com:navikt/sp-data-analyse.git",
     "sp-dbt": "git@github.com:navikt/sp-dbt.git",
@@ -60,6 +61,7 @@
     "sprute": "git@github.com:navikt/helse-sprute.git",
     "spydig": "git@github.com:navikt/helse-spydig.git",
     "tbd-libs": "git@github.com:navikt/tbd-libs.git",
+    "trygdhetens-voktere": "git@github.com:navikt/trygdhetens-voktere.git",
     "vedtaksfeed": "git@github.com:navikt/helse-vedtaksfeed.git",
     "web": "git@github.com:navikt/helse-sykepenger-web.git"
   }
