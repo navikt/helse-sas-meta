@@ -8,13 +8,13 @@
 
 **Blokkeres av:** [02: Saksbehandler kan lagre en vurdering av oppholdskravet](02-lagre-vurdering-av-oppholdskravet.md)
 
-**Status:** klar
+**Status:** ferdig
 
 ## Akseptansekriterier
 
-- [ ] Endepunktet krever `Tilgang.Les` og bruker `KallKontekst.medPerson`.
-- [ ] `handlingId` er vurderings-ID-en. En ukjent ID eller en vurdering som gjelder en annen person, gir 404.
-- [ ] Svaret er `{ "felter": [...] }` med `TEKST` (`tittel`, `tekst`) og `LISTE` (`tittel`, `elementer`).
-- [ ] Feltene kommer i denne rekkefølgen: dagene som sammenhengende perioder, utfallet, vilkårsvurderingene med lovreferanse og utfall, fritekstbegrunnelsen og journalpostene.
-- [ ] Endepunktet er med i OpenAPI-spesifikasjonen, og `EKSPONER_OPENAPI` er på i dev, slik at Speil kan lage klienten.
-- [ ] REST-tester for avslag, omgjøring, ukjent `handlingId`, en annen person og manglende tilgang.
+- [x] Endepunktet krever `Tilgang.Les` og bruker `KallKontekst.medPerson`.
+- [x] `handlingId` er vurderings-ID-en. En ukjent ID eller en vurdering som gjelder en annen person, gir 404.
+- [x] Svaret er `{ "felter": [...] }` med `TEKST` (`tittel`, `tekst`) og `LISTE` (`tittel`, `elementer`).
+- [x] Feltene kommer i denne rekkefølgen: dagene som sammenhengende perioder, utfallet, vilkårsvurderingene med lovreferanse og utfall, fritekstbegrunnelsen og journalpostene.
+- [x] Endepunktet er med i OpenAPI-spesifikasjonen, og `EKSPONER_OPENAPI` er på i dev, slik at Speil kan lage klienten.
+- [x] REST-tester for avslag, omgjøring, ukjent `handlingId`, en annen person og manglende tilgang.
