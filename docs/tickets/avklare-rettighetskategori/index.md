@@ -12,7 +12,7 @@ Tickets for [Avklare rettighetskategori i sp-rettighetskategori](../../specs/avk
 | 06 | [Rulle ut fase 1](06-rulle-ut-fase-1.md) | 1 | spleis, sp-rettighetskategori | 02, 04, 13 | ferdig |
 | 07 | [Endepunkt for rettighetskategorier i spleis-api](07-spleis-api-rettighetskategorier.md) | 2 | spleis | 03 | ferdig |
 | 08 | [Backfill av historikken i sp-rettighetskategori](08-backfill-i-sp-rettighetskategori.md) | 2 | sp-rettighetskategori | 01, 07 | ferdig |
-| 09 | [Forkaste kombinerte rettighetskategorier i Spleis](09-forkaste-kombinerte-kategorier.md) | 3 | spleis | 06 | klar |
+| 09 | [Forkaste kombinerte rettighetskategorier i Spleis](09-forkaste-kombinerte-kategorier.md) | 3 | spleis | 06 | ferdig |
 | 10 | [Konsistenssjekk av rettighetskategori i `AvventerHistorikk`](10-konsistenssjekk-i-avventer-historikk.md) | 3 | spleis | 06, 08 | ferdig |
 | 11 | [Skru på togglen for fase 3](11-skru-pa-togglen-for-fase-3.md) | 3 | spleis, sp-rettighetskategori | 09, 10 | klar |
 | 12 | [Fjerne backfill](12-fjerne-backfill.md) | 4 | sp-rettighetskategori, spleis | 11 | klar |
@@ -50,5 +50,5 @@ flowchart LR
     T11 --> T12
 
     classDef ferdig fill:#c8e6c9,stroke:#2e7d32,color:#1b5e20
-    class T01,T02,T03,T04,T05,T06,T07,T08,T10,T13 ferdig
+    class T01,T02,T03,T04,T05,T06,T07,T08,T09,T10,T13 ferdig
 ```
