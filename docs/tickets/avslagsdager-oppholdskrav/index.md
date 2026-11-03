@@ -4,7 +4,7 @@ Tickets for [Avslå dager etter oppholdskravet i sp-avslagsdager](../../specs/av
 
 | # | Ticket | Repo | Blokkeres av | Status |
 |---|---|---|---|---|
-| 01 | [Spesialist kjenner `AVSLAGSDAGER_ENDRET` og begrunnelsen `Oppholdskrav`](01-spesialist-avslagsdager-endret-og-oppholdskrav.md) | spesialist | Ingen | klar |
+| 01 | [Spesialist kjenner `AVSLAGSDAGER_ENDRET` og begrunnelsen `Oppholdskrav`](01-spesialist-avslagsdager-endret-og-oppholdskrav.md) | spesialist | Ingen | ferdig |
 | 02 | [Saksbehandler kan lagre en vurdering av oppholdskravet](02-lagre-vurdering-av-oppholdskravet.md) | sp-avslagsdager | Ingen | klar |
 | 03 | [Vurderingen publiseres til spesialist og Spleis via outbox](03-publisere-via-outbox.md) | sp-avslagsdager | 02 | klar |
 | 04 | [Visning av vurderingen](04-visning-av-vurderingen.md) | sp-avslagsdager | 02 | klar |

@@ -8,14 +8,14 @@
 
 **Blokkeres av:** Ingen (kan starte med en gang)
 
-**Status:** klar
+**Status:** ferdig
 
 ## Akseptansekriterier
 
-- [ ] `HandlingType.AVSLAGSDAGER_ENDRET` finnes i domenet, i `ApiHandlingType` og i mappingen mellom dem.
-- [ ] `SaksbehandlerhandlingRiver` godtar `AVSLAGSDAGER_ENDRET` med `behandlingId` og uten `skjæringstidspunkt`.
-- [ ] `kreverTotrinnsvurdering = true` legger handlingen i den aktive totrinnsvurderingen eller oppretter en.
-- [ ] Begrunnelsen `Oppholdskrav` finnes i spesialist-klienten for Spleis, `OPPHOLDSKRAV` finnes i `ApiDag`, og de er mappet mot hverandre.
-- [ ] Riverstesten for `saksbehandlerhandling` har et tilfelle med `AVSLAGSDAGER_ENDRET`.
-- [ ] En test sjekker at et snapshot med `Oppholdskrav` gir `OPPHOLDSKRAV` i `ApiDag`.
+- [x] `HandlingType.AVSLAGSDAGER_ENDRET` finnes i domenet, i `ApiHandlingType` og i mappingen mellom dem.
+- [x] `SaksbehandlerhandlingRiver` godtar `AVSLAGSDAGER_ENDRET` med `behandlingId` og uten `skjæringstidspunkt`.
+- [x] `kreverTotrinnsvurdering = true` legger handlingen i den aktive totrinnsvurderingen eller oppretter en.
+- [x] Begrunnelsen `Oppholdskrav` finnes i spesialist-klienten for Spleis, `OPPHOLDSKRAV` finnes i `ApiDag`, og de er mappet mot hverandre.
+- [x] Riverstesten for `saksbehandlerhandling` har et tilfelle med `AVSLAGSDAGER_ENDRET`.
+- [x] En test sjekker at et snapshot med `Oppholdskrav` gir `OPPHOLDSKRAV` i `ApiDag`.
 - [ ] Endringen er i drift i dev og prod før ticket 10 skrur på togglen i Spleis.
