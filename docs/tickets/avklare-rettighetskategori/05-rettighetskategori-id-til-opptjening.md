@@ -14,7 +14,7 @@
 
 ## Akseptansekriterier
 
-- [x] sp-vilkarsproving tar imot feltet med rettighetskategori-ID i opptjeningsbehovet. Feltet er påkrevd, se ticket 14.
+- [x] sp-vilkarsproving tar imot et valgfritt felt med rettighetskategori-ID i opptjeningsbehovet og virker som før med og uten feltet.
 - [x] Spleis sender ID-en fra det minimale vilkårsgrunnlaget i opptjeningsbehovet fra `AvventerVilkårsprøving`. Finnes det ikke noe minimalt vilkårsgrunnlag, sendes ikke feltet.
-- [ ] Spleis er deployet først. sp-vilkarsproving deployes etterpå, når kriteriene for deploy i ticket 14 er oppfylt. Spleis kan gå først fordi rivere ignorerer felter de ikke kjenner.
+- [ ] Spleis og sp-vilkarsproving er deployet. Rekkefølgen spiller ingen rolle, fordi rivere ignorerer felter de ikke kjenner, og feltet er valgfritt i sp-vilkarsproving.
 - [x] Feltet er lagt inn i `BehovkontraktTest` i Spleis og i river-testene i sp-vilkarsproving.

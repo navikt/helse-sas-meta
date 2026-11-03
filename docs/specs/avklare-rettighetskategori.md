@@ -24,7 +24,7 @@ Vi ruller ut i fem faser. Hver fase rulles ut i dev før prod, med én toggle i 
 2. **Backfill av historikken.** sp-rettighetskategori lager avgjørelser for ID-er som bare finnes i Spleis. Det skjer ved `person_avstemming` og når tjenesten får et oppslag på en ID den ikke kjenner.
 3. **Flytte valideringen.** Valideringen flyttes fra søknadshåndteringen til `AvventerRettighetskategori` og `AvventerHistorikk`, med de nye varslene RV_RK_1 og RV_RK_2. RV_SØ_53 kjører bare når skjæringstidspunktet har fullt vilkårsgrunnlag. Fase 3 krever ikke at fase 2 er ferdig for alle personer, fordi oppslag på ukjente ID-er kjører backfill med en gang.
 4. **Rydde opp.** Når migreringsloggen ikke får nye rader etter en full runde med `person_avstemming`, fjerner vi backfill i sp-rettighetskategori og endepunktet i spleis-api.
-5. **Rettighetskategori-ID i opptjeningsbehovet.** Spleis sender rettighetskategori-ID-en med i opptjeningsbehovet til sp-vilkarsproving. Fasen starter når fase 1 er rullet ut, og kan gå parallelt med fase 2, 3 og 4. Den blokkerer ingen andre faser og trenger ingen toggle, fordi sp-vilkarsproving ikke bruker feltet ennå. Spleis deployes først. Når alle opptjeningsbehov har ID-en, gjør sp-vilkarsproving feltet påkrevd.
+5. **Rettighetskategori-ID i opptjeningsbehovet.** Spleis sender rettighetskategori-ID-en med i opptjeningsbehovet til sp-vilkarsproving. Fasen starter når fase 1 er rullet ut, og kan gå parallelt med fase 2, 3 og 4. Den blokkerer ingen andre faser og trenger ingen toggle, fordi sp-vilkarsproving ikke bruker feltet ennå. Når alle opptjeningsbehov har ID-en, gjør sp-vilkarsproving feltet påkrevd.
 
 ## Brukerhistorier
 
@@ -180,7 +180,7 @@ Spock og spammer lister tilstandsnavnene fra `vedtaksperiode_endret` og `påminn
 
 ### Endringer i sp-vilkarsproving
 
-- Opptjeningsbehovet får et nytt felt med rettighetskategori-ID. sp-vilkarsproving krever feltet, men bruker det ikke i første versjon. Et behov uten ID blir ikke besvart. Endringen hører til fase 5 og deployes etter Spleis, når alle opptjeningsbehov har ID-en.
+- Opptjeningsbehovet får et nytt, valgfritt felt med rettighetskategori-ID. sp-vilkarsproving tar imot feltet, men bruker det ikke i første versjon. Endringen hører til fase 5. Når alle opptjeningsbehov har ID-en, blir feltet påkrevd. Et behov uten ID blir da ikke besvart.
 
 ## Beslutninger om testing
 
