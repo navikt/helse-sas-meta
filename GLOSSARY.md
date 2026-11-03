@@ -38,6 +38,12 @@ _Unngå_: Kombinert (bruk den presise kombinasjonen)
 Når sp-rettighetskategori lager avgjørelser for rettighetskategori-ID-er som bare finnes i Spleis, med data fra spleis-api. Avgjørelser fra backfill har kilden `spleis`.
 _Unngå_: Innfylling, migrering (migreringsloggen er bare loggen over backfill per person)
 
+### Avslagsdager
+
+**Avslagsdager**:
+Dager i et sykefraværstilfelle der personen ikke får sykepenger fordi et vilkår ikke er oppfylt. Definisjonen er foreløpig og avklares når sp-avslagsdager får et domene.
+_Unngå_: Avviste dager
+
 ### Saksbehandling
 
 **Aktiv oppgave**:
