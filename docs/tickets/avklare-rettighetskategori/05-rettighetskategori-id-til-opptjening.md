@@ -10,11 +10,11 @@
 
 **Blokkeres av:** [06: Rulle ut fase 1](06-rulle-ut-fase-1.md)
 
-**Status:** klar
+**Status:** ferdig
 
 ## Akseptansekriterier
 
-- [ ] sp-vilkarsproving tar imot et valgfritt felt med rettighetskategori-ID i opptjeningsbehovet og virker som før med og uten feltet.
-- [ ] Spleis sender ID-en fra det minimale vilkårsgrunnlaget i opptjeningsbehovet fra `AvventerVilkårsprøving`. Finnes det ikke noe minimalt vilkårsgrunnlag, sendes ikke feltet.
+- [x] sp-vilkarsproving tar imot et valgfritt felt med rettighetskategori-ID i opptjeningsbehovet og virker som før med og uten feltet.
+- [x] Spleis sender ID-en fra det minimale vilkårsgrunnlaget i opptjeningsbehovet fra `AvventerVilkårsprøving`. Finnes det ikke noe minimalt vilkårsgrunnlag, sendes ikke feltet.
 - [ ] sp-vilkarsproving er deployet før Spleis begynner å sende feltet.
-- [ ] Feltet er lagt inn i `BehovkontraktTest` i Spleis og i river-testene i sp-vilkarsproving.
+- [x] Feltet er lagt inn i `BehovkontraktTest` i Spleis og i river-testene i sp-vilkarsproving.
