@@ -180,7 +180,7 @@ Spock og spammer lister tilstandsnavnene fra `vedtaksperiode_endret` og `påminn
 
 ### Endringer i sp-vilkarsproving
 
-- Opptjeningsbehovet får et nytt, valgfritt felt med rettighetskategori-ID. sp-vilkarsproving tar imot feltet, men bruker det ikke i første versjon. Endringen hører til fase 5. Når loggen viser at alle opptjeningsbehov har ID-en, blir feltet påkrevd. Et behov uten ID blir da ikke besvart.
+- Opptjeningsbehovet får et nytt felt med rettighetskategori-ID. sp-vilkarsproving krever feltet, men bruker det ikke i første versjon. Et behov uten ID blir ikke besvart. Endringen hører til fase 5 og deployes etter Spleis, når alle opptjeningsbehov har ID-en.
 
 ## Beslutninger om testing
 

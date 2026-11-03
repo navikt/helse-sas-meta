@@ -12,11 +12,11 @@ Spleis sender ikke ID-en når skjæringstidspunktet mangler minimalt vilkårsgru
 
 **Blokkeres av:** [05: Rettighetskategori-ID i opptjeningsbehovet](05-rettighetskategori-id-til-opptjening.md)
 
-**Status:** klar
+**Status:** ferdig
 
 ## Akseptansekriterier
 
-- [ ] Loggen i sp-vilkarsproving viser at ingen opptjeningsbehov uten `rettighetskategoriId` har kommet inn i prod den siste tiden, og vi har tall for det.
-- [ ] Ingen perioder står i `AvventerVilkårsprøving` eller `AvventerVilkårsprøvingRevurdering` uten minimalt vilkårsgrunnlag.
-- [ ] `OpptjeningsvurderingRiver` krever `Opptjeningsvurdering.rettighetskategoriId`, og et behov uten feltet besvares ikke.
-- [ ] River-testene i sp-vilkarsproving dekker behov med og uten feltet.
+- [ ] Før deploy: Opptjeningsbehovene på rapiden viser at Spleis ikke har sendt noen behov uten `rettighetskategoriId` i prod den siste tiden, og vi har tall for det.
+- [ ] Før deploy: Ingen perioder står i `AvventerVilkårsprøving` eller `AvventerVilkårsprøvingRevurdering` uten minimalt vilkårsgrunnlag.
+- [x] `OpptjeningsvurderingRiver` krever `Opptjeningsvurdering.rettighetskategoriId`, og et behov uten feltet besvares ikke.
+- [x] River-testene i sp-vilkarsproving dekker behov med og uten feltet.
