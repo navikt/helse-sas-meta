@@ -8,7 +8,7 @@
 
 **Blokkeres av:** [03: Spleis leser løsningen fra sp-andre-ytelser og bruker trekket](03-spleis-leser-trekket.md)
 
-**Status:** klar
+**Status:** pågår
 
 ## Akseptansekriterier
 
