@@ -15,6 +15,7 @@
 ## Akseptansekriterier
 
 - [ ] Sykdomsgraden må være mellom 1 og sykdomsgraden før fordeling.
+- [ ] En dag som ikke har sykdomsgrad i Spleis, for eksempel en feriedag, kan ikke fordeles. I dag sender Speil 0 som sykdomsgrad før fordeling, og sp-andre-ytelser svarer 400 `GRAD_UTENFOR_GRENSER`.
 - [ ] Sykdomsgrad + ytelsesgrad må være minst sykdomsgraden før fordeling, altså at arbeidsgraden ikke øker.
 - [ ] Sykdomsgrad + ytelsesgrad kan ikke være over 100, altså at arbeidsgraden ikke blir negativ.
 - [ ] Ytelsesgraden må være mellom 1 og 99. I dag godtar skjemaet 100.

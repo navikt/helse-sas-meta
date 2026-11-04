@@ -12,7 +12,7 @@ Tickets for [Graderte andre ytelser fra saksbehandler](../../specs/graderte-andr
 | 06 | [Spleis varsler når sykdomsgraden er endret etter fordelingen](06-spleis-varsler-ved-endret-sykdomsgrad.md) | spleis | 03 | klar |
 | 07 | [Fjerne togglen for graderte andre ytelser i Spleis](07-fjerne-togglen.md) | spleis | 02, 03, 04, 05, 06 | klar |
 | 08 | [Speil videresender og mocker API-et til sp-andre-ytelser](08-speil-videresender-og-mocker-api-et.md) | speil | Ingen | ferdig |
-| 09 | [Speil lagrer fordelingene i sp-andre-ytelser med sykdomsgraden før fordeling](09-speil-lagrer-fordelinger-i-sp-andre-ytelser.md) | speil | 08 | klar |
+| 09 | [Speil lagrer fordelingene i sp-andre-ytelser med sykdomsgraden før fordeling](09-speil-lagrer-fordelinger-i-sp-andre-ytelser.md) | speil | 08 | ferdig |
 | 10 | [Dagoversikten får kolonnen «Andre ytelser» med fordelingen for hver dag](10-visning-av-fordelingen-per-dag.md) | speil | 09 | klar |
 | 11 | [Saksbehandler og beslutter ser endringsloggen for fordelingen per dag](11-endringslogg-for-fordelingen-per-dag.md) | speil | 10 | klar |
 | 12 | [Skjemaet stopper fordelinger som bryter reglene](12-skjemaet-stopper-ugyldige-fordelinger.md) | speil | 09 | klar |
@@ -53,6 +53,6 @@ flowchart LR
 
     classDef ferdig fill:#c8e6c9,stroke:#2e7d32,color:#1b5e20
     classDef pagar fill:#ffe0b2,stroke:#ef6c00,color:#e65100
-    class T01,T03,T04,T05,T08 ferdig
+    class T01,T03,T04,T05,T08,T09 ferdig
     class T02 pagar
 ```
