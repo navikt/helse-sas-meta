@@ -8,13 +8,13 @@
 
 **Blokkeres av:** [02: Saksbehandler kan lagre en vurdering av oppholdskravet](02-lagre-vurdering-av-oppholdskravet.md)
 
-**Status:** klar
+**Status:** ferdig
 
 ## Akseptansekriterier
 
-- [ ] En river tar imot behovet `Avslagsdager` med `fødselsnummer` og `Avslagsdager.vurderingIder`.
-- [ ] Løsningen er `@løsning.Avslagsdager.avslagsdager`, en liste med `{ "vurderingId", "dato", "vilkårskoder" }`, med én oppføring per dag i hver vurdering der utfallet er `IkkeOppfylt`.
-- [ ] En vurdering med utfallet `Oppfylt` gir ingen oppføringer.
-- [ ] Er det ingen avslåtte dager, er listen tom.
-- [ ] En ukjent vurderings-ID, eller en ID som gjelder en annen person, gir ingen løsning, og feilen logges.
-- [ ] Rapid-tester med ekte Postgres dekker én og flere vurderings-ID-er, en vurdering med utfallet `Oppfylt`, en ukjent ID og en ID for en annen person. Tester å bygge videre på: riverstestene i `infra/kafka` i sp-vilkarsproving.
+- [x] En river tar imot behovet `Avslagsdager` med `fødselsnummer` og `Avslagsdager.vurderingIder`.
+- [x] Løsningen er `@løsning.Avslagsdager.avslagsdager`, en liste med `{ "vurderingId", "dato", "vilkårskoder" }`, med én oppføring per dag i hver vurdering der utfallet er `IkkeOppfylt`.
+- [x] En vurdering med utfallet `Oppfylt` gir ingen oppføringer.
+- [x] Er det ingen avslåtte dager, er listen tom.
+- [x] En ukjent vurderings-ID, eller en ID som gjelder en annen person, gir ingen løsning, og feilen logges.
+- [x] Rapid-tester med ekte Postgres dekker én og flere vurderings-ID-er, en vurdering med utfallet `Oppfylt`, en ukjent ID og en ID for en annen person. Tester å bygge videre på: riverstestene i `infra/kafka` i sp-vilkarsproving.
