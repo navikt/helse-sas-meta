@@ -8,14 +8,14 @@
 
 **Blokkeres av:** Ingen (kan starte med en gang)
 
-**Status:** klar
+**Status:** ferdig
 
 ## Akseptansekriterier
 
-- [ ] `GET` og `POST` på `/api/andre-ytelser/personer/{personPseudoId}/graderte-andre-ytelser` videresendes til sp-andre-ytelser i dev.
-- [ ] Lokalt svarer en mock. Den lagrer fordelinger per yrkesaktivitet med versjon og hendelser, og fyller inn `fra`-feltene, også `fraSykdomsgradFørFordeling`.
-- [ ] Mocken håndhever reglene 1–6 i specen med de samme feilkodene. Den svarer 409 `UTDATERT_TILSTAND` ved feil versjon og 400 `MANGLER_ENDRINGER` uten dager.
-- [ ] En forespørsel uten reelle endringer gir samme versjon og ingen ny hendelse.
-- [ ] `orval.config.ts` har et prosjekt for sp-andre-ytelser, og typer og hooks for `graderte-andre-ytelser` og visningen av saksbehandlerhandlinger er generert fra det.
-- [ ] Skriptet `lokal-andre-ytelser` i `package.json` bruker backendnavnet i `backends.ts`. I dag bruker det `andre-ytelser`, mens backenden heter `sp-andre-ytelser`, så `parseLokaleBackends` kaster feil.
-- [ ] Tester dekker lagring, `fra`-felter, hver feilkode, 409 og forespørsler uten endring.
+- [x] `GET` og `POST` på `/api/andre-ytelser/personer/{personPseudoId}/graderte-andre-ytelser` videresendes til sp-andre-ytelser i dev.
+- [x] Lokalt svarer en mock. Den lagrer fordelinger per yrkesaktivitet med versjon og hendelser, og fyller inn `fra`-feltene, også `fraSykdomsgradFørFordeling`.
+- [x] Mocken håndhever reglene 1–6 i specen med de samme feilkodene. Den svarer 409 `UTDATERT_TILSTAND` ved feil versjon og 400 `MANGLER_ENDRINGER` uten dager.
+- [x] En forespørsel uten reelle endringer gir samme versjon og ingen ny hendelse.
+- [x] `orval.config.ts` har et prosjekt for sp-andre-ytelser, og typer og hooks for `graderte-andre-ytelser` og visningen av saksbehandlerhandlinger er generert fra det.
+- [x] Skriptet `lokal-andre-ytelser` i `package.json` bruker backendnavnet i `backends.ts`. Begge heter `andre-ytelser`.
+- [x] Tester dekker lagring, `fra`-felter, hver feilkode, 409 og forespørsler uten endring.
