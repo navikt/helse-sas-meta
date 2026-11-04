@@ -82,7 +82,7 @@ Hver dag i en forespørsel valideres for seg. En dag er gyldig når alt dette gj
 1. `1 ≤ sykdomsgradFørFordeling ≤ 100`.
 2. `sykdomsgrad + arbeidsgrad + summen av andreYtelserGrader = 100`.
 3. Hver grad i `andreYtelserGrader` er mellom 1 og 99.
-4. `1 ≤ sykdomsgrad ≤ sykdomsgradFørFordeling`.
+4. `1 ≤ sykdomsgrad ≤ sykdomsgradFørFordeling` og `0 ≤ arbeidsgrad`. Uten den siste delen ville en negativ arbeidsgrad gått gjennom regel 2 og 5, for eksempel 50 før fordeling, sykdomsgrad 50, foreldrepenger 60 og arbeidsgrad −10.
 5. `arbeidsgrad ≤ 100 − sykdomsgradFørFordeling`, altså at arbeidsgraden ikke øker.
 6. Hvis `andreYtelserGrader` er tom, er `sykdomsgrad = sykdomsgradFørFordeling`. Slik fjerner saksbehandler graderte andre ytelser fra en dag, og trekket blir 0.
 
@@ -92,8 +92,10 @@ Regel 2 og 5 sammen gir at trekket er mellom 0 og summen av ytelsene. Feilkodene
 |---|---|
 | `GRAD_UTENFOR_GRENSER` | 1, 3 eller 4 |
 | `SUM_ER_IKKE_100` | 2 |
-| `ARBEIDSGRAD_OKER` | 5 |
 | `YTELSER_MANGLER_TREKK` | 6 |
+| `ARBEIDSGRAD_OKER` | 5 |
+
+Regel 6 følger egentlig av regel 2, 4 og 5: uten ytelser er arbeidsgraden `100 − sykdomsgrad`, så en lavere sykdomsgrad betyr alltid at arbeidsgraden øker. Den sjekkes likevel før regel 5, slik at saksbehandler får en mer presis feilmelding.
 
 `MANGLER_ENDRINGER` (400) og `UTDATERT_TILSTAND` (409) er som før. Rekkefølgen er validering, så versjonssjekk, så lagring.
 

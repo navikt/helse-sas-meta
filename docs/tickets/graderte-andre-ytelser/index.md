@@ -4,7 +4,7 @@ Tickets for [Graderte andre ytelser fra saksbehandler](../../specs/graderte-andr
 
 | # | Ticket | Repo | Blokkeres av | Status |
 |---|---|---|---|---|
-| 01 | [sp-andre-ytelser lagrer sykdomsgraden før fordeling og håndhever reglene](01-sykdomsgrad-for-fordeling-og-regler.md) | sp-andre-ytelser | Ingen | klar |
+| 01 | [sp-andre-ytelser lagrer sykdomsgraden før fordeling og håndhever reglene](01-sykdomsgrad-for-fordeling-og-regler.md) | sp-andre-ytelser | Ingen | ferdig |
 | 02 | [sp-andre-ytelser svarer med versjon og trekk fra sykdomsgrad](02-versjon-og-trekk-i-losningen.md) | sp-andre-ytelser | 01 | klar |
 | 03 | [Spleis leser løsningen fra sp-andre-ytelser og bruker trekket](03-spleis-leser-trekket.md) | spleis | Ingen | klar |
 | 04 | [Spleis lagrer versjonen på endringen i behandlingen](04-spleis-lagrer-versjoner.md) | spleis | 03 | klar |
