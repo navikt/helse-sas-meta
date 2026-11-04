@@ -93,6 +93,51 @@ window.SKISSE_DATA = (() => {
     },
   ];
 
+  // Commits per uke per kvartal: [kvartal, Spleis + Speil + Spesialist, andre apper].
+  // Alle repoene som er sjekket ut i sas-meta, uten bots og merge-commits. 2026-4 gjelder 1. oktober–4. november.
+  const takt = [
+    ['2020-1', 84, 37], ['2020-2', 78, 30], ['2020-3', 53, 9], ['2020-4', 72, 12],
+    ['2021-1', 61, 43], ['2021-2', 56, 35], ['2021-3', 42, 37], ['2021-4', 74, 36],
+    ['2022-1', 88, 44], ['2022-2', 70, 53], ['2022-3', 72, 50], ['2022-4', 74, 46],
+    ['2023-1', 108, 59], ['2023-2', 96, 44], ['2023-3', 76, 31], ['2023-4', 89, 70],
+    ['2024-1', 90, 130], ['2024-2', 80, 53], ['2024-3', 72, 47], ['2024-4', 135, 115],
+    ['2025-1', 125, 59], ['2025-2', 73, 33], ['2025-3', 53, 51], ['2025-4', 97, 31],
+    ['2026-1', 91, 60], ['2026-2', 52, 72], ['2026-3', 56, 59], ['2026-4', 75, 116],
+  ];
+  // Fra første commit til første gang funksjonen var på i prod. Samme datoer som i storeLoft og fart.
+  const ledetid = [
+    { navn: 'Flere arbeidsgivere', fra: '2020-05-14', prod: '2022-08-10', bane: 0 },
+    { navn: 'Revurdering', fra: '2021-02-10', prod: '2021-06-15', bane: 1 },
+    { navn: 'Utbetaling til sykmeldt', fra: '2021-10-19', prod: '2023-02-20', bane: 2 },
+    { navn: 'Totrinnsvurdering', fra: '2022-05-12', prod: '2022-06-30', bane: 1 },
+    { navn: 'Skjønnsfastsettelse', fra: '2023-05-19', prod: '2024-01-05', bane: 0 },
+    { navn: 'Avviksvurdering', fra: '2023-10-17', prod: '2024-01-02', bane: 1 },
+    { navn: 'Tilkommen inntekt', fra: '2023-11-14', prod: '2025-10-22', bane: 2 },
+    { navn: 'Selvstendig', fra: '2025-04-28', prod: '2025-09-16', bane: 0 },
+    { navn: 'sp-forsikring', fra: '2026-05-19', prod: '2026-06-15', bane: 0 },
+    { navn: 'sp-vilkarsproving', fra: '2026-08-18', prod: '2026-08-27', bane: 1 },
+    { navn: 'tre til', fra: '2026-10-28', prod: '2026-11-04', bane: 2, deler: [['2026-10-28', '2026-11-02'], ['2026-11-02', '2026-11-02'], ['2026-11-03', '2026-11-04']], tekst: 'tre til · 0–5 dager' },
+  ];
+  // Toggle-tallene er levetiden til togglene i Spleis sin Toggle.kt, fra de ble lagt inn til de ble fjernet.
+  // Togglen telles i perioden den ble fjernet.
+  const teamperioder = [
+    {
+      id: 'ett', navn: 'Ett team', tid: '2020 – sommeren 2022', fra: '2020-1', til: '2022-3', farge: 'sage',
+      commitsUke: 103, perUtvikler: '6', toggleDager: '77 dager', toggleAntall: 43,
+      poeng: 'Store løft tok måneder, noen over to år.',
+    },
+    {
+      id: 'to', navn: 'Speilvendt og Spleiselaget', tid: 'høsten 2022 – mars 2026', fra: '2022-4', til: '2026-1', farge: 'terra',
+      commitsUke: 149, perUtvikler: '9', toggleDager: '22 dager', toggleAntall: 62,
+      poeng: 'Mer kode i uka, men store løft tok fortsatt måneder.',
+    },
+    {
+      id: 'igjen', navn: 'Ett team igjen', tid: 'fra april 2026', fra: '2026-2', til: '2026-4', farge: 'sage',
+      commitsUke: 131, perUtvikler: '9', toggleDager: '2,5 dager', toggleAntall: 12,
+      poeng: 'Nye kapabiliteter går i prod på dager.',
+    },
+  ];
+
   const apper = ['Spleis', 'Speil', 'Spesialist'];
   const sporIApper = [
     { navn: ['Flere', 'arbeidsgivere'], commits: [155, 49, 13], tilstander: 0 },
@@ -238,5 +283,5 @@ window.SKISSE_DATA = (() => {
     { navn: 'sp-avslagsdager', under: 'oppholdskravet', fra: '2026-11-03', til: '2026-11-04', notat: 'fire tickets ferdig' },
   ];
 
-  return { spor, storeLoft, apper, sporIApper, kapabiliteter, kategorier, fart, idag: '2026-11-04' };
+  return { spor, storeLoft, takt, ledetid, teamperioder, apper, sporIApper, kapabiliteter, kategorier, fart, idag: '2026-11-04' };
 })();

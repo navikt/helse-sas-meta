@@ -7,7 +7,7 @@ const FARGE = { sage: C.sage, terra: C.terra, sand: C.sand, ink: C.ink };
 const dag = s => Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10));
 const dagerMellom = (a, b) => Math.round((dag(b) - dag(a)) / 864e5);
 
-/* Felles: kapabilitetskort, brukt i kapittel 4 og 6. */
+/* Felles: kapabilitetskort, brukt i kapittel 4 og 7. */
 const STATUS = {
   prod: { tekst: 'i prod', farge: C.sageDark },
   'pågår': { tekst: 'pågår', farge: C.terra },
@@ -396,6 +396,123 @@ window.Kapitler.push({
     k.text('Målt til første versjon i prod, ikke til ferdig funksjonalitet. Selvstendig hadde i tillegg et forsøk i 2023. Kilde: git log.',
       60, 836, { size: 13, fill: C.inkSoft, start: S + 400, maxW: 1100 });
     this.varighet = S + 1400;
+    k.varighet = this.varighet;
+    return k;
+  },
+});
+
+/* ---------- Kapittel 6: leveransetakten ---------- */
+window.Kapitler.push({
+  id: 'team',
+  varighet: 9000,
+  bygg(root) {
+    const k = M.nyttKapittel(root, this);
+    k.header('Takten før, under og etter delingen', 'Høsten 2022 ble vi delt i Speilvendt og Spleiselaget. I april 2026 ble vi ett team igjen. Vi skrev minst like mye kode mens vi var delt. Det som har endret seg mest, er tiden fra vi begynner på noe til det er på i prod.');
+    const Q = D.takt, X0 = 170, X1 = 1540, YT = 276, YB = 404, MAKS = 260;
+    const xMnd = m => X0 + m * (X1 - X0) / 84;
+    const xDato = s => xMnd((+s.slice(0, 4) - 2020) * 12 + (+s.slice(5, 7) - 1) + (+s.slice(8, 10) - 1) / 30.5);
+    const xKv = q => xMnd((+q.slice(0, 4) - 2020) * 12 + (+q.slice(5) - 1) * 3);
+    const yAt = v => YB - v / MAKS * (YB - YT);
+    const farge = p => p.farge === 'sage' ? C.sageDark : C.terraDark;
+    const G0 = 482, GS = 30;
+
+    D.teamperioder.forEach((p, i) => {
+      const a = xKv(p.fra), b = xKv(p.til) + (X1 - X0) / 28, w = b - a;
+      const band = el('g', { opacity: 0 }, k.g);
+      roughShape(band, w - 6, G0 + 2 * GS + 30 - (YT - 40), 'teamband' + p.id, { fill: p.farge === 'sage' ? C.sage : C.terra, opacity: p.farge === 'sage' ? 0.16 : 0.1, transform: `translate(${a + w / 2} ${(YT - 40 + G0 + 2 * GS + 30) / 2})` }, 1);
+      k.fade(band, 300 + i * 200, 500);
+      k.text(p.navn.toUpperCase(), a + 12, YT - 20, { size: 12, weight: 600, ls: '0.12em', fill: farge(p), start: 400 + i * 200, maxW: w - 20 });
+    });
+
+    k.ink(catmull([[X0 - 20, YB + 2], [X1 + 20, YB + 3]], false, 16), { key: 'taktakse', width: 1.6, start: 200, dur: 600 });
+    [0, 100, 200].forEach((v, i) => {
+      k.text(String(v), X0 - 30, yAt(v) + 4, { size: 12.5, anchor: 'end', fill: C.inkSoft, start: 500 + i * 80 });
+      if (v > 0) {
+        const l = el('line', { x1: X0 - 22, y1: yAt(v), x2: X1 + 20, y2: yAt(v), stroke: 'rgba(31,30,29,.14)', 'stroke-width': 1, 'stroke-dasharray': '2 6' }, k.g);
+        k.fade(l, 500 + i * 80, 400);
+      }
+    });
+    k.text('commits', X0 - 30, YT - 14, { size: 12, anchor: 'end', fill: C.inkSoft, start: 600 });
+    k.text('i uka', X0 - 30, YT, { size: 12, anchor: 'end', fill: C.inkSoft, start: 600 });
+    for (let y = 2020; y <= 2026; y++) k.text(String(y), xMnd((y - 2020) * 12) + 4, YB + 22, { size: 12.5, fill: C.inkSoft, start: 600 + (y - 2020) * 40 });
+
+    const rng = M.rngFor('taktsoyler');
+    const j = () => (rng() - 0.5) * 1.4;
+    const rekt = (x0, x1, y0, y1) => `M${(x0 + j()).toFixed(1)} ${(y0 + j()).toFixed(1)}L${(x0 + j()).toFixed(1)} ${(y1 + j()).toFixed(1)}L${(x1 + j()).toFixed(1)} ${(y1 + j()).toFixed(1)}L${(x1 + j()).toFixed(1)} ${(y0 + j()).toFixed(1)}Z`;
+    let dK = '', dA = '';
+    const bw = (X1 - X0) / 28;
+    Q.forEach(([q, kj, an]) => {
+      const x0 = xKv(q) + 5, x1 = xKv(q) + bw - 5;
+      dK += rekt(x0, x1, YB - 1, yAt(kj));
+      dA += rekt(x0, x1, yAt(kj) - 1.5, yAt(kj + an));
+    });
+    const klipp = el('clipPath', { id: 'klipp-takt' }, k.g);
+    const klippRekt = el('rect', { x: X0 - 10, y: YT - 60, width: 0, height: YB - YT + 70 }, klipp);
+    el('path', { d: dK, fill: C.ink, opacity: 0.72, 'clip-path': 'url(#klipp-takt)' }, k.g);
+    el('path', { d: dA, fill: C.sand, stroke: 'rgba(31,30,29,.35)', 'stroke-width': 1, 'clip-path': 'url(#klipp-takt)' }, k.g);
+    const BS = 1200, BD = 2400;
+    k.add(t => klippRekt.setAttribute('width', ((X1 - X0 + 20) * ease(progress(t, BS, BD))).toFixed(1)));
+
+    const LX = X1 + 20;
+    const legende = el('g', { opacity: 0 }, k.g);
+    el('rect', { x: LX - 300, y: YT - 64, width: 12, height: 12, fill: C.ink, opacity: 0.72 }, legende);
+    text(legende, 'Spleis, Speil og Spesialist', LX - 282, YT - 53, { size: 12.5, fill: C.inkSoft });
+    el('rect', { x: LX - 110, y: YT - 64, width: 12, height: 12, fill: C.sand, stroke: 'rgba(31,30,29,.35)' }, legende);
+    text(legende, 'andre apper', LX - 92, YT - 53, { size: 12.5, fill: C.inkSoft });
+    k.fade(legende, BS, 400);
+
+    const SS = BS + BD + 100;
+    D.teamperioder.forEach((p, i) => {
+      const a = xKv(p.fra), b = xKv(p.til) + bw, y = yAt(p.commitsUke);
+      k.ink(catmull([[a + 8, y], [b - 8, y + 1]], false, 8), { key: 'taktsnitt' + p.id, width: 2.4, color: farge(p), start: SS + i * 300, dur: 400 });
+      const kort = p.id === 'igjen';
+      const etikett = k.text(`snitt ${p.commitsUke} i uka`, kort ? b - 10 : a + 12, y - 8, { size: 13, weight: 600, anchor: kort ? 'end' : 'start', fill: farge(p), start: SS + i * 300 + 300 });
+      Object.entries({ stroke: C.paper, 'stroke-width': 5, 'stroke-linejoin': 'round', 'paint-order': 'stroke' }).forEach(([n, v]) => etikett.setAttribute(n, v));
+    });
+
+    const LS = SS + 1100;
+    k.text('STORE LØFT, FRA FØRSTE COMMIT TIL PÅ I PROD', X0 + 12, G0 - 36, { size: 11.5, weight: 600, ls: '0.12em', fill: C.inkSoft, start: LS - 200 });
+    const varighet = (a, b) => {
+      const d = dagerMellom(a, b);
+      if (d < 21) return `${d} dager`;
+      if (d < 90) return `${Math.round(d / 7)} uker`;
+      return `${Math.round(d / 30.44)} mnd`;
+    };
+    D.ledetid.forEach((r, i) => {
+      const y = G0 + r.bane * GS, start = LS + i * 220;
+      const deler = r.deler || [[r.fra, r.prod]];
+      deler.forEach(([fra, til], di) => {
+        const x0 = xDato(fra), w = Math.max(5, xDato(til) - x0);
+        const strip = el('g', { opacity: 0 }, k.g);
+        roughShape(strip, w, 9, 'ledetid' + i + '-' + di, { fill: C.sand, stroke: 'rgba(31,30,29,.4)', 'stroke-width': 1, transform: `translate(${w / 2} 0)` }, 0.6);
+        const gs = start + di * 60, gd = Math.min(900, 200 + w * 2);
+        k.add(t => {
+          const p = ease(progress(t, gs, gd));
+          setTransform(strip, `translate(${x0 + (r.deler ? di * 7 : 0)} ${y}) scale(${Math.max(0.001, p).toFixed(3)} 1)`);
+          setOpacity(strip, p > 0 ? 1 : 0);
+        });
+        if (!r.deler) k.ink([[x0 + w, y - 6], [x0 + w, y + 6]], { key: 'ledeprod' + i, width: 2, color: C.terra, start: gs + gd, dur: 150 });
+      });
+      const ny = r.fra >= '2026-04-01';
+      const tx = ny ? xKv('2026-2') + 10 : xDato(r.fra);
+      k.text(r.tekst || `${r.navn} · ${varighet(r.fra, r.prod)}`, tx, y - 9, { size: 12, weight: ny ? 600 : 400, fill: ny ? C.sageDark : C.ink, start: start + 300 });
+    });
+
+    const KS = LS + D.ledetid.length * 220 + 900, CW = 466, CY = 692;
+    D.teamperioder.forEach((p, i) => {
+      const cx = 60 + CW / 2 + i * (CW + 31);
+      const kort = k.paper({ key: 'teamkort' + p.id, cx, cy: CY, w: CW, h: 184, fill: p.id === 'to' ? C.paperDim : C.paper, start: KS + i * 450, restRot: 1 });
+      const L = -CW / 2 + 24, c = kort.content;
+      text(c, p.navn.toUpperCase(), L, -64, { size: 12, weight: 600, ls: '0.12em', fill: farge(p), maxW: CW - 48 });
+      text(c, p.tid, L, -45, { size: 12.5, fill: C.inkSoft });
+      text(c, p.toggleDager, L, -2, { family: CONFIG.fonts.serif, size: 38, fill: farge(p) });
+      text(c, `fra ny toggle i Spleis til på for alle (median av ${p.toggleAntall})`, L, 22, { size: 12.5, fill: C.inkSoft, maxW: CW - 48 });
+      text(c, `${p.commitsUke} commits i uka · ${p.perUtvikler} per utvikler`, L, 48, { size: 14, maxW: CW - 48 });
+      text(c, p.poeng, L, 72, { size: 14, weight: 600, maxW: CW - 48 });
+    });
+    k.text('Commits fra alle repoene som er sjekket ut i sas-meta, uten bots. Toggle-tallene gjelder Spleis, og en toggle telles i perioden den ble fjernet. 2026 K4 gjelder bare oktober og starten av november. Kilde: git log.',
+      60, 836, { size: 13, fill: C.inkSoft, start: KS + 1600, maxW: 1480 });
+    this.varighet = KS + 2600;
     k.varighet = this.varighet;
     return k;
   },

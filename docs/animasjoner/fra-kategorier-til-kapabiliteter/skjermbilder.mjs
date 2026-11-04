@@ -26,17 +26,17 @@ if (modus === "bilder") {
   await mkdir(bilder, { recursive: true });
   const page = await browser.newPage({ viewport: VIEWPORT, deviceScaleFactor: 2 });
   const feil = feilsjekk(page);
-  for (let n = 1; n <= 6; n++) {
+  for (let n = 1; n <= 7; n++) {
     await page.goto(`${side}?kapittel=${n}&t=999999`);
     await page.waitForTimeout(400);
     await page.screenshot({ path: path.join(bilder, `kapittel-${n}.png`) });
   }
   for (const valg of ["inaktiv", "fl", "dagpenger", "bladb", "sn", "at", "inaktiv,dagpenger,verneplikt", "yrkesskade"]) {
-    await page.goto(`${side}?kapittel=6&t=999999&kategorier=${valg}`);
+    await page.goto(`${side}?kapittel=7&t=999999&kategorier=${valg}`);
     await page.waitForTimeout(400);
     await page.screenshot({ path: path.join(bilder, `velg-${valg.replaceAll(",", "+")}.png`) });
   }
-  await page.goto(`${side}?kapittel=6&t=999999&kategorier=fl`);
+  await page.goto(`${side}?kapittel=7&t=999999&kategorier=fl`);
   await page.waitForTimeout(300);
   await page.locator('[data-kategori="kombsn"]').click();
   await page.waitForTimeout(1200);
@@ -48,7 +48,7 @@ if (modus === "animasjon") {
   await mkdir(bilder, { recursive: true });
   const page = await browser.newPage({ viewport: VIEWPORT });
   const feil = feilsjekk(page);
-  for (let n = 1; n <= 6; n++) {
+  for (let n = 1; n <= 7; n++) {
     await page.goto(`${side}?kapittel=${n}`);
     let forrige = 0;
     for (const ms of [700, 1600, 3200, 5000]) {
