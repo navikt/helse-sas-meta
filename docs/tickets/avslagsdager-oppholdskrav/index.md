@@ -11,7 +11,7 @@ Tickets for [Avslå dager etter oppholdskravet i sp-avslagsdager](../../specs/av
 | 05 | [sp-avslagsdager svarer på behovet `Avslagsdager`](05-svare-pa-behovet-avslagsdager.md) | sp-avslagsdager | 02 | ferdig |
 | 06 | [Spleis avslår dager med `Oppholdskrav` fra behovet](06-spleis-avslar-dager-med-oppholdskrav.md) | spleis | Ingen | klar |
 | 07 | [Spleis tar imot `avslagsdager_endret` og revurderer](07-spleis-revurderer-ved-avslagsdager-endret.md) | spleis | 06 | klar |
-| 08 | [Speil viser handlingen og `Oppholdskrav`](08-speil-viser-handlingen-og-oppholdskrav.md) | speil | 01, 04 | klar |
+| 08 | [Speil viser handlingen og `Oppholdskrav`](08-speil-viser-handlingen-og-oppholdskrav.md) | speil | 01, 04 | ferdig |
 | 09 | [Skjema for avslag i dagoversikten](09-speil-skjema-for-avslag.md) | speil | 02, 08 | klar |
 | 10 | [Rulle ut i dev og prod](10-rulle-ut.md) | alle | 01, 03, 05, 07, 09 | klar |
 
