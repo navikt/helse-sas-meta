@@ -8,12 +8,12 @@
 
 **Blokkeres av:** Ingen (kan starte med en gang)
 
-**Status:** klar
+**Status:** ferdig
 
 ## Akseptansekriterier
 
-- [ ] `Økonomi` bruker `trekkFraSykdomsgrad` i stedet for `andreYtelserGrad`.
-- [ ] `ØkonomiUtDto` og `ØkonomiInnDto` har `trekkFraSykdomsgrad`, og serde lagrer feltet per utbetalingsdag.
-- [ ] Utbetalingsdager uten feltet leses som 0.
-- [ ] En person med trekk som lagres og leses inn igjen, får samme utbetalingstidslinje.
-- [ ] En serde-test dekker både nye og gamle data.
+- [x] `Økonomi` bruker `trekkFraSykdomsgrad` i stedet for `andreYtelserGrad`.
+- [x] `ØkonomiUtDto` og `ØkonomiInnDto` har `trekkFraSykdomsgrad`, og serde lagrer feltet per utbetalingsdag.
+- [x] Utbetalingsdager uten feltet leses som 0.
+- [x] En person med trekk som lagres og leses inn igjen, får samme utbetalingstidslinje.
+- [x] En serde-test dekker både nye og gamle data.
