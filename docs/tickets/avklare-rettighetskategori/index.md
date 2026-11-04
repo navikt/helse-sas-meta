@@ -14,7 +14,7 @@ Tickets for [Avklare rettighetskategori i sp-rettighetskategori](../../specs/avk
 | 08 | [Backfill av historikken i sp-rettighetskategori](08-backfill-i-sp-rettighetskategori.md) | 2 | sp-rettighetskategori | 01, 07 | ferdig |
 | 09 | [Forkaste kombinerte rettighetskategorier i Spleis](09-forkaste-kombinerte-kategorier.md) | 3 | spleis | 06 | ferdig |
 | 10 | [Konsistenssjekk av rettighetskategori i `AvventerHistorikk`](10-konsistenssjekk-i-avventer-historikk.md) | 3 | spleis | 06, 08 | ferdig |
-| 11 | [Skru på togglen for fase 3](11-skru-pa-togglen-for-fase-3.md) | 3 | spleis, sp-rettighetskategori | 09, 10 | klar |
+| 11 | [Skru på togglen for fase 3](11-skru-pa-togglen-for-fase-3.md) | 3 | spleis, sp-rettighetskategori | 09, 10 | ferdig |
 | 12 | [Fjerne backfill](12-fjerne-backfill.md) | 4 | sp-rettighetskategori, spleis | 11 | klar |
 | 13 | [`AVVENTER_RETTIGHETSKATEGORI` i Spock og spammer](13-tilstanden-i-spock-og-spammer.md) | 1 | spock, spammer | Ingen | ferdig |
 | 14 | [Påkrevd rettighetskategori-ID i opptjeningsbehovet](14-pakrevd-rettighetskategori-id-i-opptjening.md) | 5 | sp-vilkarsproving | 05 | klar |
@@ -50,5 +50,5 @@ flowchart LR
     T11 --> T12
 
     classDef ferdig fill:#c8e6c9,stroke:#2e7d32,color:#1b5e20
-    class T01,T02,T03,T04,T05,T06,T07,T08,T09,T10,T13 ferdig
+    class T01,T02,T03,T04,T05,T06,T07,T08,T09,T10,T11,T13 ferdig
 ```
