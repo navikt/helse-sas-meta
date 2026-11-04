@@ -18,4 +18,5 @@
 - [ ] `UTDATERT_TILSTAND` beholder meldingen om at noen andre har endret fordelingene.
 - [ ] 403 fra sp-andre-ytelser, når saksbehandler mangler skrivetilgang til personen, gir en melding om manglende tilgang.
 - [ ] Ukjente feilkoder gir den generelle meldingen.
+- [ ] Når lagringen feiler, forsvinner «visningen oppdateres», og saksbehandler kan rette og prøve igjen.
 - [ ] Tester dekker hver feilkode.

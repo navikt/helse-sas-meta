@@ -10,13 +10,13 @@
 
 **Blokkeres av:** [10: Dagoversikten får kolonnen «Andre ytelser» med fordelingen for hver dag](10-visning-av-fordelingen-per-dag.md)
 
-**Status:** klar
+**Status:** ferdig
 
 ## Akseptansekriterier
 
-- [ ] Endringsloggen bygges fra `events` i `GET` fra sp-andre-ytelser, med `tidspunkt`, `utfortAvSaksbehandlerIdent`, `notatTilBeslutter` og dagene i hver hendelse.
-- [ ] Hver endring viser ytelsene, sykdomsgraden og arbeidsgraden fra og til. Den første fordelingen av en dag har ingen `fra`-verdier.
-- [ ] Ikonet vises bare for dager med endringer av fordelingen, ved siden av graden i kolonnen «Andre ytelser».
-- [ ] Endringene vises sortert på tidspunkt.
-- [ ] Endringsloggen for overstyringer av tidslinjen i Kilde-kolonnen er som før.
-- [ ] Tester dekker én endring, flere endringer av samme dag, fjerning av ytelser og en dag som også har en overstyring av tidslinjen.
+- [x] Endringsloggen bygges fra `events` i `GET` fra sp-andre-ytelser, med `tidspunkt`, `utfortAvSaksbehandlerIdent`, `notatTilBeslutter` og dagene i hver hendelse.
+- [x] Hver endring viser ytelsene, sykdomsgraden og arbeidsgraden fra og til. Den første fordelingen av en dag har ingen `fra`-verdier.
+- [x] Ikonet vises bare for dager med endringer av fordelingen, ved siden av graden i kolonnen «Andre ytelser». Ikonet står etter graden, som i skissene i Figma.
+- [x] Endringene vises sortert på tidspunkt, med den nyeste først.
+- [x] Endringsloggen for overstyringer av tidslinjen i Kilde-kolonnen er som før.
+- [x] Tester dekker én endring, flere endringer av samme dag, fjerning av ytelser og en dag som også har en overstyring av tidslinjen.
