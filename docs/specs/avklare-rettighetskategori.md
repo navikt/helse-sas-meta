@@ -1,6 +1,6 @@
 # Avklare rettighetskategori i sp-rettighetskategori
 
-[Tickets](../tickets/avklare-rettighetskategori/) · [ADR 0001](../adr/0001-spleis-lagrer-bare-id-for-rettighetskategori.md) · [ADR 0002](../adr/0002-alle-vilkarsgrunnlag-far-rettighetskategori-id.md) · [ADR 0003](../adr/0003-minimalt-vilkarsgrunnlag-for-rettighetskategori.md)
+[Tickets](https://github.com/navikt/sas-issues/issues?q=label%3Aepic%3Aavklare-rettighetskategori) · [ADR 0001](../adr/0001-spleis-lagrer-bare-id-for-rettighetskategori.md) · [ADR 0002](../adr/0002-alle-vilkarsgrunnlag-far-rettighetskategori-id.md) · [ADR 0003](../adr/0003-minimalt-vilkarsgrunnlag-for-rettighetskategori.md)
 
 ## Problem
 
