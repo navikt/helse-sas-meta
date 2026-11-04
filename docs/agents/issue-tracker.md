@@ -1,6 +1,6 @@
 # Issue tracker: GitHub (navikt/sas-issues)
 
-Tickets live as GitHub issues in **`navikt/sas-issues`**, not in this repo. Specs stay as Markdown files in `docs/specs/` in sas-meta (helse-sas-meta). Use the `gh` CLI for all operations, and always pass `-R navikt/sas-issues`: `gh` would otherwise infer `navikt/helse-sas-meta` from `git remote`. The repo is checked out at `./sas-issues` so the agent sandbox allows writes to it, but you don't need to `cd` there: `-R` is enough from any directory.
+Tickets live as GitHub issues in **`navikt/sas-issues`**, the sole source of truth for ticket content, status and dependencies. Specs stay as Markdown files in `docs/specs/` in sas-meta (helse-sas-meta). Use the `gh` CLI for all operations, and always pass `-R navikt/sas-issues`: `gh` would otherwise infer `navikt/helse-sas-meta` from `git remote`. The repo is checked out at `./sas-issues` so the agent sandbox allows writes to it, but you don't need to `cd` there: `-R` is enough from any directory.
 
 If the cplt sandbox blocks a write to `navikt/sas-issues` ("outside the startup repo"), stop and tell the user to run `cplt config set --local sandbox.repo_dirs sas-issues` outside the sandbox from `helse-sas-meta`, then restart cplt. See "Tickets i sas-issues og cplt-sandkassen" in `README.md`. Don't work around the block.
 
@@ -44,9 +44,9 @@ Issues that don't come from a spec get neither label.
 
 Link to a spec from an issue with the full URL, for example `https://github.com/navikt/helse-sas-meta/blob/main/docs/specs/<spec-slug>.md`. Relative links don't work across repos.
 
-## Older tickets in docs/tickets
+## Migrated tickets
 
-Features specified before the switch to GitHub issues have their tickets as Markdown files in `docs/tickets/<feature>/`, with a `**Status:**` line (`klar`/`pågår`/`ferdig`). Keep working on those there. Don't move them to GitHub unless the user asks.
+All former Markdown tickets have been migrated to GitHub, and `docs/tickets/` has been removed. Resolve an old ticket path through Git history to find its title, then locate the issue by epic label and title in `navikt/sas-issues`. Read and update the current issue in GitHub.
 
 ## Pull requests as a triage surface
 
@@ -58,7 +58,7 @@ Create a GitHub issue in `navikt/sas-issues`. If it comes from a spec, add the l
 
 ## When a skill says "fetch the relevant ticket"
 
-Read it as in **Read an issue** above, together with the spec it links to. The user normally passes the issue number (`#12`), the URL or the title. For older features, the reference may be a path in `docs/tickets/`.
+Read it as in **Read an issue** above, together with the spec it links to. The user normally passes the issue number (`#12`), the URL or the title. Resolve old file paths as in **Migrated tickets** above.
 
 ## Wayfinding operations
 

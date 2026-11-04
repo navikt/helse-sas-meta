@@ -31,7 +31,7 @@ Disse skillene er hentet fra [mattpocock/skills](https://github.com/mattpocock/s
 
 ### Issue tracker
 
-Tickets er GitHub-issues i `navikt/sas-issues`. Tickets fra en spec har labelene `spec-ticket` og `epic:<spec-slug>`. Specene ligger fortsatt i `docs/specs/`, og eldre tickets i `docs/tickets/`. Se `docs/agents/issue-tracker.md`.
+Tickets er GitHub-issues i `navikt/sas-issues`, som er eneste kilde til ticketinnhold, status og avhengigheter. Tickets fra en spec har labelene `spec-ticket` og `epic:<spec-slug>`. Specene ligger i `docs/specs/`. Se `docs/agents/issue-tracker.md`.
 
 ### Domain docs
 

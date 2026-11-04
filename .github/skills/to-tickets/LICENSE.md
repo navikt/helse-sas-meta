@@ -1,4 +1,4 @@
-Denne skillen er hentet fra [mattpocock/skills](https://github.com/mattpocock/skills/tree/9e2abf8611a345efbf779aacb171cff015bcdeb6/skills/engineering/to-tickets) (commit `9e2abf8`) og tilpasset slik at ticketene skrives som én Markdown-fil per ticket i `docs/tickets/` i sas-meta i stedet for å publiseres til en issue tracker, og er lisensiert under MIT-lisensen nedenfor.
+Denne skillen er hentet fra [mattpocock/skills](https://github.com/mattpocock/skills/tree/9e2abf8611a345efbf779aacb171cff015bcdeb6/skills/engineering/to-tickets) (commit `9e2abf8`) og tilpasset slik at hver ticket publiseres som et GitHub-issue i `navikt/sas-issues` med labelene `spec-ticket` og `epic:<spec-slug>`. Den er lisensiert under MIT-lisensen nedenfor.
 
 ```text
 MIT License
