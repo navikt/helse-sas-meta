@@ -16,4 +16,5 @@
 - [ ] Varselet lages når minst én dag i perioden for behandlingens yrkesaktivitet har en `sykdomsgradFørFordeling` som ikke er lik Spleis' sykdomsgrad. En dag som ikke er sykedag i Spleis, har sykdomsgrad 0 i sammenligningen.
 - [ ] Spleis lager ikke varselet når gradene er like, eller når perioden ikke har graderte andre ytelser.
 - [ ] Varselet stopper automatisk behandling.
+- [ ] Varselet har en definisjon med tittel og handling, slik at Spesialist får `varselkode_ny_definisjon` og Speil viser varselet med tekst, som for de andre `RV_AY`-varslene.
 - [ ] E2e-tester i `GraderteAndreYtelserTest` dekker endret sykdomsgrad fra en korrigerende søknad, en overstyrt dag som ikke lenger er sykedag, og like grader uten varsel.

@@ -1,4 +1,4 @@
-# 12: Lagring uten reelle endringer venter ikke på oppdatering
+# 15: Lagring uten reelle endringer venter ikke på oppdatering
 
 **Spec:** [Graderte andre ytelser fra saksbehandler](../../specs/graderte-andre-ytelser.md)
 
@@ -6,7 +6,7 @@
 
 **Hva skal lages:** Når sp-andre-ytelser svarer med samme versjon som før, vet Speil at ingenting ble endret. Saksbehandler ser ikke «visningen oppdateres» og blir ikke stående og vente.
 
-**Blokkeres av:** [08: Speil videresender og mocker API-et til sp-andre-ytelser](08-speil-videresender-og-mocker-api-et.md)
+**Blokkeres av:** [09: Speil lagrer fordelingene i sp-andre-ytelser med sykdomsgraden før fordeling](09-speil-lagrer-fordelinger-i-sp-andre-ytelser.md)
 
 **Status:** klar
 

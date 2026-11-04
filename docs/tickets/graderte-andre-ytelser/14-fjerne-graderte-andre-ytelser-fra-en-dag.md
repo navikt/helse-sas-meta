@@ -1,4 +1,4 @@
-# 11: Saksbehandler kan fjerne graderte andre ytelser fra en dag
+# 14: Saksbehandler kan fjerne graderte andre ytelser fra en dag
 
 **Spec:** [Graderte andre ytelser fra saksbehandler](../../specs/graderte-andre-ytelser.md)
 
@@ -8,7 +8,7 @@
 
 **Hva skal lages:** Når saksbehandler endrer en dag med graderte andre ytelser tilbake til en vanlig sykedag, fjernes fordelingen i sp-andre-ytelser. Trekket for dagen blir 0.
 
-**Blokkeres av:** [08: Speil videresender og mocker API-et til sp-andre-ytelser](08-speil-videresender-og-mocker-api-et.md)
+**Blokkeres av:** [10: Dagoversikten får kolonnen «Andre ytelser» med fordelingen for hver dag](10-visning-av-fordelingen-per-dag.md)
 
 **Status:** klar
 

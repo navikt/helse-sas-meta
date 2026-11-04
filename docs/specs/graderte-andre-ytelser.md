@@ -14,7 +14,7 @@ Speil sender fordelingen til sp-andre-ytelser sammen med sykdomsgraden saksbehan
 
 Spleis revurderer fra `fom` i meldingen. Når Spleis beregner, sender den behovet `GraderteAndreYtelserForBeregning` med beregningsperioden. Løsningen gir per yrkesaktivitet den gjeldende versjonen og, for hver dag, trekket fra sykdomsgraden og sykdomsgraden før fordeling. Spleis lagrer versjonen for behandlingens egen yrkesaktivitet på endringen i behandlingen, bruker trekket som `trekkFraSykdomsgrad` i `Økonomi` og lagrer `trekkFraSykdomsgrad` per utbetalingsdag. Den justerte sykdomsgraden er Spleis' sykdomsgrad minus trekket, aldri under 0. Når sykdomsgraden før fordeling ikke stemmer med Spleis' sykdomsgrad, lager Spleis et varsel som stopper automatisk behandling.
 
-Speil-teamet lager visningen og skjemaet i Speil selv. Det står ikke i denne specen ut over kontrakten mot sp-andre-ytelser.
+Specen beskriver bare kontrakten mellom Speil og sp-andre-ytelser. Visningen og skjemaet i Speil er beskrevet i ticketene.
 
 ## Brukerhistorier
 
@@ -173,7 +173,6 @@ Et nytt varsel i serien `RV_AY` med teksten «Sykdomsgraden er endret etter ford
 
 ## Utenfor omfang
 
-- Speil: visning per dag i dagoversikten, skjemaet for fordeling av dagen og togglen. Speil-teamet gjør dette.
 - Automatisk henting av graderte andre ytelser fra andre systemer. sp-andre-ytelser skal eie også disse senere.
 - Dager som er helt dekket av en annen ytelse. De registreres som annen ytelse på sykdomstidslinjen, som i dag.
 - Overlapp mellom ytelser, der for eksempel 20 % foreldrepenger og 20 % omsorgspenger til sammen dekker 30 %.

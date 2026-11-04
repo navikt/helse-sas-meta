@@ -23,4 +23,4 @@
 ## Merknader fra implementasjonen
 
 - **Rullerende deploy:** Flyway kjører V005 når den første nye poden starter. Gamle pods kan fortsatt lagre hendelser uten `sykdomsgradFørFordeling`, og da kan ikke de nye podene lese strømmen til den personen. Skaler ned eller deploy med `Recreate` når V005 går ut, eller sørg for at ingen fordeler dager under deployen.
-- **Speil:** API-et krever nå `sykdomsgradFørFordeling`. En Speil-versjon som ikke sender feltet, får 400. Speil må derfor sende feltet før eller samtidig med at denne endringen går ut. Ingen av ticketene i denne featuren dekker Speil, fordi Speil-teamet gjør det selv. Avtal rekkefølgen med dem.
+- **Speil:** API-et krever nå `sykdomsgradFørFordeling`. En Speil-versjon som ikke sender feltet, får 400. Speil må derfor sende feltet før eller samtidig med at denne endringen går ut. [09: Speil lagrer fordelingene i sp-andre-ytelser med sykdomsgraden før fordeling](09-speil-lagrer-fordelinger-i-sp-andre-ytelser.md) dekker dette.
