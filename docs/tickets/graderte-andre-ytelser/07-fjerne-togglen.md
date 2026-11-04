@@ -6,7 +6,7 @@
 
 **Hva skal lages:** Spleis sender alltid behovet `GraderteAndreYtelserForBeregning` i ytelsesrunden, også i prod. Koden har bare én vei.
 
-**Blokkeres av:** [02: sp-andre-ytelser svarer med versjon og trekk fra sykdomsgrad](02-versjon-og-trekk-i-losningen.md), [03: Spleis leser løsningen fra sp-andre-ytelser og bruker trekket](03-spleis-leser-trekket.md), [04: Spleis lagrer versjonen på endringen i behandlingen](04-spleis-lagrer-versjoner.md), [05: Spleis lagrer `andreYtelserGrad` per utbetalingsdag](05-spleis-lagrer-andre-ytelser-grad.md), [06: Spleis varsler når sykdomsgraden er endret etter fordelingen](06-spleis-varsler-ved-endret-sykdomsgrad.md)
+**Blokkeres av:** [02: sp-andre-ytelser svarer med versjon og trekk fra sykdomsgrad](02-versjon-og-trekk-i-losningen.md), [03: Spleis leser løsningen fra sp-andre-ytelser og bruker trekket](03-spleis-leser-trekket.md), [04: Spleis lagrer versjonen på endringen i behandlingen](04-spleis-lagrer-versjoner.md), [05: Spleis lagrer `trekkFraSykdomsgrad` per utbetalingsdag](05-spleis-lagrer-trekk-fra-sykdomsgrad.md), [06: Spleis varsler når sykdomsgraden er endret etter fordelingen](06-spleis-varsler-ved-endret-sykdomsgrad.md)
 
 **Status:** klar
 

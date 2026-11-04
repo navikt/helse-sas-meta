@@ -12,7 +12,7 @@ Saksbehandler lager en fordeling av dagen i dagoversikten i Speil. Fordelingen g
 
 Speil sender fordelingen til sp-andre-ytelser sammen med sykdomsgraden saksbehandler så før fordelingen. sp-andre-ytelser validerer, lagrer en ny hendelse med ny `versjon` og sender `saksbehandlerhandling` (totrinn) og `graderte_andre_ytelser_endret` i samme transaksjon. Dette finnes allerede, bortsett fra sykdomsgraden før fordeling og den strengere valideringen.
 
-Spleis revurderer fra `fom` i meldingen. Når Spleis beregner, sender den behovet `GraderteAndreYtelserForBeregning` med beregningsperioden. Løsningen gir per yrkesaktivitet den gjeldende versjonen og, for hver dag, trekket fra sykdomsgraden og sykdomsgraden før fordeling. Spleis lagrer versjonen for behandlingens egen yrkesaktivitet på endringen i behandlingen, bruker trekket som `andreYtelserGrad` i `Økonomi` og lagrer `andreYtelserGrad` per utbetalingsdag. Den justerte sykdomsgraden er Spleis' sykdomsgrad minus trekket, aldri under 0. Når sykdomsgraden før fordeling ikke stemmer med Spleis' sykdomsgrad, lager Spleis et varsel som stopper automatisk behandling.
+Spleis revurderer fra `fom` i meldingen. Når Spleis beregner, sender den behovet `GraderteAndreYtelserForBeregning` med beregningsperioden. Løsningen gir per yrkesaktivitet den gjeldende versjonen og, for hver dag, trekket fra sykdomsgraden og sykdomsgraden før fordeling. Spleis lagrer versjonen for behandlingens egen yrkesaktivitet på endringen i behandlingen, bruker trekket som `trekkFraSykdomsgrad` i `Økonomi` og lagrer `trekkFraSykdomsgrad` per utbetalingsdag. Den justerte sykdomsgraden er Spleis' sykdomsgrad minus trekket, aldri under 0. Når sykdomsgraden før fordeling ikke stemmer med Spleis' sykdomsgrad, lager Spleis et varsel som stopper automatisk behandling.
 
 Speil-teamet lager visningen og skjemaet i Speil selv. Det står ikke i denne specen ut over kontrakten mot sp-andre-ytelser.
 
@@ -37,13 +37,13 @@ Speil-teamet lager visningen og skjemaet i Speil selv. Det står ikke i denne sp
 17. Som sp-andre-ytelser vil jeg bare svare med dager innenfor perioden i behovet, og bare med yrkesaktiviteter som har dager der, slik at Spleis får akkurat det den trenger.
 18. Som Spleis vil jeg sende behovet `GraderteAndreYtelserForBeregning` med beregningsperioden i samme runde som ytelsene, slik at fordelingene alltid er oppdaterte når jeg beregner.
 19. Som Spleis vil jeg lese løsningen for arbeidstakere, frilansere, selvstendig næringsdrivende og arbeidsledige, slik at alle yrkesaktiviteter kan få et trekk.
-20. Som Spleis vil jeg bruke trekket som `andreYtelserGrad` for dagen og yrkesaktiviteten, slik at den justerte sykdomsgraden gir utbetalingen.
+20. Som Spleis vil jeg bruke trekket som `trekkFraSykdomsgrad` for dagen og yrkesaktiviteten, slik at den justerte sykdomsgraden gir utbetalingen.
 21. Som Spleis vil jeg aldri gi en justert sykdomsgrad under 0, slik at et for stort trekk ikke gir negativ utbetaling.
 22. Som Spleis vil jeg sjekke 20 %-regelen mot totalgraden etter trekket, slik som i dag, slik at regelen gjelder samlet over alle arbeidsgivere.
 23. Som Spleis vil jeg telle en dag med justert sykdomsgrad over 0 som en hel forbrukt sykepengedag, slik som for andre graderte dager.
 24. Som Spleis vil jeg lagre versjonen for behandlingens yrkesaktivitet på endringen i behandlingen, slik at det går an å se i ettertid hvilke fordelinger et vedtak bygde på.
-25. Som Spleis vil jeg lagre `andreYtelserGrad` for hver utbetalingsdag, slik at et vedtak kan leses uten å spørre sp-andre-ytelser.
-26. Som Spleis vil jeg lese utbetalingsdager uten `andreYtelserGrad` som 0, slik at gamle data virker som før.
+25. Som Spleis vil jeg lagre `trekkFraSykdomsgrad` for hver utbetalingsdag, slik at et vedtak kan leses uten å spørre sp-andre-ytelser.
+26. Som Spleis vil jeg lese utbetalingsdager uten `trekkFraSykdomsgrad` som 0, slik at gamle data virker som før.
 27. Som Spleis vil jeg lage et varsel når sykdomsgraden før fordeling ikke er lik min sykdomsgrad for dagen, slik at saksbehandler fordeler dagen på nytt før vedtaket fattes.
 28. Som Spleis vil jeg revurdere fra `fom` i `graderte_andre_ytelser_endret`, slik at perioder som er beregnet eller utbetalt, får fordelingen med.
 29. Som Spleis vil jeg behandle en behandling uten versjon som en behandling uten graderte andre ytelser, slik at eksisterende behandlinger virker som før.
@@ -58,7 +58,7 @@ Se [GLOSSARY.md](../../GLOSSARY.md), seksjonen «Andre ytelser»: sykdomsgrad, j
 ### Ansvar
 
 - sp-andre-ytelser eier fordelingene, historikken og reglene for en fordeling. Den regner ut trekket fra sykdomsgraden: `trekkFraSykdomsgrad = sykdomsgradFørFordeling − sykdomsgrad`.
-- Spleis eier sykdomsgraden og regner ut den justerte sykdomsgraden: `max(0, sykdomsgrad − trekkFraSykdomsgrad)`. Spleis lagrer ikke fordelingene, bare versjonen og `andreYtelserGrad`.
+- Spleis eier sykdomsgraden og regner ut den justerte sykdomsgraden: `max(0, sykdomsgrad − trekkFraSykdomsgrad)`. Spleis lagrer ikke fordelingene, bare versjonen og `trekkFraSykdomsgrad`.
 - Graderte andre ytelser ligger ikke på sykdomstidslinjen. En dag som er helt dekket av en annen ytelse, registreres som annen ytelse med en overstyring av tidslinjen, som i dag.
 
 ### sp-andre-ytelser: REST-API for Speil
@@ -137,7 +137,7 @@ Formatet er som i dag: `fødselsnummer`, `fom`, `yrkesaktivitetstype` og `organi
 
 - Mottaket av `Ytelser` leser formatet over. `ARBEIDSTAKER` med organisasjonsnummer blir arbeidstaker hos arbeidsgiveren, og `FRILANS`, `SELVSTENDIG` og `ARBEIDSLEDIG` blir de tilsvarende yrkesaktivitetene. Mottaket kjenner ikke `ARBEIDSLEDIG` i dag.
 - Trekket blir tidslinjen per yrkesaktivitet som byggerne av utbetalingstidslinjen allerede bruker. Den inneholder trekket og sykdomsgraden før fordeling per dag.
-- Trekket brukes som `andreYtelserGrad` i `Økonomi`. Feltnavnene i `Økonomi` endres ikke. 20 %-regelen og forbruket av sykepengedager er som i dag.
+- Trekket brukes som `trekkFraSykdomsgrad` i `Økonomi`. Feltet het `andreYtelserGrad` før, men det er trekket fra sykdomsgraden og ikke graden til ytelsene, så det får navnet fra ordlisten. 20 %-regelen og forbruket av sykepengedager er som i dag.
 
 ### Spleis: versjoner på endringen i behandlingen
 
@@ -145,9 +145,9 @@ Formatet er som i dag: `fødselsnummer`, `fom`, `yrkesaktivitetstype` og `organi
 - Endringen lagrer ikke versjonene til de andre yrkesaktivitetene, selv om totalgraden avhenger av dem. Spleis beregner overlappende perioder samlet, og endringene i de andre behandlingene lagrer sine egne versjoner. Til sammen gir endringene den samme sporingen.
 - Feltet lagres med serde og i DTO-ene. Endringer som er lagret før dette, har ikke feltet.
 
-### Spleis: `andreYtelserGrad` i økonomien
+### Spleis: `trekkFraSykdomsgrad` i økonomien
 
-`ØkonomiUtDto` og `ØkonomiInnDto` får `andreYtelserGrad`. Serde lagrer feltet per utbetalingsdag. Når feltet mangler, leses det som 0.
+`andreYtelserGrad` i `Økonomi` får navnet `trekkFraSykdomsgrad`. `ØkonomiUtDto` og `ØkonomiInnDto` får `trekkFraSykdomsgrad`. Serde lagrer feltet per utbetalingsdag. Når feltet mangler, leses det som 0.
 
 ### Spleis: varsel
 
@@ -169,7 +169,7 @@ Et nytt varsel i serien `RV_AY` med teksten «Sykdomsgraden er endret etter ford
 - Spleis:
   - Mottaket testes med det nye formatet for alle yrkesaktivitetstypene. Bygg videre på `YtelserRiverTest` og `YtelserRiverMappingTest`. Behovet er med i `BehovkontraktTest`.
   - E2e-tester med testløsninger dekker trekk fra sykdom, trekk som er større enn sykdomsgraden, to arbeidsgivere der bare én har et trekk og 20 %-regelen mot totalgraden, varsel ved endret sykdomsgrad, revurdering etter `graderte_andre_ytelser_endret`, versjonen på endringen og togglen av og på. Bygg videre på `GraderteAndreYtelserTest` i `e2e/andre_ytelser`.
-  - Serde testes for `andreYtelserGrad` og versjonen, med gamle data uten feltene.
+  - Serde testes for `trekkFraSykdomsgrad` og versjonen, med gamle data uten feltene.
 
 ## Utenfor omfang
 
@@ -177,7 +177,7 @@ Et nytt varsel i serien `RV_AY` med teksten «Sykdomsgraden er endret etter ford
 - Automatisk henting av graderte andre ytelser fra andre systemer. sp-andre-ytelser skal eie også disse senere.
 - Dager som er helt dekket av en annen ytelse. De registreres som annen ytelse på sykdomstidslinjen, som i dag.
 - Overlapp mellom ytelser, der for eksempel 20 % foreldrepenger og 20 % omsorgspenger til sammen dekker 30 %.
-- Nye navn på `andreYtelserGrad` og `utbetalingsgrad` i `Økonomi`.
+- Nytt navn på `utbetalingsgrad` i `Økonomi`.
 - Endringer i Spesialist. Spesialist har allerede fjernet sin løsning og tar imot `saksbehandlerhandling` som før.
 
 ## Andre merknader

@@ -2,7 +2,7 @@
 
 Saksbehandler fordeler en dag for én yrkesaktivitet mellom sykdom, arbeid og graderte andre ytelser. sp-andre-ytelser eier fordelingene og historikken som en hendelseslogg per person og yrkesaktivitet. Hver hendelse har en `versjon`. Spleis lagrer ikke fordelingene.
 
-Når Spleis beregner en periode, sender den behovet `GraderteAndreYtelserForBeregning` med beregningsperioden. Løsningen gir per yrkesaktivitet den gjeldende `versjon` og, for hver dag i perioden, trekket fra sykdomsgraden og sykdomsgraden saksbehandler så da dagen ble fordelt. Spleis lagrer versjonen for behandlingens egen yrkesaktivitet på endringen i behandlingen og bruker trekket som `andreYtelserGrad` i `Økonomi`. Spleis regner selv ut den justerte sykdomsgraden, fordi Spleis eier sykdomsgraden.
+Når Spleis beregner en periode, sender den behovet `GraderteAndreYtelserForBeregning` med beregningsperioden. Løsningen gir per yrkesaktivitet den gjeldende `versjon` og, for hver dag i perioden, trekket fra sykdomsgraden og sykdomsgraden saksbehandler så da dagen ble fordelt. Spleis lagrer versjonen for behandlingens egen yrkesaktivitet på endringen i behandlingen og bruker trekket som `trekkFraSykdomsgrad` i `Økonomi`. Spleis regner selv ut den justerte sykdomsgraden, fordi Spleis eier sykdomsgraden.
 
 Ansvaret er delt etter hvem som vet hva. Bare sp-andre-ytelser vet om saksbehandler tok ytelsene fra sykdommen eller fra arbeidet, så den regner ut trekket. Bare Spleis vet hva sykdomsgraden er nå, så den trekker fra og lager et varsel når sykdomsgraden ikke er den saksbehandler så.
 
@@ -22,6 +22,6 @@ Graderte andre ytelser ligger heller ikke på sykdomstidslinjen. De endrer bare 
 ## Konsekvenser
 
 - Spleis kan ikke beregne en periode uten svar fra sp-andre-ytelser. Hvis appen ikke svarer, blir behovet liggende til en påminnelse sender det på nytt. sp-andre-ytelser må derfor svare i prod før Spleis tar behovet i bruk.
-- Spleis lagrer `andreYtelserGrad` per utbetalingsdag, slik at et vedtak kan leses uten å spørre sp-andre-ytelser. Gamle data uten feltet leses som 0.
+- Spleis lagrer `trekkFraSykdomsgrad` per utbetalingsdag, slik at et vedtak kan leses uten å spørre sp-andre-ytelser. Gamle data uten feltet leses som 0.
 - Behandlinger uten versjon har ingen graderte andre ytelser. Ingen versjoner fylles inn i ettertid.
 - Hvis graderte andre ytelser senere kan overlappe hverandre, endres bare valideringen i sp-andre-ytelser. Kontrakten med Spleis er den samme.

@@ -8,7 +8,7 @@ Tickets for [Graderte andre ytelser fra saksbehandler](../../specs/graderte-andr
 | 02 | [sp-andre-ytelser svarer med versjon og trekk fra sykdomsgrad](02-versjon-og-trekk-i-losningen.md) | sp-andre-ytelser | 01 | pågår |
 | 03 | [Spleis leser løsningen fra sp-andre-ytelser og bruker trekket](03-spleis-leser-trekket.md) | spleis | Ingen | ferdig |
 | 04 | [Spleis lagrer versjonen på endringen i behandlingen](04-spleis-lagrer-versjoner.md) | spleis | 03 | ferdig |
-| 05 | [Spleis lagrer `andreYtelserGrad` per utbetalingsdag](05-spleis-lagrer-andre-ytelser-grad.md) | spleis | Ingen | klar |
+| 05 | [Spleis lagrer `trekkFraSykdomsgrad` per utbetalingsdag](05-spleis-lagrer-trekk-fra-sykdomsgrad.md) | spleis | Ingen | klar |
 | 06 | [Spleis varsler når sykdomsgraden er endret etter fordelingen](06-spleis-varsler-ved-endret-sykdomsgrad.md) | spleis | 03 | klar |
 | 07 | [Fjerne togglen for graderte andre ytelser i Spleis](07-fjerne-togglen.md) | spleis | 02, 03, 04, 05, 06 | klar |
 
@@ -20,7 +20,7 @@ flowchart LR
     T02 --> T07[07 Fjerne togglen]
     T03 --> T07
     T04 --> T07
-    T05[05 andreYtelserGrad per utbetalingsdag] --> T07
+    T05[05 trekkFraSykdomsgrad per utbetalingsdag] --> T07
     T06 --> T07
 
     classDef ferdig fill:#c8e6c9,stroke:#2e7d32,color:#1b5e20
