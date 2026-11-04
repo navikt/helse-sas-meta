@@ -1,33 +1,16 @@
 # Tickets: avslå dager etter oppholdskravet
 
-Tickets for [Avslå dager etter oppholdskravet i sp-avslagsdager](../../specs/avslagsdager-oppholdskrav.md). Statusen står i hver ticket og i tabellen under.
+Alle 10 tickets for [Avslå dager etter oppholdskravet i sp-avslagsdager](../../specs/avslagsdager-oppholdskrav.md) er flyttet til [navikt/sas-issues](https://github.com/navikt/sas-issues/issues?q=label%3Aepic%3Aavslagsdager-oppholdskrav). Innhold, status og avhengigheter vedlikeholdes i GitHub. De gamle ticketfilene peker til hvert sitt issue.
 
-| # | Ticket | Repo | Blokkeres av | Status |
-|---|---|---|---|---|
-| 01 | [Spesialist kjenner `AVSLAGSDAGER_ENDRET` og begrunnelsen `Oppholdskrav`](01-spesialist-avslagsdager-endret-og-oppholdskrav.md) | spesialist | Ingen | ferdig |
-| 02 | [Saksbehandler kan lagre en vurdering av oppholdskravet](02-lagre-vurdering-av-oppholdskravet.md) | sp-avslagsdager | Ingen | ferdig |
-| 03 | [Vurderingen publiseres til spesialist og Spleis via outbox](03-publisere-via-outbox.md) | sp-avslagsdager | 02 | ferdig |
-| 04 | [Visning av vurderingen](04-visning-av-vurderingen.md) | sp-avslagsdager | 02 | ferdig |
-| 05 | [sp-avslagsdager svarer på behovet `Avslagsdager`](05-svare-pa-behovet-avslagsdager.md) | sp-avslagsdager | 02 | ferdig |
-| 06 | [Spleis avslår dager med `Oppholdskrav` fra behovet](06-spleis-avslar-dager-med-oppholdskrav.md) | spleis | Ingen | klar |
-| 07 | [Spleis tar imot `avslagsdager_endret` og revurderer](07-spleis-revurderer-ved-avslagsdager-endret.md) | spleis | 06 | klar |
-| 08 | [Speil viser handlingen og `Oppholdskrav`](08-speil-viser-handlingen-og-oppholdskrav.md) | speil | 01, 04 | ferdig |
-| 09 | [Skjema for avslag i dagoversikten](09-speil-skjema-for-avslag.md) | speil | 02, 08 | klar |
-| 10 | [Rulle ut i dev og prod](10-rulle-ut.md) | alle | 01, 03, 05, 07, 09 | klar |
-
-```mermaid
-flowchart LR
-    T01[01 Spesialist] --> T08[08 Speil viser handlingen]
-    T02[02 Lagre vurdering] --> T03[03 Outbox]
-    T02 --> T04[04 Visning]
-    T02 --> T05[05 Behovet Avslagsdager]
-    T04 --> T08
-    T02 --> T09[09 Skjema i dagoversikten]
-    T08 --> T09
-    T06[06 Spleis avslår dager] --> T07[07 Spleis tar imot meldingen]
-    T01 --> T10[10 Rulle ut]
-    T03 --> T10
-    T05 --> T10
-    T07 --> T10
-    T09 --> T10
-```
+| Tidligere ticket | GitHub-issue | Repo |
+|---|---|---|
+| 01 | [#90: Spesialist kjenner `AVSLAGSDAGER_ENDRET` og begrunnelsen `Oppholdskrav`](https://github.com/navikt/sas-issues/issues/90) | `spesialist` |
+| 02 | [#91: Saksbehandler kan lagre en vurdering av oppholdskravet](https://github.com/navikt/sas-issues/issues/91) | `sp-avslagsdager` |
+| 03 | [#92: Vurderingen publiseres til spesialist og Spleis via outbox](https://github.com/navikt/sas-issues/issues/92) | `sp-avslagsdager` |
+| 04 | [#93: Visning av vurderingen](https://github.com/navikt/sas-issues/issues/93) | `sp-avslagsdager` |
+| 05 | [#94: sp-avslagsdager svarer på behovet `Avslagsdager`](https://github.com/navikt/sas-issues/issues/94) | `sp-avslagsdager` |
+| 06 | [#95: Spleis avslår dager med `Oppholdskrav` fra behovet](https://github.com/navikt/sas-issues/issues/95) | `spleis` |
+| 07 | [#96: Spleis tar imot `avslagsdager_endret` og revurderer](https://github.com/navikt/sas-issues/issues/96) | `spleis` |
+| 08 | [#97: Speil viser handlingen og `Oppholdskrav`](https://github.com/navikt/sas-issues/issues/97) | `speil` |
+| 09 | [#98: Skjema for avslag i dagoversikten](https://github.com/navikt/sas-issues/issues/98) | `speil` |
+| 10 | [#99: Rulle ut i dev og prod](https://github.com/navikt/sas-issues/issues/99) | `spleis`, `sp-avslagsdager`, `spesialist`, `speil` |

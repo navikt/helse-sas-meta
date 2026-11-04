@@ -1,6 +1,6 @@
 # Avslå dager etter oppholdskravet i sp-avslagsdager
 
-[Tickets](../tickets/avslagsdager-oppholdskrav/) · [ADR 0005](../adr/0005-spleis-lagrer-vurderings-id-per-avslagsdag.md) · [ADR 0006](../adr/0006-sp-avslagsdager-sender-ikke-subsumsjoner.md)
+[Tickets i GitHub](https://github.com/navikt/sas-issues/issues?q=label%3Aepic%3Aavslagsdager-oppholdskrav) · [ADR 0005](../adr/0005-spleis-lagrer-vurderings-id-per-avslagsdag.md) · [ADR 0006](../adr/0006-sp-avslagsdager-sender-ikke-subsumsjoner.md)
 
 ## Problem
 

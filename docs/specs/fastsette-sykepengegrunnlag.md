@@ -1,6 +1,6 @@
 # Fastsette sykepengegrunnlag i sp-sykepengegrunnlag
 
-[Tickets](../tickets/fastsette-sykepengegrunnlag/) · [ADR 0008](../adr/0008-inntekt-og-sykepengegrunnlag-er-to-domenetjenester.md) · [ADR 0009](../adr/0009-avviksvurderingen-gjores-nar-grunnlaget-fastsettes.md) · [ADR 0010](../adr/0010-pensjonsgivende-inntekt-hentes-fra-sigrun.md) · [Spec: avklare inntekt](avklare-inntekt.md)
+[Tickets i GitHub](https://github.com/navikt/sas-issues/issues?q=label%3Aepic%3Afastsette-sykepengegrunnlag) · [ADR 0008](../adr/0008-inntekt-og-sykepengegrunnlag-er-to-domenetjenester.md) · [ADR 0009](../adr/0009-avviksvurderingen-gjores-nar-grunnlaget-fastsettes.md) · [ADR 0010](../adr/0010-pensjonsgivende-inntekt-hentes-fra-sigrun.md) · [Spec: avklare inntekt](avklare-inntekt.md)
 
 ## Problem
 

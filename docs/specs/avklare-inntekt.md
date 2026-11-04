@@ -1,6 +1,6 @@
 # Avklare inntekt i sp-inntekt
 
-[Tickets](../tickets/avklare-inntekt/) · [ADR 0008](../adr/0008-inntekt-og-sykepengegrunnlag-er-to-domenetjenester.md) · [ADR 0010](../adr/0010-pensjonsgivende-inntekt-hentes-fra-sigrun.md) · [Spec: fastsette sykepengegrunnlag](fastsette-sykepengegrunnlag.md)
+[Tickets i GitHub](https://github.com/navikt/sas-issues/issues?q=label%3Aepic%3Aavklare-inntekt) · [ADR 0008](../adr/0008-inntekt-og-sykepengegrunnlag-er-to-domenetjenester.md) · [ADR 0010](../adr/0010-pensjonsgivende-inntekt-hentes-fra-sigrun.md) · [Spec: fastsette sykepengegrunnlag](fastsette-sykepengegrunnlag.md)
 
 ## Problem
 

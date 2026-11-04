@@ -1,21 +1,3 @@
 # 08: Speil videresender og mocker API-et til sp-andre-ytelser
 
-**Spec:** [Graderte andre ytelser fra saksbehandler](../../specs/graderte-andre-ytelser.md)
-
-**Repo:** `speil`
-
-**Hva skal lages:** Speil har en rute som videresender til sp-andre-ytelser i dev, en mock med de samme reglene som sp-andre-ytelser lokalt, og genererte typer og hooks for API-et. Skjemaet tar dem i bruk i [09](09-speil-lagrer-fordelinger-i-sp-andre-ytelser.md).
-
-**Blokkeres av:** Ingen (kan starte med en gang)
-
-**Status:** ferdig
-
-## Akseptansekriterier
-
-- [x] `GET` og `POST` på `/api/andre-ytelser/personer/{personPseudoId}/graderte-andre-ytelser` videresendes til sp-andre-ytelser i dev.
-- [x] Lokalt svarer en mock. Den lagrer fordelinger per yrkesaktivitet med versjon og hendelser, og fyller inn `fra`-feltene, også `fraSykdomsgradFørFordeling`.
-- [x] Mocken håndhever reglene 1–6 i specen med de samme feilkodene. Den svarer 409 `UTDATERT_TILSTAND` ved feil versjon og 400 `MANGLER_ENDRINGER` uten dager.
-- [x] En forespørsel uten reelle endringer gir samme versjon og ingen ny hendelse.
-- [x] `orval.config.ts` har et prosjekt for sp-andre-ytelser, og typer og hooks for `graderte-andre-ytelser` og visningen av saksbehandlerhandlinger er generert fra det.
-- [x] Skriptet `lokal-andre-ytelser` i `package.json` bruker backendnavnet i `backends.ts`. Begge heter `andre-ytelser`.
-- [x] Tester dekker lagring, `fra`-felter, hver feilkode, 409 og forespørsler uten endring.
+Ticketen er flyttet til [navikt/sas-issues#39](https://github.com/navikt/sas-issues/issues/39). Innhold, status og avhengigheter vedlikeholdes i GitHub.

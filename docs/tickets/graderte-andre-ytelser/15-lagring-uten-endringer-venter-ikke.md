@@ -1,17 +1,3 @@
 # 15: Lagring uten reelle endringer venter ikke på oppdatering
 
-**Spec:** [Graderte andre ytelser fra saksbehandler](../../specs/graderte-andre-ytelser.md)
-
-**Repo:** `speil`
-
-**Hva skal lages:** Når sp-andre-ytelser svarer med samme versjon som før, vet Speil at ingenting ble endret. Saksbehandler ser ikke «visningen oppdateres» og blir ikke stående og vente.
-
-**Blokkeres av:** [09: Speil lagrer fordelingene i sp-andre-ytelser med sykdomsgraden før fordeling](09-speil-lagrer-fordelinger-i-sp-andre-ytelser.md)
-
-**Status:** klar
-
-## Akseptansekriterier
-
-- [ ] Speil sammenligner versjonen i svaret med versjonen som ble sendt.
-- [ ] Ved samme versjon venter ikke Speil på oppdatering for fordelingene, men lagrer fortsatt eventuelle endringer i tidslinjen.
-- [ ] Tester dekker samme versjon, ny versjon og lagring sammen med endringer i tidslinjen.
+Ticketen er flyttet til [navikt/sas-issues#46](https://github.com/navikt/sas-issues/issues/46). Innhold, status og avhengigheter vedlikeholdes i GitHub.

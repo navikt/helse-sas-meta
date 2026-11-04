@@ -1,6 +1,6 @@
 # Graderte andre ytelser fra saksbehandler
 
-[Tickets](../tickets/graderte-andre-ytelser/) · [ADR 0007](../adr/0007-spleis-lagrer-versjon-av-graderte-andre-ytelser.md)
+[Tickets i GitHub](https://github.com/navikt/sas-issues/issues?q=label%3Aepic%3Agraderte-andre-ytelser) · [ADR 0007](../adr/0007-spleis-lagrer-versjon-av-graderte-andre-ytelser.md)
 
 ## Problem
 
