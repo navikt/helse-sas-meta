@@ -10,14 +10,14 @@
 
 **Blokkeres av:** [09: Speil lagrer fordelingene i sp-andre-ytelser med sykdomsgraden før fordeling](09-speil-lagrer-fordelinger-i-sp-andre-ytelser.md)
 
-**Status:** klar
+**Status:** ferdig
 
 ## Akseptansekriterier
 
-- [ ] Sykdomsgraden må være mellom 1 og sykdomsgraden før fordeling.
-- [ ] En dag som ikke har sykdomsgrad i Spleis, for eksempel en feriedag, kan ikke fordeles. I dag sender Speil 0 som sykdomsgrad før fordeling, og sp-andre-ytelser svarer 400 `GRAD_UTENFOR_GRENSER`.
-- [ ] Sykdomsgrad + ytelsesgrad må være minst sykdomsgraden før fordeling, altså at arbeidsgraden ikke øker.
-- [ ] Sykdomsgrad + ytelsesgrad kan ikke være over 100, altså at arbeidsgraden ikke blir negativ.
-- [ ] Ytelsesgraden må være mellom 1 og 99. I dag godtar skjemaet 100.
-- [ ] Feilmeldingene sier hva saksbehandler må rette.
-- [ ] Tester dekker grensene rundt hver regel.
+- [x] Sykdomsgraden må være mellom 1 og sykdomsgraden før fordeling.
+- [x] En dag som ikke har sykdomsgrad i Spleis, for eksempel en feriedag, kan ikke fordeles. I dag sender Speil 0 som sykdomsgrad før fordeling, og sp-andre-ytelser svarer 400 `GRAD_UTENFOR_GRENSER`.
+- [x] Sykdomsgrad + ytelsesgrad må være minst sykdomsgraden før fordeling, altså at arbeidsgraden ikke øker.
+- [x] Sykdomsgrad + ytelsesgrad kan ikke være over 100, altså at arbeidsgraden ikke blir negativ.
+- [x] Ytelsesgraden må være mellom 1 og 99. I dag godtar skjemaet 100.
+- [x] Feilmeldingene sier hva saksbehandler må rette.
+- [x] Tester dekker grensene rundt hver regel.
