@@ -1,0 +1,292 @@
+:root {
+  --behov: #2563eb;
+  --løsning: #059669;
+  --hendelse: #d97706;
+  --http: #7c3aed;
+  --intern: #475569;
+  --varsel: #dc2626;
+  --ny: #0d9488;
+  --fjernes: #9ca3af;
+  --før: #64748b;
+  --etter: #0f766e;
+  --bakgrunn: #f4f6f9;
+  --flate: #ffffff;
+  --tekst: #1e293b;
+  --dempet: #64748b;
+  --kant: #dbe1e8;
+  font-family: "Source Sans 3", "Source Sans Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--tekst);
+  background: var(--bakgrunn);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; padding: 14px 20px 24px; }
+h1, h2, h3, h4 { margin: 0; }
+button { font: inherit; cursor: pointer; }
+
+.topp {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.topp h1 { font-size: 24px; }
+.undertittel { margin: 4px 0 0; color: var(--dempet); font-size: 14px; }
+#scenarier { display: flex; gap: 6px; flex-wrap: wrap; }
+#scenarier button {
+  border: 1px solid var(--kant);
+  background: var(--flate);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  color: var(--tekst);
+}
+#scenarier button.valgt { background: var(--tekst); color: #fff; border-color: var(--tekst); }
+
+.styring {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: var(--flate);
+  border: 1px solid var(--kant);
+  border-radius: 12px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+}
+#kontroller { display: flex; align-items: center; gap: 6px; }
+#kontroller button {
+  border: 1px solid var(--kant);
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 6px 10px;
+  min-width: 38px;
+}
+#kontroller button.hoved { background: var(--behov); color: #fff; border-color: var(--behov); min-width: 150px; font-weight: 600; }
+.fart { font-size: 13px; color: var(--dempet); margin-left: 6px; }
+#teller { font-size: 13px; color: var(--dempet); margin-left: 8px; min-width: 120px; }
+#faser { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; }
+#faser button {
+  border: 1px solid var(--kant);
+  background: #f8fafc;
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-size: 13px;
+  color: var(--dempet);
+}
+#faser li.ulik button { border-bottom: 3px solid var(--ny); }
+#faser li.passert button { color: var(--tekst); background: #eef2f7; }
+#faser li.nå button { background: var(--tekst); color: #fff; border-color: var(--tekst); }
+
+.intro {
+  background: var(--flate);
+  border: 1px solid var(--kant);
+  border-radius: 12px;
+  padding: 10px 16px;
+  margin-bottom: 10px;
+}
+.intro h2 { font-size: 17px; margin-bottom: 2px; }
+.intro p { margin: 4px 0; font-size: 15px; line-height: 1.4; max-width: 1400px; }
+.intro .poeng { color: var(--etter); font-weight: 600; }
+.intro.kompakt h2 { display: none; }
+.intro.kompakt .poeng { display: none; }
+.intro.kompakt p { font-size: 13.5px; color: var(--dempet); margin: 0; }
+
+.forskjell {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: #ecfdf5;
+  border: 2px solid var(--ny);
+  border-radius: 12px;
+  padding: 10px 16px;
+  margin-bottom: 10px;
+  min-height: 52px;
+}
+.forskjell.lik { background: #f8fafc; border-color: var(--kant); }
+.forskjell.skjult { visibility: hidden; }
+.forskjell-merke {
+  background: var(--ny);
+  color: #fff;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-weight: 700;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.forskjell.lik .forskjell-merke { background: var(--før); }
+.forskjell p { margin: 0; font-size: 16px; line-height: 1.4; }
+
+.sider { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 1300px) { .sider { grid-template-columns: 1fr; } }
+
+.side {
+  background: var(--flate);
+  border: 1px solid var(--kant);
+  border-top: 6px solid var(--før);
+  border-radius: 12px;
+  padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.side[data-side="etter"] { border-top-color: var(--etter); }
+.side-topp { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.side-topp h2 { font-size: 20px; color: var(--før); }
+.side[data-side="etter"] .side-topp h2 { color: var(--etter); }
+.side-merke { font-size: 13px; color: var(--dempet); }
+
+.kart { width: 100%; height: auto; display: block; }
+.side.ingenting .kart { opacity: 0.55; transition: opacity 0.3s; }
+
+.node .boks { fill: #fff; stroke: #94a3b8; stroke-width: 1.5; transition: fill 0.25s, stroke 0.25s; }
+.node .navn { font-size: 15px; font-weight: 700; text-anchor: middle; fill: var(--tekst); }
+.node .navn.stor { font-size: 21px; }
+.node .under { font-size: 11.5px; text-anchor: middle; fill: var(--dempet); }
+.node-stor .boks { fill: #eef2ff; stroke: #4f46e5; stroke-width: 2.5; }
+.node-stor.forkastet .boks { fill: #fef2f2; stroke: var(--varsel); }
+.tilstandspille { fill: #fff; stroke: #c7d2fe; }
+.tilstandstekst { font-size: 13px; font-weight: 700; text-anchor: middle; fill: #3730a3; }
+.spleis-intern { font-size: 12.5px; text-anchor: middle; fill: var(--intern); font-weight: 600; }
+.spleis-intern.varsel { fill: var(--varsel); }
+.node-ny .boks { fill: #f0fdfa; stroke: var(--ny); stroke-width: 2.5; }
+.node-fjernes .boks { fill: #f3f4f6; stroke: var(--fjernes); stroke-dasharray: 5 4; }
+.node-fjernes .navn, .node-fjernes .under { fill: var(--fjernes); text-decoration: line-through; }
+.node-mangler { opacity: 0.45; }
+.node-mangler .boks { fill: none; stroke: #94a3b8; stroke-dasharray: 4 5; }
+.node-mangler .navn { fill: #94a3b8; }
+.node.uinvolvert:not(.node-ny):not(.node-fjernes):not(.node-mangler) { opacity: 0.4; }
+.node.aktiv .boks { stroke: var(--tekst); stroke-width: 2.5; fill: #fffbeb; }
+.node-stor.aktiv .boks { fill: #e0e7ff; stroke: #4338ca; }
+.node.puls .boks { animation: puls 0.7s ease-out; }
+@keyframes puls {
+  0% { stroke-width: 7; stroke: #f59e0b; }
+  100% { stroke-width: 2.5; }
+}
+.statusmerke rect { stroke: none; }
+.statusmerke text { font-size: 10.5px; font-weight: 800; fill: #fff; text-anchor: middle; letter-spacing: 0.5px; }
+.statusmerke-ny rect { fill: var(--ny); }
+.statusmerke-fjernes rect { fill: var(--fjernes); }
+
+.spor { fill: none; stroke-width: 2.4; opacity: 0.85; }
+.spor.type-behov { stroke: var(--behov); }
+.spor.type-løsning { stroke: var(--løsning); stroke-dasharray: 7 4; }
+.spor.type-hendelse { stroke: var(--hendelse); }
+.spor.type-http { stroke: var(--http); }
+.pilhode.type-behov { fill: var(--behov); }
+.pilhode.type-løsning { fill: var(--løsning); }
+.pilhode.type-hendelse { fill: var(--hendelse); }
+.pilhode.type-http { fill: var(--http); }
+.pilhode.type-intern { fill: var(--intern); }
+.pilhode.type-varsel { fill: var(--varsel); }
+
+.pille rect { stroke-width: 1.5; }
+.pille text { font-size: 13px; font-weight: 700; text-anchor: middle; fill: #fff; }
+.pille.liten text { font-size: 11px; font-weight: 600; }
+.pille.type-behov rect { fill: var(--behov); stroke: var(--behov); }
+.pille.type-løsning rect { fill: var(--løsning); stroke: var(--løsning); }
+.pille.type-hendelse rect { fill: var(--hendelse); stroke: var(--hendelse); }
+.pille.type-http rect { fill: var(--http); stroke: var(--http); }
+.pille.type-intern rect { fill: var(--intern); stroke: var(--intern); }
+.pille.type-varsel rect { fill: var(--varsel); stroke: var(--varsel); }
+.etikettlag .pille rect { fill: #fff; }
+.etikettlag .pille.type-behov text { fill: var(--behov); }
+.etikettlag .pille.type-løsning text { fill: var(--løsning); }
+.etikettlag .pille.type-hendelse text { fill: var(--hendelse); }
+.etikettlag .pille.type-http text { fill: var(--http); }
+.reiselag .pille { filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.25)); }
+.boble { animation: inn 0.35s ease-out; }
+.boble text { font-size: 12px; }
+@keyframes inn { from { opacity: 0; } to { opacity: 1; } }
+
+.tilstander { display: flex; flex-wrap: wrap; gap: 4px; }
+.tilstand {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border: 1px solid var(--kant);
+  border-radius: 7px;
+  padding: 2px 7px;
+  background: #f8fafc;
+  color: #94a3b8;
+  line-height: 1.1;
+  min-height: 34px;
+  justify-content: center;
+}
+.tilstand small { font-size: 10px; }
+.tilstand b { font-size: 12.5px; }
+.tilstand-ny { border: 2px dashed var(--ny); }
+.tilstand-ny::after { content: "NY"; font-size: 9px; font-weight: 800; color: var(--ny); }
+.tilstand-slutt { border-style: dotted; }
+.tilstand.besøkt { color: var(--tekst); background: #eef2ff; border-color: #c7d2fe; }
+.tilstand-ny.besøkt { border: 2px solid var(--ny); background: #ccfbf1; }
+.tilstand.nå { background: #4338ca; color: #fff; border-color: #4338ca; box-shadow: 0 0 0 3px #c7d2fe; }
+.tilstand-ny.nå { background: var(--ny); border-color: var(--ny); box-shadow: 0 0 0 3px #99f6e4; }
+.tilstand-ny.nå::after { color: #fff; }
+
+.fortelling {
+  background: #f8fafc;
+  border: 1px solid var(--kant);
+  border-radius: 10px;
+  padding: 8px 12px;
+  min-height: 118px;
+}
+.side.har-steg .fortelling { border-left: 5px solid var(--før); }
+.side[data-side="etter"].har-steg .fortelling { border-left-color: var(--etter); }
+.side.ingenting .fortelling { background: #fff; border-style: dashed; color: var(--dempet); font-style: italic; }
+.fortelling-tekst { margin: 0 0 6px; font-size: 15px; line-height: 1.4; }
+.logg { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+.logg li { display: grid; grid-template-columns: 74px auto 1fr; gap: 8px; align-items: baseline; font-size: 12.5px; animation: inn 0.3s; }
+.loggtype { font-weight: 700; font-size: 10.5px; text-transform: uppercase; color: #fff; border-radius: 4px; padding: 1px 5px; text-align: center; }
+.loggtekst { font-weight: 600; }
+.loggretning { color: var(--dempet); }
+.logg .type-behov .loggtype { background: var(--behov); }
+.logg .type-løsning .loggtype { background: var(--løsning); }
+.logg .type-hendelse .loggtype { background: var(--hendelse); }
+.logg .type-http .loggtype { background: var(--http); }
+.logg .type-intern .loggtype { background: var(--intern); }
+.logg .type-varsel .loggtype { background: var(--varsel); }
+
+.lagret h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--dempet); margin-bottom: 4px; }
+.kort { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 6px; min-height: 40px; }
+.kort .tomt { color: var(--dempet); font-size: 13px; margin: 6px 0; }
+.datakort { border: 1px solid var(--kant); border-radius: 8px; padding: 6px 9px; background: #fff; transition: background 0.4s; }
+.datakort h4 { font-size: 13px; margin-bottom: 2px; }
+.datakort ul { list-style: none; margin: 0; padding: 0; font-size: 12.5px; line-height: 1.35; }
+.datakort li.punkt { padding-left: 10px; position: relative; }
+.datakort li.punkt::before { content: "•"; position: absolute; left: 0; color: var(--dempet); }
+.datakort.oppdatert { border: 2px solid #f59e0b; background: #fffbeb; animation: inn 0.4s; }
+.kort-spinntekt h4, .kort-spspg h4 { color: var(--ny); }
+.kort-spinnvill h4 { color: var(--fjernes); }
+
+.eierskap { margin-top: 14px; background: var(--flate); border: 1px solid var(--kant); border-radius: 12px; padding: 10px 14px; }
+.eierskap h2 { font-size: 17px; margin-bottom: 6px; }
+.eierskap table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.eierskap th, .eierskap td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--kant); vertical-align: top; }
+.eierskap thead th { font-size: 12px; text-transform: uppercase; color: var(--dempet); }
+.eierskap tbody th { font-weight: 600; width: 28%; }
+.eierskap td.etter { color: var(--etter); font-weight: 600; }
+.eierskap tr.irrelevant { opacity: 0.45; }
+.eierskap tr.nå { background: #fef9c3; opacity: 1; }
+.eierskap tr.nå th { box-shadow: inset 4px 0 0 #f59e0b; }
+
+.bunn { margin-top: 12px; font-size: 13px; color: var(--dempet); }
+.bunn p { margin: 6px 0; max-width: 1400px; }
+.forklaring { display: flex; gap: 8px; flex-wrap: wrap; }
+.tegn { display: inline-flex; align-items: center; gap: 6px; }
+.tegn::before { content: ""; width: 22px; height: 0; border-top: 3px solid currentColor; }
+.tegn.type-behov { color: var(--behov); }
+.tegn.type-løsning { color: var(--løsning); }
+.tegn.type-løsning::before { border-top-style: dashed; }
+.tegn.type-hendelse { color: var(--hendelse); }
+.tegn.type-http { color: var(--http); }
+.tegn.type-intern { color: var(--intern); }
+.tegn.type-varsel { color: var(--varsel); }
+.tegn.node-ny, .tegn.node-fjernes, .tegn.node-mangler { color: var(--tekst); opacity: 1; }
+.tegn.node-ny::before { width: 16px; height: 12px; border: 2px solid var(--ny); background: #f0fdfa; border-radius: 3px; }
+.tegn.node-fjernes::before { width: 16px; height: 12px; border: 2px dashed var(--fjernes); background: #f3f4f6; border-radius: 3px; }
+.tegn.node-mangler::before { width: 16px; height: 12px; border: 2px dotted #94a3b8; border-radius: 3px; }
+.tilstand.skjult { display: none; }
+.undertittel a { color: var(--behov); font-weight: 600; margin-left: 6px; }

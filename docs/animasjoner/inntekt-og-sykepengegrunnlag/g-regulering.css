@@ -1,0 +1,103 @@
+.lenker { display: flex; gap: 16px; font-weight: 600; }
+.lenker a { color: var(--behov); text-decoration: none; }
+.lenker a:hover { text-decoration: underline; }
+
+.forklaring {
+  background: var(--flate);
+  border: 2px solid var(--ny);
+  border-radius: 12px;
+  padding: 10px 16px;
+  margin-bottom: 10px;
+  min-height: 92px;
+}
+.forklaring h2 { font-size: 18px; margin-bottom: 4px; }
+.forklaring p { margin: 0; font-size: 16px; line-height: 1.45; max-width: 1500px; }
+
+.panel {
+  background: var(--flate);
+  border: 1px solid var(--kant);
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  transition: box-shadow 0.3s, border-color 0.3s;
+}
+.panel.fokus { border-color: var(--ny); box-shadow: 0 0 0 3px #99f6e4; }
+.panel h3 { font-size: 15px; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+.rad { display: grid; grid-template-columns: 1fr 1.15fr; gap: 10px; }
+.rad .panel { margin-bottom: 0; }
+
+.status { font-size: 12px; padding: 2px 10px; border-radius: 999px; font-weight: 700; }
+.status.før { background: #fef3c7; color: #92400e; }
+.status.etter { background: #d1fae5; color: #065f46; }
+
+svg.tl, svg.graf { width: 100%; height: auto; display: block; font-family: inherit; }
+
+.tl .ukelinje { stroke: #eef2f7; }
+.tl .månedslinje { stroke: #cbd5e1; }
+.tl .datotekst { font-size: 11px; fill: var(--dempet); text-anchor: middle; }
+.tl .stripe { fill: #f8fafc; }
+.tl .g-gammel { fill: #e2e8f0; }
+.tl .g-ny { fill: #ccfbf1; stroke: var(--ny); stroke-width: 1.5; transition: fill 0.4s, stroke 0.4s; }
+.tl #nytt-g.ukjent .g-ny { fill: #fff; stroke: #94a3b8; stroke-dasharray: 6 4; }
+.tl #nytt-g.ukjent .g-tekst { fill: var(--dempet); font-style: italic; font-weight: 500; }
+.tl .g-tekst { font-size: 14px; font-weight: 700; text-anchor: middle; fill: var(--tekst); }
+.tl .radetikett, .tl .kolonnetittel { font-size: 12px; font-weight: 700; fill: var(--dempet); text-transform: uppercase; letter-spacing: 0.04em; }
+.tl .milepæl-linje { stroke: var(--tekst); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.tl .milepæl-tekst { font-size: 12.5px; font-weight: 700; text-anchor: middle; fill: var(--tekst); }
+.tl .juni .milepæl-linje { stroke: var(--ny); }
+.tl .juni .milepæl-tekst { fill: var(--ny); }
+.tl .regulering .reguleringsstrek { fill: var(--løsning); opacity: 0.25; }
+.tl .regulering .reguleringstekst { font-size: 12px; font-weight: 700; fill: var(--løsning); }
+.tl .regulering.puls .reguleringsstrek { animation: strek 1.4s ease-out; }
+@keyframes strek { 0% { opacity: 0.9; } 100% { opacity: 0.25; } }
+
+.tl .personnavn { font-size: 15px; font-weight: 700; fill: var(--tekst); }
+.tl .personom { font-size: 12px; fill: var(--dempet); }
+.tl .stp { fill: var(--tekst); }
+.tl .stp-tekst { font-size: 10px; fill: var(--dempet); text-anchor: middle; }
+.tl .behandling { stroke: #94a3b8; stroke-width: 3; }
+.tl .effekt { font-size: 13.5px; font-weight: 600; fill: var(--tekst); }
+.tl .nå-linje { stroke: var(--behov); stroke-width: 2.5; }
+.tl .nå-merke { fill: var(--behov); }
+.tl .nå-tekst { fill: #fff; font-size: 11px; font-weight: 700; text-anchor: middle; }
+
+.tl .merke rect { stroke-width: 1.5; }
+.tl .merke text { font-size: 12px; font-weight: 700; text-anchor: middle; }
+.tl .merke-gammel rect { fill: #f1f5f9; stroke: #94a3b8; }
+.tl .merke-riktig rect { fill: #e0e7ff; stroke: var(--behov); }
+.tl .merke-riktig text { fill: #1e3a8a; }
+.tl .merke-feil rect { fill: #fff7ed; stroke: var(--hendelse); }
+.tl .merke-feil text { fill: #9a3412; }
+.tl .merke-erstattet { opacity: 0.45; }
+.tl .merke-erstattet rect { fill: #f8fafc; stroke: #cbd5e1; }
+.tl .merke-erstattet text { text-decoration: line-through; fill: var(--dempet); }
+.tl .merke-ny rect { fill: #d1fae5; stroke: var(--løsning); }
+.tl .merke-ny text { fill: #065f46; }
+.tl .reguleringspil { fill: none; stroke: var(--løsning); stroke-width: 2; stroke-dasharray: 5 4; }
+
+.tl .inn, .tl .merke.inn { animation: inn 0.6s ease-out; }
+.tl .skjult, .graf .skjult { display: none; }
+
+.graf .rutenett { stroke: #eef2f7; }
+.graf .akseverdi { font-size: 11px; fill: var(--dempet); text-anchor: middle; }
+.graf .søylenavn { font-size: 15px; font-weight: 700; fill: var(--tekst); }
+.graf .søyleom { font-size: 12px; fill: var(--dempet); }
+.graf .beregning { fill: #fff; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 5 3; }
+.graf .grunnlag { fill: #a5b4fc; }
+.graf .søyletall { font-size: 13px; font-weight: 700; fill: #1e1b4b; }
+.graf .søylemerknad { font-size: 12.5px; fill: var(--tekst); }
+.graf .seksg-linje { stroke: var(--varsel); stroke-width: 2.5; }
+.graf .seksg-tekst { font-size: 12.5px; font-weight: 700; fill: var(--varsel); text-anchor: middle; }
+
+.sammenligning { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.sammenligning th, .sammenligning td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #eef2f7; vertical-align: top; }
+.sammenligning thead th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--dempet); }
+.sammenligning tbody th { font-weight: 600; width: 26%; }
+.sammenligning td:last-child { color: var(--etter); font-weight: 600; }
+.sammenligning tr.lik td:last-child { color: var(--dempet); font-weight: 400; }
+.sammenligning tr { transition: opacity 0.3s, background 0.3s; }
+.sammenligning tr.dempet { opacity: 0.35; }
+.sammenligning tr.aktiv { background: #fef9c3; }
+
+.fot { color: var(--dempet); font-size: 13px; margin-top: 12px; }
+.fot p { margin: 4px 0; }

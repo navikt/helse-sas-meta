@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="nb">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Inntekt og sykepengegrunnlag – i dag og etter specene</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topp">
+      <div class="tittel">
+        <h1>Inntekt og sykepengegrunnlag: i dag og etter specene</h1>
+        <p class="undertittel">
+          Skisse av <em>Avklare inntekt i sp-inntekt</em> og <em>Fastsette sykepengegrunnlag i sp-sykepengegrunnlag</em>.
+          Samme sak spilles av i begge diagrammene samtidig.
+          <a href="g-regulering.html">Hvordan virker G-regulering? →</a>
+        </p>
+      </div>
+      <nav id="scenarier" aria-label="Scenarioer"></nav>
+    </header>
+
+    <section class="styring">
+      <div id="kontroller">
+        <button id="til-start" title="Til start (Home)">⏮</button>
+        <button id="forrige" title="Forrige steg (←)">◀</button>
+        <button id="spill" class="hoved" title="Spill av / pause (mellomrom)">▶ Spill av</button>
+        <button id="neste" title="Neste steg (→)">▶</button>
+        <button id="igjen" title="Spill av steget igjen (R)">↻</button>
+        <label class="fart">Fart
+          <select id="fart">
+            <option value="0.5">0,5×</option>
+            <option value="1" selected>1×</option>
+            <option value="1.5">1,5×</option>
+            <option value="2">2×</option>
+            <option value="3">3×</option>
+          </select>
+        </label>
+        <span id="teller"></span>
+      </div>
+      <ol id="faser"></ol>
+    </section>
+
+    <section id="intro" class="intro"></section>
+
+    <section id="forskjell" class="forskjell" aria-live="polite">
+      <span class="forskjell-merke">Forskjellen</span>
+      <p id="forskjell-tekst"></p>
+    </section>
+
+    <main class="sider">
+      <section class="side" data-side="før">
+        <header class="side-topp">
+          <h2>I dag</h2>
+          <span class="side-merke">Spleis eier inntektene og grunnlaget, Spinnvill vurderer avviket</span>
+        </header>
+        <div class="diagram"></div>
+        <div class="tilstander"></div>
+        <div class="fortelling"><p class="fortelling-tekst"></p><ol class="logg"></ol></div>
+        <div class="lagret"><h3>Hva er lagret hvor?</h3><div class="kort"></div></div>
+      </section>
+      <section class="side" data-side="etter">
+        <header class="side-topp">
+          <h2>Etter specene</h2>
+          <span class="side-merke">sp-inntekt eier inntektene, sp-sykepengegrunnlag eier grunnlaget</span>
+        </header>
+        <div class="diagram"></div>
+        <div class="tilstander"></div>
+        <div class="fortelling"><p class="fortelling-tekst"></p><ol class="logg"></ol></div>
+        <div class="lagret"><h3>Hva er lagret hvor?</h3><div class="kort"></div></div>
+      </section>
+    </main>
+
+    <section class="eierskap">
+      <h2>Hvem eier hva?</h2>
+      <table>
+        <thead><tr><th>Opplysning eller vurdering</th><th>I dag</th><th>Etter specene</th></tr></thead>
+        <tbody id="eierskap"></tbody>
+      </table>
+    </section>
+
+    <footer class="bunn">
+      <div class="forklaring">
+        <span class="tegn type-behov">Behov</span>
+        <span class="tegn type-løsning">Løsning</span>
+        <span class="tegn type-hendelse">Hendelse</span>
+        <span class="tegn type-http">HTTP-kall</span>
+        <span class="tegn type-intern">Internt</span>
+        <span class="tegn type-varsel">Varsel eller forkasting</span>
+        <span class="tegn node-ny">Ny tjeneste</span>
+        <span class="tegn node-fjernes">Fjernes</span>
+        <span class="tegn node-mangler">Finnes ikke</span>
+      </div>
+      <p>
+        «Etter specene» viser situasjonen etter byttet og opprydningen (fase 3 og 4). I fase 1 og 2 går Spleis gjennom de nye
+        tilstandene, men bruker fortsatt sitt eget Inntektsgrunnlag, og sp-sykepengegrunnlag sammenligner i skyggen.
+        Pilene er forenklet: behov og løsninger går over rapiden, og behovsakkumulatoren er utelatt. Tallene er eksempler.
+      </p>
+      <p>Tastatur: ← → for steg, mellomrom for å spille av og pause, 1–5 for scenario.</p>
+    </footer>
+
+    <script src="scenarier.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

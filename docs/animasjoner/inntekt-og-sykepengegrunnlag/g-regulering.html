@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="nb">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>G-regulering – hvordan det virker</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="g-regulering.css" />
+  </head>
+  <body>
+    <header class="topp">
+      <div class="tittel">
+        <h1>G-regulering: hvorfor og hvordan</h1>
+        <p class="undertittel">
+          Hvorfor noen sykepengegrunnlag må regnes ut på nytt når grunnbeløpet endres, hvem som merker det, og hvem som gjør jobben i dag og etter specene.
+        </p>
+      </div>
+      <nav class="lenker">
+        <a href="index.html">← Flytskissen</a>
+        <a href="index.html?scenario=gregulering">Se meldingsflyten for G-regulering →</a>
+      </nav>
+    </header>
+
+    <section class="styring">
+      <div id="kontroller">
+        <button id="til-start" title="Til start (Home)">⏮</button>
+        <button id="forrige" title="Forrige steg (←)">◀</button>
+        <button id="spill" class="hoved" title="Spill av / pause (mellomrom)">▶ Spill av</button>
+        <button id="neste" title="Neste steg (→)">▶</button>
+        <span id="teller"></span>
+      </div>
+      <ol id="faser"></ol>
+    </section>
+
+    <section class="forklaring">
+      <h2 id="steg-tittel"></h2>
+      <p id="steg-tekst"></p>
+    </section>
+
+    <section class="panel">
+      <h3>Tidslinje 2026</h3>
+      <div id="tidslinje"></div>
+    </section>
+
+    <div class="rad">
+      <section class="panel">
+        <h3>Hva skjer med grunnlaget? <span id="graf-status" class="status"></span></h3>
+        <div id="graf"></div>
+      </section>
+      <section class="panel">
+        <h3>Hvem gjør hva?</h3>
+        <table class="sammenligning">
+          <thead>
+            <tr><th></th><th>I dag</th><th>Etter specene</th></tr>
+          </thead>
+          <tbody id="sammenligning"></tbody>
+        </table>
+      </section>
+    </div>
+
+    <footer class="fot">
+      <p>
+        Lovgrunnlag: grunnbeløpet reguleres hvert år med virkning fra 1. mai (folketrygdloven § 1-4). Sykepengegrunnlaget kan ikke være høyere enn 6G
+        (§ 8-10). For selvstendig næringsdrivende reguleres den pensjonsgivende inntekten med grunnbeløpet på sykmeldingstidspunktet (§ 8-35).
+      </p>
+      <p>Grunnbeløpene er de som ligger i Spleis: 130 160 kr fra 1. mai 2025 og 136 549 kr fra 1. mai 2026. Personene og datoene er eksempler.</p>
+      <p>Tastatur: ← → for steg, mellomrom for å spille av og pause.</p>
+    </footer>
+
+    <script src="g-regulering.js"></script>
+  </body>
+</html>
