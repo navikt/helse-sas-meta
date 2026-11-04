@@ -41,6 +41,16 @@ Deretter kan man bruke git som normalt for hvert repo.
 
 Se [meta](https://github.com/mateodelnorte/meta) for flere kommandoer.
 
+### Tickets i sas-issues og cplt-sandkassen
+
+Tickets ligger som issues i [navikt/sas-issues](https://github.com/navikt/sas-issues/issues), og repoet blir sjekket ut i `./sas-issues` sammen med de andre. Kjører du Copilot i [cplt](https://github.com/navikt/cplt)-sandkassen, kan agenten i utgangspunktet bare skrive til `helse-sas-meta`. Da stopper sandkassen for eksempel `gh issue create` og `gh label create` mot `navikt/sas-issues`. Gi agenten tilgang ved å kjøre dette én gang, utenfor sandkassen, fra `helse-sas-meta`:
+
+```shell
+cplt config set --local sandbox.repo_dirs sas-issues
+```
+
+Innstillingen lagres bare hos deg, i `~/.config/cplt/local/`, og ikke i repoet. Den gjelder fra neste gang du starter cplt.
+
 Dersom du nå åpner `build.gradle.kts` med `Open` (som Project) i IntelliJ så får du alle komponentene inn i ett IntelliJ-oppsett.
 
 ## Legge til nye repos?

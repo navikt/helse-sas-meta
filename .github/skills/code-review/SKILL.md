@@ -10,7 +10,7 @@ Two-axis review of the diff between `HEAD` and a fixed point the user supplies:
 
 Both axes run as **parallel sub-agents** so they don't pollute each other's context, then this skill aggregates their findings.
 
-Specs live as Markdown files in `docs/specs/` and tickets in `docs/tickets/<feature>/` at the root of the sas-meta repo (helse-sas-meta). They are not in an issue tracker. The code lives in the app repos checked out underneath sas-meta, each its own git repository: run every git command below inside the app repo that holds the changes.
+Specs live as Markdown files in `docs/specs/` at the root of the sas-meta repo (helse-sas-meta). Tickets are GitHub issues in `navikt/sas-issues` (see `docs/agents/issue-tracker.md`); older features have them as Markdown files in `docs/tickets/<feature>/`. The code lives in the app repos checked out underneath sas-meta, each its own git repository: run every git command below inside the app repo that holds the changes.
 
 ## Process
 
@@ -27,7 +27,7 @@ Before going further, confirm the fixed point resolves (`git rev-parse <fixed-po
 Look for the originating spec, in this order:
 
 1. A path the user passed as an argument.
-2. A ticket in `docs/tickets/<feature>/` in sas-meta matching the branch name, the commit messages or the feature, together with the spec in `docs/specs/` it links to.
+2. An issue in `navikt/sas-issues` referenced by the branch name or the commit messages (for example `#12`), or a `spec-ticket` issue matching the feature, together with the spec in `docs/specs/` it links to. Read it with `gh issue view <n> -R navikt/sas-issues`. For older features, a ticket in `docs/tickets/<feature>/` in sas-meta.
 3. A spec file under `docs/specs/` in sas-meta matching the branch name or feature.
 4. If nothing is found, ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
 

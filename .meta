@@ -8,6 +8,7 @@
     "libs": "git@github.com:navikt/sykepenger-libs.git",
     "redteam": "git@github.com:navikt/helse-redteam.git",
     "risk-mock": "git@github.com:navikt/helse-risk-mock.git",
+    "sas-issues": "git@github.com:navikt/sas-issues.git",
     "sp-andre-ytelser": "git@github.com:navikt/sp-andre-ytelser.git",
     "sp-avslagsdager": "git@github.com:navikt/sp-avslagsdager.git",
     "sp-bigquery-terraform": "git@github.com:navikt/sp-bigquery-terraform.git",

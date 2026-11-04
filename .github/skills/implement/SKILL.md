@@ -6,11 +6,13 @@ disable-model-invocation: true
 
 Implement the work described by the user in the spec or tickets.
 
-Specs live as Markdown files in `docs/specs/` and tickets in `docs/tickets/<feature>/` at the root of the sas-meta repo (helse-sas-meta). They are not in an issue tracker. If the user passes a ticket reference (a path, a ticket number or a title), read it from `docs/tickets/` together with the spec it links to, and state its title before starting. If the reference is ambiguous, ask. Only start a ticket whose blockers have status `ferdig`.
+Specs live as Markdown files in `docs/specs/` at the root of the sas-meta repo (helse-sas-meta). Tickets are GitHub issues in `navikt/sas-issues`; see `docs/agents/issue-tracker.md` for the `gh` commands, and always pass `-R navikt/sas-issues`. If the user passes a ticket reference (an issue number, a URL or a title), read the issue together with the spec it links to, and state its title before starting. If the reference is ambiguous, ask. Only start a ticket whose blockers are all closed.
+
+Older features have their tickets as Markdown files in `docs/tickets/<feature>/` in sas-meta. If the reference is a path there, follow the **Older tickets** section below instead.
 
 The code itself lives in the app repo(s) checked out underneath sas-meta, named on the ticket's **Repo** line. Each app repo is its own git repository.
 
-Set the ticket's **Status** to `pågår` when you start and `ferdig` when you're done, and tick off the acceptance criteria you've met.
+Assign the issue to yourself (`--add-assignee @me`) when you start, and tick off the acceptance criteria you've met in the issue body. When every criterion is met, comment with a short summary and the commits, then close the issue.
 
 Call the Skill tool with "tdd" where possible, at pre-agreed seams.
 
@@ -18,4 +20,8 @@ Compile regularly, run single test classes regularly, and run the full test suit
 
 Once done, call the Skill tool with "code-review" to review the work.
 
-Commit your work to the current branch of the app repo. Commit the ticket status changes in sas-meta separately.
+Commit your work to the current branch of the app repo.
+
+## Older tickets
+
+For a ticket in `docs/tickets/<feature>/`: only start it when its blockers have status `ferdig`. Set its **Status** to `pågår` when you start and `ferdig` when you're done, tick off the acceptance criteria you've met, and update the status in the feature's `index.md`. Commit the ticket changes in sas-meta separately from the app repo.
