@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fra kategorier til kapabiliteter</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #f0eee6; overflow: hidden; }
+  .stage { position: fixed; inset: 0; }
+  .stage svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .grain { position: fixed; inset: 0; pointer-events: none; mix-blend-mode: multiply; background-size: 320px 320px; }
+  .kategori { cursor: pointer; }
+  .kategori:focus { outline: none; }
+  .kategori:focus-visible .fokus { opacity: 1; }
+  .controls {
+    position: fixed; right: 20px; bottom: 14px; z-index: 2;
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 12px; border-radius: 10px;
+    background: rgba(250,246,239,.94); box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 3px 8px rgba(0,0,0,.06);
+    font: 14px "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; color: #1f1e1d;
+  }
+  .controls[hidden] { display: none; }
+  .controls button {
+    padding: 6px 12px; border: 0; border-radius: 6px; cursor: pointer;
+    background: #d97757; color: #f8f1e6; font: inherit; font-weight: 600;
+  }
+  .controls button.stille { background: #e3dacc; color: #1f1e1d; }
+  .controls button:disabled { opacity: .4; cursor: default; }
+  .controls button#playPause { min-width: 128px; }
+  .controls button:focus-visible, .controls select:focus-visible, .controls input:focus-visible { outline: 2px solid #1f1e1d; outline-offset: 2px; }
+  .controls label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .controls select { font: inherit; padding: 2px 4px; }
+  .controls .step { color: rgba(31,30,29,.58); min-width: 104px; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <svg id="bg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+  <svg id="scene" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet" role="img"
+       aria-label="Skisse i fem kapitler: fra ett spor per kategori i Spleis, Speil og Spesialist til kapabiliteter som nye kategorier kobles inn i. Siste kapittel lar deg huke av kategorier og se hvilke kapabiliteter som må endres."></svg>
+</div>
+<div class="grain" aria-hidden="true"></div>
+<div class="controls" id="controls" hidden>
+  <button type="button" id="prev" class="stille" aria-label="Forrige kapittel">◀</button>
+  <button type="button" id="playPause">Pause</button>
+  <button type="button" id="next" class="stille" aria-label="Neste kapittel">▶</button>
+  <label><input type="checkbox" id="autoNext"> Gå videre selv</label>
+  <label>Fart
+    <select id="speed">
+      <option value="0.5">0,5×</option>
+      <option value="0.75">0,75×</option>
+      <option value="1" selected>1×</option>
+      <option value="1.5">1,5×</option>
+    </select>
+  </label>
+  <span class="step" id="stepInfo" aria-live="polite"></span>
+</div>
+<script src="data.js"></script>
+<script src="motor.js"></script>
+<script src="kapitler.js"></script>
+<script src="interaktiv.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
