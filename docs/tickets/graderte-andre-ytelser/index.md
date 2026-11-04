@@ -20,8 +20,7 @@ Tickets for [Graderte andre ytelser fra saksbehandler](../../specs/graderte-andr
 | 14 | [Saksbehandler kan fjerne graderte andre ytelser fra en dag](14-fjerne-graderte-andre-ytelser-fra-en-dag.md) | speil | 10 | klar |
 | 15 | [Lagring uten reelle endringer venter ikke på oppdatering](15-lagring-uten-endringer-venter-ikke.md) | speil | 09 | klar |
 | 16 | [Beslutter ser endringer av fordelingene i historikkpanelet](16-historikk-i-historikkpanelet.md) | speil | 08 | klar |
-| 17 | [Saksbehandler kan registrere flere graderte andre ytelser samme dag](17-flere-ytelser-samme-dag.md) | speil | 10 | klar |
-| 18 | [Graderte andre ytelser i Speil i prod](18-speil-i-prod.md) | speil | 02, 08–17 | klar |
+| 17 | [Graderte andre ytelser i Speil i prod](17-speil-i-prod.md) | speil | 02, 08–16 | klar |
 
 ```mermaid
 flowchart LR
@@ -41,15 +40,13 @@ flowchart LR
     T10 --> T14[14 Fjerne fra en dag]
     T09 --> T15[15 Lagring uten endringer]
     T08 --> T16[16 Historikkpanelet]
-    T10 --> T17[17 Flere ytelser samme dag]
-    T02 --> T18[18 Speil i prod]
-    T11 --> T18
-    T12 --> T18
-    T13 --> T18
-    T14 --> T18
-    T15 --> T18
-    T16 --> T18
-    T17 --> T18
+    T02 --> T17[17 Speil i prod]
+    T11 --> T17
+    T12 --> T17
+    T13 --> T17
+    T14 --> T17
+    T15 --> T17
+    T16 --> T17
 
     classDef ferdig fill:#c8e6c9,stroke:#2e7d32,color:#1b5e20
     classDef pagar fill:#ffe0b2,stroke:#ef6c00,color:#e65100

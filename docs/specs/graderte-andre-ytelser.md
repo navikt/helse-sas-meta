@@ -181,6 +181,7 @@ Et nytt varsel i serien `RV_AY` med teksten «Sykdomsgraden er endret etter ford
 
 ## Andre merknader
 
+- **Flere ytelser samme dag i Speil kommer senere.** Speil går i prod med én ytelse per dag. Brukerhistorie 3 kommer i Speil i en senere iterasjon. API-et i sp-andre-ytelser tar allerede imot flere ytelser per dag.
 - **Eksisterende hendelser uten `sykdomsgradFørFordeling`.** Funksjonen er ikke i bruk. Vi antar at det bare finnes testdata i dev, og at de kan slettes med en migrering i sp-andre-ytelser. Sjekk at prod er tom før migreringen kjøres der.
 - **Overlapp senere.** Hvis ytelser kan overlappe, er den samlede andelen andre ytelser `100 − sykdomsgrad − arbeidsgrad`. Regel 2 endres til at summen av ytelsene er minst like stor som den samlede andelen, og regel 3 til at hver ytelse er høyst like stor. Kontrakten med Spleis og de lagrede dataene er de samme.
 - **Eksisterende varsler om andre ytelser.** Spleis lager allerede varsler som `RV_AY_5` når foreldrepenger og andre ytelser er utbetalt i samme periode. De påvirkes ikke av denne specen.
