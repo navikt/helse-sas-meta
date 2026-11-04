@@ -8,7 +8,7 @@
 
 **Blokkeres av:** [03: Spleis leser løsningen fra sp-andre-ytelser og bruker trekket](03-spleis-leser-trekket.md)
 
-**Status:** pågår
+**Status:** ferdig
 
 ## Akseptansekriterier
 
@@ -21,4 +21,3 @@
 ## Merknader
 
 - Versjonen følger beregningen. Den settes når endringen får en ny beregning, og nullstilles når beregningen fjernes eller perioden annulleres.
-- Koden er ferdig og testet, men ikke committet i spleis. Pre-commit-hooken kjører ktlint, og den feilet fordi sandkassen ikke tillater Gradle-workeren å koble til localhost.
