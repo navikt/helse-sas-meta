@@ -7,7 +7,7 @@ const FARGE = { sage: C.sage, terra: C.terra, sand: C.sand, ink: C.ink };
 const dag = s => Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10));
 const dagerMellom = (a, b) => Math.round((dag(b) - dag(a)) / 864e5);
 
-/* Felles: kapabilitetskort, brukt i kapittel 3 og 5. */
+/* Felles: kapabilitetskort, brukt i kapittel 4 og 6. */
 const STATUS = {
   prod: { tekst: 'i prod', farge: C.sageDark },
   'pågår': { tekst: 'pågår', farge: C.terra },
@@ -109,7 +109,88 @@ window.Kapitler.push({
   },
 });
 
-/* ---------- Kapittel 2: hvert spor gjennom alle appene ---------- */
+/* ---------- Kapittel 2: andre store løft ---------- */
+window.Kapitler.push({
+  id: 'loft',
+  varighet: 8200,
+  bygg(root) {
+    const k = M.nyttKapittel(root, this);
+    k.header('Andre store løft tok også lang tid', 'Revurdering, skjønnsfastsettelse og tilkommen inntekt krevde endringer i Spleis, Speil og Spesialist på samme tid. Søylene viser commits per måned.');
+    const X0 = 430, X1 = 1190, Y0 = 2021, Y1 = 2027;
+    const xFor = s => {
+      const d = dag(s), y = +s.slice(0, 4);
+      return X0 + (y - Y0 + (d - Date.UTC(y, 0, 1)) / (365.25 * 864e5)) / (Y1 - Y0) * (X1 - X0);
+    };
+    const AX = 236;
+    k.ink(catmull([[X0 - 6, AX], [X1 + 6, AX]], false, 16), { key: 'akse', width: 1.8, start: 150, dur: 600 });
+    for (let y = Y0; y <= Y1; y++) {
+      const x = xFor(`${y}-01-01`);
+      k.ink([[x, AX - 6], [x, AX + 6]], { key: 'tick' + y, width: 1.6, start: 300 + (y - Y0) * 50, dur: 120 });
+      if (y < Y1) k.text(String(y), x + (xFor(`${y + 1}-01-01`) - x) / 2, AX - 10, { size: 13, anchor: 'middle', fill: C.inkSoft, start: 350 + (y - Y0) * 50 });
+    }
+    const KOL = [1240, 1330, 1420];
+    D.apper.forEach((navn, i) => {
+      k.text(navn.toUpperCase(), KOL[i], AX - 10, { size: 12.5, weight: 600, ls: '0.14em', fill: C.inkSoft, start: 400 + i * 100 });
+    });
+
+    const LANE0 = 300, STEP = 88;
+    D.storeLoft.forEach((r, i) => {
+      const cy = LANE0 + i * STEP, start = 700 + i * 650, yb = cy + 16;
+      const tag = k.paper({ key: 'loft' + r.id, cx: 225, cy, w: 330, h: 60, fill: C.paper, start, restRot: 1 });
+      text(tag.content, r.navn, -150, -3, { size: 16, weight: 600, maxW: 300 });
+      text(tag.content, r.under, -150, 18, { size: 12.5, fill: C.inkSoft, maxW: 300 });
+
+      const x0 = xFor(r.fra), xp = xFor(r.prod), w = Math.max(8, xp - x0);
+      const strip = el('g', { opacity: 0 }, k.g);
+      roughShape(strip, w, 12, 'loftstrip' + r.id, { fill: C.sand, transform: `translate(${w / 2} 0)` }, 0.8);
+      const growStart = start + 250, growDur = Math.min(1100, 250 + w * 2);
+      k.add(t => {
+        const p = ease(progress(t, growStart, growDur));
+        setTransform(strip, `translate(${x0} ${yb}) scale(${Math.max(0.001, p).toFixed(3)} 1)`);
+        setOpacity(strip, p > 0 ? 1 : 0);
+      });
+
+      const rng = M.rngFor('soyler' + r.id);
+      let d = '';
+      for (const [mnd, n] of Object.entries(r.mnd)) {
+        const xm = xFor(`${mnd}-15`), h = Math.min(40, 3 + Math.sqrt(n) * 4.2), bw = 6.2;
+        const j = () => (rng() - 0.5) * 1.2;
+        d += `M${(xm - bw / 2 + j()).toFixed(1)} ${(yb - 4).toFixed(1)}L${(xm - bw / 2 + j()).toFixed(1)} ${(yb - 4 - h + j()).toFixed(1)}L${(xm + bw / 2 + j()).toFixed(1)} ${(yb - 4 - h + j()).toFixed(1)}L${(xm + bw / 2 + j()).toFixed(1)} ${(yb - 4).toFixed(1)}Z`;
+      }
+      const klippId = 'klipp-loft-' + r.id;
+      const clip = el('clipPath', { id: klippId }, k.g);
+      const klippRekt = el('rect', { x: X0 - 10, y: yb - 60, width: 0, height: 70 }, clip);
+      el('path', { d, fill: C.ink, opacity: 0.72, 'clip-path': `url(#${klippId})` }, k.g);
+      const soyleStart = growStart + 200;
+      k.add(t => klippRekt.setAttribute('width', ((X1 - X0 + 20) * ease(progress(t, soyleStart, 1500))).toFixed(1)));
+
+      const mndTilProd = Math.max(1, Math.round(dagerMellom(r.fra, r.prod) / 30.44));
+      const ms = growStart + growDur;
+      k.ink([[xp, yb - 2], [xp, yb + 14]], { key: 'prod' + r.id, width: 2.2, color: C.terra, start: ms, dur: 180 });
+      const venstre = xp - 175 > X0;
+      k.text(`${r.prodTekst} etter ${mndTilProd} mnd`, venstre ? xp - 4 : xp + 6, yb + 30, { size: 12.5, weight: 600, anchor: venstre ? 'end' : 'start', fill: C.terraDark, start: ms + 120 });
+      (r.merker || []).forEach((m, j) => {
+        const xm = xFor(m.dato);
+        k.ink([[xm, yb + 2], [xm, yb + 14]], { key: 'loftmerke' + r.id + j, width: 1.6, start: ms + 300 + j * 250, dur: 160 });
+        k.text(m.tekst, xm, yb + 30, { size: 12.5, anchor: 'middle', fill: C.ink, start: ms + 400 + j * 250 });
+      });
+
+      r.commits.forEach((n, ci) => {
+        k.text(String(n), KOL[ci], cy + 8, { family: CONFIG.fonts.serif, size: 20, start: start + 500 + ci * 120 });
+      });
+    });
+
+    const S = 700 + D.storeLoft.length * 650 + 1600;
+    const note = k.paper({ key: 'loftnotat', cx: 1340, cy: 802, w: 380, h: 74, fill: C.paper, start: S, restRot: -1.2 });
+    text(note.content, 'Samme mønster hver gang', -174, -6, { size: 15, weight: 600, maxW: 350 });
+    text(note.content, 'Tre apper i takt, måneder til prod og en lang hale etterpå.', -174, 16, { size: 12.5, fill: C.inkSoft, maxW: 350 });
+    k.text('Commits der emnet nevner funksjonen. Tallene til høyre gjelder fra første commit. «I prod» er første gang funksjonen ble skrudd på i prod. Kilde: git log.',
+      60, 836, { size: 13, fill: C.inkSoft, start: S + 300, maxW: 1000 });
+    return k;
+  },
+});
+
+/* ---------- Kapittel 3: hvert spor gjennom alle appene ---------- */
 window.Kapitler.push({
   id: 'apper',
   varighet: 8600,
@@ -175,7 +256,7 @@ window.Kapitler.push({
   },
 });
 
-/* ---------- Kapittel 3: kapabiliteter i stedet for spor ---------- */
+/* ---------- Kapittel 4: kapabiliteter i stedet for spor ---------- */
 window.Kapitler.push({
   id: 'kapabiliteter',
   varighet: 10200,
@@ -255,7 +336,7 @@ window.Kapitler.push({
   },
 });
 
-/* ---------- Kapittel 4: farten ---------- */
+/* ---------- Kapittel 5: farten ---------- */
 window.Kapitler.push({
   id: 'fart',
   varighet: 9200,

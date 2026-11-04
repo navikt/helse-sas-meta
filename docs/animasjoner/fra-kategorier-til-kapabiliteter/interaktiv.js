@@ -4,7 +4,7 @@ window.Kapitler = window.Kapitler || [];
 const M = window.Motor, D = window.SKISSE_DATA;
 const { C, CONFIG, el, text, progress, ease, setOpacity, lassoPts, checkPts, roughShape } = M;
 
-/* ---------- Kapittel 5: hvor treffer neste kategori? ---------- */
+/* ---------- Kapittel 6: hvor treffer neste kategori? ---------- */
 window.Kapitler.push({
   id: 'interaktiv',
   varighet: 3200,
