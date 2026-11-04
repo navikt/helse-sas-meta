@@ -8,13 +8,13 @@
 
 **Blokkeres av:** [01: sp-andre-ytelser lagrer sykdomsgraden før fordeling og håndhever reglene](01-sykdomsgrad-for-fordeling-og-regler.md)
 
-**Status:** klar
+**Status:** pågår
 
 ## Akseptansekriterier
 
-- [ ] Hvert element i løsningen har `versjon`, som er versjonen til den siste hendelsen for yrkesaktiviteten.
-- [ ] Hver dag har `trekkFraSykdomsgrad` (`sykdomsgradFørFordeling − sykdomsgrad`) og `sykdomsgradFørFordeling`.
-- [ ] Dagene er avgrenset til `fom`–`tom` og sortert på dato. Yrkesaktiviteter uten dager i perioden er ikke med.
-- [ ] En dag der ytelsene er fjernet, har `trekkFraSykdomsgrad` 0.
-- [ ] Tester i `GraderteAndreYtelserBehovRiverTest` dekker versjon, trekk fra sykdom, ytelser tatt fra arbeid (trekk 0), flere yrkesaktiviteter og avgrensning til perioden.
+- [x] Hvert element i løsningen har `versjon`, som er versjonen til den siste hendelsen for yrkesaktiviteten.
+- [x] Hver dag har `trekkFraSykdomsgrad` (`sykdomsgradFørFordeling − sykdomsgrad`) og `sykdomsgradFørFordeling`.
+- [x] Dagene er avgrenset til `fom`–`tom` og sortert på dato. Yrkesaktiviteter uten dager i perioden er ikke med.
+- [x] En dag der ytelsene er fjernet, har `trekkFraSykdomsgrad` 0.
+- [x] Tester i `GraderteAndreYtelserBehovRiverTest` dekker versjon, trekk fra sykdom, ytelser tatt fra arbeid (trekk 0), flere yrkesaktiviteter og avgrensning til perioden.
 - [ ] Rullet ut i dev og prod.
