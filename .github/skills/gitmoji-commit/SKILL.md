@@ -20,7 +20,8 @@ Git history supplies their identity, not proof that they contributed to this cha
    Keep unrelated working-tree and staged changes outside the commit.
 2. Select the emoji and write the message using the rules below. A squash message
    describes the final result, not intermediate approaches that were discarded.
-3. Resolve co-authors, then validate the subject length and trailers.
+3. Resolve issue references and co-authors, then validate the subject length,
+   issue references and trailers.
 4. Perform only the requested Git action. Rewriting history or pushing requires
    explicit user authorization. After a squash, verify that the new commit has
    the original tip's tree and the intended parent. After any commit, inspect
@@ -32,6 +33,8 @@ Git history supplies their identity, not proof that they contributed to this cha
 <emoji> <Capitalized summary>
 
 Context and reasoning when useful.
+
+Refs navikt/sas-issues#123
 
 Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
 ```
@@ -53,6 +56,25 @@ Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
   was chosen, or why an alternative was rejected. Describe the final decision;
   retain useful reasoning from squashed commits without obsolete warnings.
   Separate subject, body and trailer block with blank lines.
+
+## Issue references
+
+Link every commit that belongs to a GitHub issue, so GitHub shows the commit on
+the issue. The issue is the one the user names, the spec or ticket being
+implemented, or one named in the branch name or in commits being squashed.
+
+- Write the reference as its own paragraph after the body and before the
+  trailer block, one issue per line, for example `Refs navikt/sas-issues#123`.
+- Use the full `owner/repo#number` form whenever the issue lives in another
+  repository than the commit, as specs and tickets in `navikt/sas-issues` do.
+  Use the short `#number` form only for an issue in the commit's own repository.
+- Use `Refs` by default. Use a closing keyword (`Closes owner/repo#123`) only
+  when the user states that the commit completes the issue; GitHub closes the
+  issue when the commit reaches the default branch.
+- During a squash, keep every issue reference from the range, deduplicated.
+- Verify the issue number against the issue itself, for example with
+  `gh issue view 123 --repo navikt/sas-issues`. Ask the user when the issue is
+  ambiguous.
 
 ## Co-authors
 
