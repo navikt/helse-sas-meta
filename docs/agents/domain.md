@@ -19,7 +19,6 @@ If any of these files don't exist, **proceed silently**. Don't flag their absenc
 ├── docs/adr/
 │   ├── 0001-spleis-lagrer-bare-id-for-rettighetskategori.md
 │   └── 0002-alle-vilkarsgrunnlag-far-rettighetskategori-id.md
-├── docs/specs/
 └── <app-repo>/          ← each app repo checked out here
 ```
 

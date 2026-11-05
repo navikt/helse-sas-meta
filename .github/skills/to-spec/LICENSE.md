@@ -1,4 +1,4 @@
-Denne skillen er hentet fra [mattpocock/skills](https://github.com/mattpocock/skills/tree/5beb35b040e3de97e54fa9e386d7e42d15c295c2/skills/engineering/to-spec) (commit `5beb35b`) og tilpasset slik at specen skrives som Markdown-fil i `docs/specs/` i sas-meta i stedet for å publiseres til en issue tracker, og er lisensiert under MIT-lisensen nedenfor.
+Denne skillen er hentet fra [mattpocock/skills](https://github.com/mattpocock/skills/tree/5beb35b040e3de97e54fa9e386d7e42d15c295c2/skills/engineering/to-spec) (commit `5beb35b`) og tilpasset slik at specen publiseres som et issue med labelen `spec-issue` i `navikt/sas-issues`, og er lisensiert under MIT-lisensen nedenfor.
 
 ```text
 MIT License

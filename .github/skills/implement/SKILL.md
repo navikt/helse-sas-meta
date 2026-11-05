@@ -6,9 +6,9 @@ disable-model-invocation: true
 
 Implement the work described by the user in the spec or tickets.
 
-Specs live as Markdown files in `docs/specs/` at the root of the sas-meta repo (helse-sas-meta). Tickets are GitHub issues in `navikt/sas-issues`; see `docs/agents/issue-tracker.md` for the `gh` commands, and always pass `-R navikt/sas-issues`. If the user passes a ticket reference (an issue number, a URL or a title), read the issue together with the spec it links to, and state its title before starting. If the reference is ambiguous, ask. Only start a ticket whose blockers are all closed.
+Specs are GitHub issues in `navikt/sas-issues` labelled `spec-issue`, with their tickets as sub-issues. Tickets are GitHub issues in `navikt/sas-issues`; see `docs/agents/issue-tracker.md` for the `gh` commands, and always pass `-R navikt/sas-issues`. If the user passes a ticket reference (an issue number, a URL or a title), read the issue together with the spec it links to (its parent `spec-issue`), and state its title before starting. If the reference is ambiguous, ask. Only start a ticket whose blockers are all closed.
 
-Resolve old Markdown ticket paths to their migrated GitHub issues as described in `docs/agents/issue-tracker.md`.
+Resolve old Markdown spec and ticket paths to their migrated GitHub issues as described in `docs/agents/issue-tracker.md`.
 
 The code itself lives in the app repo(s) checked out underneath sas-meta, named on the ticket's **Repo** line. Each app repo is its own git repository.
 

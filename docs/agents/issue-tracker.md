@@ -1,27 +1,36 @@
 # Issue tracker: GitHub (navikt/sas-issues)
 
-Tickets live as GitHub issues in **`navikt/sas-issues`**, the sole source of truth for ticket content, status and dependencies. Specs stay as Markdown files in `docs/specs/` in sas-meta (helse-sas-meta). Use the `gh` CLI for all operations, and always pass `-R navikt/sas-issues`: `gh` would otherwise infer `navikt/helse-sas-meta` from `git remote`. The repo is checked out at `./sas-issues` so the agent sandbox allows writes to it, but you don't need to `cd` there: `-R` is enough from any directory.
+Specs and tickets live as GitHub issues in **`navikt/sas-issues`**, the sole source of truth for their content, status and dependencies. Specs are never committed to sas-meta. Use the `gh` CLI for all operations, and always pass `-R navikt/sas-issues`: `gh` would otherwise infer `navikt/helse-sas-meta` from `git remote`. The repo is checked out at `./sas-issues` so the agent sandbox allows writes to it, but you don't need to `cd` there: `-R` is enough from any directory.
 
 If the cplt sandbox blocks a write to `navikt/sas-issues` ("outside the startup repo"), stop and tell the user to run `cplt config set --local sandbox.repo_dirs sas-issues` outside the sandbox from `helse-sas-meta`, then restart cplt. See "Tickets i sas-issues og cplt-sandkassen" in `README.md`. Don't work around the block.
 
 Write titles and bodies in Norwegian bokmål and follow the klarspråk principles.
 
-## Labels for tickets from a spec
+## Specs and epics
 
-Every issue created from a spec in `docs/specs/` gets two labels:
+A spec is one issue with two labels:
+
+- **`spec-issue`**: marks the issue as a spec.
+- **`epic:<spec-slug>`**: the epic. `<spec-slug>` is a short kebab-case name for the feature, for example `epic:avklare-inntekt`.
+
+Every ticket created from the spec is a **sub-issue** of the spec issue and has two labels:
 
 - **`spec-ticket`**: marks the issue as a ticket from a spec.
-- **`epic:<spec-slug>`**: the epic the ticket belongs to. `<spec-slug>` is the spec's file name without `.md`, for example `epic:avklare-inntekt` for `docs/specs/avklare-inntekt.md`.
+- **`epic:<spec-slug>`**: the same epic label as the spec.
 
-Create the epic label before the first issue in the epic if it doesn't exist:
+The spec issue stays open until every ticket is closed.
+
+Create the epic label before the spec issue if it doesn't exist:
 
 ```sh
-gh label create "epic:<spec-slug>" -R navikt/sas-issues --color 5319e7 --description "Tickets fra docs/specs/<spec-slug>.md"
+gh label create "epic:<spec-slug>" -R navikt/sas-issues --color 5319e7 --description "<Tittel på specen>"
 ```
 
-List all tickets in an epic: `gh issue list -R navikt/sas-issues --label "epic:<spec-slug>" --state all`. Link to them on the web: `https://github.com/navikt/sas-issues/issues?q=label%3Aepic%3A<spec-slug>`.
+- List the specs: `gh issue list -R navikt/sas-issues --label spec-issue --state all`.
+- List the tickets in an epic: `gh issue list -R navikt/sas-issues --label spec-ticket --label "epic:<spec-slug>" --state all`, or the spec issue's sub-issues on the web.
+- Link to the epic on the web: `https://github.com/navikt/sas-issues/issues?q=label%3Aepic%3A<spec-slug>`.
 
-Issues that don't come from a spec get neither label.
+Issues that don't come from a spec get none of these labels.
 
 ## Ticket status
 
@@ -31,7 +40,8 @@ Issues that don't come from a spec get neither label.
 
 ## Conventions
 
-- **Create an issue**: `gh issue create -R navikt/sas-issues --title "..." --body-file - --label spec-ticket --label "epic:<spec-slug>"`. Use a heredoc for the body.
+- **Create a spec**: `gh issue create -R navikt/sas-issues --title "..." --body-file - --label spec-issue --label "epic:<spec-slug>"`. Use a heredoc for the body.
+- **Create a ticket**: `gh issue create -R navikt/sas-issues --title "..." --body-file - --label spec-ticket --label "epic:<spec-slug>" --parent <spec>`.
 - **Read an issue**: `gh issue view <number> -R navikt/sas-issues --json number,title,body,labels,assignees,state,comments`.
 - **List issues**: `gh issue list -R navikt/sas-issues --state open --json number,title,labels,assignees` with appropriate `--label` and `--state` filters.
 - **Make an issue a sub-issue of a parent**: `gh issue create -R navikt/sas-issues --parent <parent> ...`, or `gh issue edit <parent> -R navikt/sas-issues --add-sub-issue <child>`.
@@ -42,11 +52,11 @@ Issues that don't come from a spec get neither label.
 - **Tick off acceptance criteria**: edit the body (`gh issue view <n> -R navikt/sas-issues --json body -q .body`, change `- [ ]` to `- [x]`, then `gh issue edit <n> -R navikt/sas-issues --body-file -`).
 - **Close**: post the explanation with `gh issue comment <number> -R navikt/sas-issues --body "..."`, then `gh issue close <number> -R navikt/sas-issues`.
 
-Link to a spec from an issue with the full URL, for example `https://github.com/navikt/helse-sas-meta/blob/main/docs/specs/<spec-slug>.md`. Relative links don't work across repos.
+Link to a spec issue from a ticket with `#<n>`. Link from a spec issue to ADRs and `GLOSSARY.md` in sas-meta with full URLs, for example `https://github.com/navikt/helse-sas-meta/blob/main/docs/adr/<adr>.md`. Relative links don't work across repos.
 
-## Migrated tickets
+## Migrated specs and tickets
 
-All former Markdown tickets have been migrated to GitHub, and `docs/tickets/` has been removed. Resolve an old ticket path through Git history to find its title, then locate the issue by epic label and title in `navikt/sas-issues`. Read and update the current issue in GitHub.
+All former Markdown specs and tickets have been migrated to GitHub, and `docs/specs/` and `docs/tickets/` have been removed. A spec `docs/specs/<spec-slug>.md` is now the issue labelled `spec-issue` and `epic:<spec-slug>`; its body starts with a note naming the old path. Resolve an old ticket path through Git history to find its title, then locate the issue by epic label and title. Read and update the current issue in GitHub.
 
 ## Pull requests as a triage surface
 
@@ -54,11 +64,11 @@ All former Markdown tickets have been migrated to GitHub, and `docs/tickets/` ha
 
 ## When a skill says "publish to the issue tracker"
 
-Create a GitHub issue in `navikt/sas-issues`. If it comes from a spec, add the labels `spec-ticket` and `epic:<spec-slug>`.
+Create a GitHub issue in `navikt/sas-issues`. A spec gets `spec-issue` and `epic:<spec-slug>`. A ticket from a spec gets `spec-ticket` and `epic:<spec-slug>`, and becomes a sub-issue of the spec.
 
 ## When a skill says "fetch the relevant ticket"
 
-Read it as in **Read an issue** above, together with the spec it links to. The user normally passes the issue number (`#12`), the URL or the title. Resolve old file paths as in **Migrated tickets** above.
+Read it as in **Read an issue** above, together with its parent `spec-issue`. The user normally passes the issue number (`#12`), the URL or the title. Resolve old file paths as in **Migrated tickets** above.
 
 ## Wayfinding operations
 

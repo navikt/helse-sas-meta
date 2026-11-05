@@ -10,7 +10,7 @@ Two-axis review of the diff between `HEAD` and a fixed point the user supplies:
 
 Both axes run as **parallel sub-agents** so they don't pollute each other's context, then this skill aggregates their findings.
 
-Specs live as Markdown files in `docs/specs/` at the root of the sas-meta repo (helse-sas-meta). Tickets are GitHub issues in `navikt/sas-issues`; see `docs/agents/issue-tracker.md` for issue operations and resolving old Markdown ticket paths. The code lives in the app repos checked out underneath sas-meta, each its own git repository: run every git command below inside the app repo that holds the changes.
+Specs are GitHub issues in `navikt/sas-issues` labelled `spec-issue`, with their tickets as sub-issues. Tickets are GitHub issues in `navikt/sas-issues`; see `docs/agents/issue-tracker.md` for issue operations and resolving old Markdown spec and ticket paths. The code lives in the app repos checked out underneath sas-meta, each its own git repository: run every git command below inside the app repo that holds the changes.
 
 ## Process
 
@@ -27,8 +27,8 @@ Before going further, confirm the fixed point resolves (`git rev-parse <fixed-po
 Look for the originating spec, in this order:
 
 1. A path the user passed as an argument.
-2. An issue in `navikt/sas-issues` referenced by the branch name or the commit messages (for example `#12`), or a `spec-ticket` issue matching the feature, together with the spec in `docs/specs/` it links to. Read it with `gh issue view <n> -R navikt/sas-issues`. Resolve old ticket paths as described in `docs/agents/issue-tracker.md`.
-3. A spec file under `docs/specs/` in sas-meta matching the branch name or feature.
+2. An issue in `navikt/sas-issues` referenced by the branch name or the commit messages (for example `#12`), or a `spec-ticket` issue matching the feature, together with its parent `spec-issue`. Read it with `gh issue view <n> -R navikt/sas-issues`. Resolve old ticket paths as described in `docs/agents/issue-tracker.md`.
+3. A `spec-issue` in `navikt/sas-issues` matching the branch name or feature (`gh issue list -R navikt/sas-issues --label spec-issue --state all`).
 4. If nothing is found, ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
 
 ### 3. Identify the standards sources

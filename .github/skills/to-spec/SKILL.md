@@ -1,12 +1,12 @@
 ---
 name: to-spec
-description: "Turn the current conversation into a spec and write it as a Markdown file in docs/specs in the sas-meta repo: no interview, just synthesis of what you've already discussed."
+description: "Turn the current conversation into a spec and publish it as a spec-issue in navikt/sas-issues: no interview, just synthesis of what you've already discussed."
 disable-model-invocation: true
 ---
 
 This skill takes the current conversation context and codebase understanding and produces a spec. Do NOT interview the user; just synthesize what you already know.
 
-Specs are written as Markdown files in `docs/specs/` at the root of the sas-meta repo (helse-sas-meta), even when the work concerns one of the app repos checked out underneath it. Do not publish the spec to an issue tracker.
+Specs are published as GitHub issues in `navikt/sas-issues`, even when the work concerns one of the app repos checked out underneath sas-meta. The issue is the spec's only copy: do not write it to a file or commit it. Read `docs/agents/issue-tracker.md` for the `gh` commands and labels, and always pass `-R navikt/sas-issues`.
 
 Write the spec in Norwegian bokmål and follow the klarspråk principles (see the `klarsprak` skill). Use the Norwegian headings from the template below. Keep code identifiers, state names and API fields unchanged.
 
@@ -18,7 +18,9 @@ Write the spec in Norwegian bokmål and follow the klarspråk principles (see th
 
 Check with the user that these seams match their expectations.
 
-3. Write the spec using the template below to `docs/specs/<kebab-case-name>.md` in the sas-meta repo. Create `docs/specs/` if it doesn't exist. Start the file with a `# <tittel>` heading. If a spec for the same feature already exists, update it instead of creating a new file. Add a link to the spec (`specs/<kebab-case-name>.html`) with a one-sentence description in `docs/index.html`, so it can be navigated on GitHub Pages. Tell the user the path of the file when you're done.
+3. Pick the **spec slug**: a short kebab-case name for the feature, for example `avklare-inntekt`. It names the epic, so `/to-tickets` and the ticket graph find the spec and its tickets through the label `epic:<spec-slug>`. Check that no spec issue already uses it (`gh issue list -R navikt/sas-issues --label spec-issue --state all`). If a spec for the same feature already exists, update its body instead of creating a new issue.
+
+4. Write the spec using the template below and publish it as one issue in `navikt/sas-issues`. Use the spec's title as the issue title, and label it `spec-issue` and `epic:<spec-slug>`. Create the epic label first if it doesn't exist (see `docs/agents/issue-tracker.md`). Tell the user the issue number and URL when you're done.
 
 <spec-template>
 

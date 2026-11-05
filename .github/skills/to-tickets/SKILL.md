@@ -16,7 +16,7 @@ Write the tickets in Norwegian bokmål and follow the klarspråk principles (see
 
 ### 1. Gather context
 
-Work from whatever is already in the conversation context. If the user passes a reference (a spec path in `docs/specs/`, an issue number or URL) as an argument, fetch it and read its full body and comments.
+Work from whatever is already in the conversation context. If the user passes a reference (a spec issue number or URL, or another issue) as an argument, fetch it and read its full body and comments.
 
 ### 2. Explore the codebase (optional)
 
@@ -63,12 +63,12 @@ Iterate until the user approves the breakdown.
 
 Create one GitHub issue per ticket in `navikt/sas-issues`, in dependency order (blockers first), so you can reference real issue numbers in the blocking edges. Use the issue template below: one ticket per issue, never a single combined issue.
 
-When the tickets come from a spec in `docs/specs/`, label every issue with:
+When the tickets come from a spec, label every issue with:
 
 - `spec-ticket`
-- `epic:<spec-slug>`, where `<spec-slug>` is the spec's file name without `.md`
+- `epic:<spec-slug>`: the spec issue's `epic:` label
 
-Create the `epic:<spec-slug>` label first if it doesn't exist (see `docs/agents/issue-tracker.md`). Tickets that don't come from a spec get neither label.
+Make every ticket a sub-issue of the spec issue (`--parent <spec>`). Create the `epic:<spec-slug>` label first if it doesn't exist (see `docs/agents/issue-tracker.md`). Tickets that don't come from a spec get neither label; if they come from another issue, make them its sub-issues.
 
 Record blocking edges as native issue dependencies (`--blocked-by`), and list them in the body as well.
 
@@ -76,7 +76,7 @@ If tickets for the same epic already exist (`gh issue list -R navikt/sas-issues 
 
 Work the **frontier**: any ticket whose blockers are all closed. For a purely linear chain that means top to bottom.
 
-Do NOT modify the source spec, except for completing contracts in step 3 and adding a link to the epic's issues right below its title: `[Tickets](https://github.com/navikt/sas-issues/issues?q=label%3Aepic%3A<spec-slug>)`. In `docs/index.html`, add the same link in the spec's section, so the tickets can be found from GitHub Pages. Tell the user the issue numbers and URLs when you're done.
+Do NOT close the spec issue or modify it, except for completing contracts in step 3. The sub-issues already list the tickets under the spec. Tell the user the issue numbers and URLs when you're done.
 
 <issue-template>
 
@@ -84,7 +84,7 @@ Title: `<Tittel>`
 
 Body:
 
-**Spec:** a full link to the source spec, `https://github.com/navikt/helse-sas-meta/blob/main/docs/specs/<spec-slug>.md`, if there is one. Otherwise omit this line.
+**Spec:** the spec issue, for example `#101`. Omit this line when there is no spec.
 
 **Repo:** the app repo(s) in sas-meta the ticket touches, for example `spleis` or `speil`.
 

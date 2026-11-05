@@ -1,4 +1,4 @@
-Denne skillen er hentet fra [mattpocock/skills](https://github.com/mattpocock/skills/tree/59db609eb1e18aaf59b63284d0e52255aff0c63c/skills/engineering/code-review) (commit `59db609`) og tilpasset slik at specen hentes fra `docs/specs/` i sas-meta, ticketene hentes fra `navikt/sas-issues`, og diffen tas i app-repoet det gjelder. Den er lisensiert under MIT-lisensen nedenfor.
+Denne skillen er hentet fra [mattpocock/skills](https://github.com/mattpocock/skills/tree/59db609eb1e18aaf59b63284d0e52255aff0c63c/skills/engineering/code-review) (commit `59db609`) og tilpasset slik at specen hentes fra et `spec-issue` i `navikt/sas-issues`, ticketene hentes fra `navikt/sas-issues`, og diffen tas i app-repoet det gjelder. Den er lisensiert under MIT-lisensen nedenfor.
 
 ```text
 MIT License
