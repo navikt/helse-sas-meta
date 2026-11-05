@@ -39,8 +39,12 @@ En egenskap ved personen som gir egne regler i tillegg til hovedkategorien, uten
 _Unngå_: Spesiell yrkesgruppe, undertype
 
 **Jordbruker**:
-Tilleggskategorien for en person som har sendt minst én søknad med arbeidssituasjonen jordbruker i sykefraværstilfellet. Den gjelder sammen med hovedkategorien Selvstendig næringsdrivende eller Arbeidstaker og selvstendig næringsdrivende. Reindrift og fiske er ikke jordbruker.
+Tilleggskategorien for en person som driver jordbruk som selvstendig næringsdrivende. Den gjelder sammen med hovedkategorien Selvstendig næringsdrivende eller Arbeidstaker og selvstendig næringsdrivende. Den avgjøres automatisk når personen har sendt minst én søknad med arbeidssituasjonen jordbruker i sykefraværstilfellet, og saksbehandler kan vurdere den manuelt. Reindrift og fiske er ikke jordbruker.
 _Unngå_: Jordbruker som yrkesaktivitetstype eller hovedkategori
+
+**Manuell vurdering av rettighetskategori**:
+En vurdering saksbehandler gjør som overstyrer en eksisterende automatisk vurdering. Den gir en ny avgjørelse med ny ID og kilden `saksbehandler`.
+_Unngå_: Endring av rettighetskategori, korrigering
 
 **Backfill**:
 Når en domenetjeneste lager avgjørelser for ID-er som bare finnes i Spleis, med data fra spleis-api og eventuelt andre tjenester som eier historikken i dag. Avgjørelser fra backfill har kilden `spleis`.
