@@ -32,7 +32,7 @@ Avgjørelse 1 viser nå begge vurderingene. For et vedtak fattet på tidspunktet
 
 ## Åpne spørsmål
 
-- **Skal domenetjenestene følge samme mønster?** Ett alternativ er at de bare vurderer på nytt når sine egne fakta endres, og bare lager en ny vurdering med ny ID når konklusjonen endres. Da vurderer ikke opptjening på nytt fordi rettighetskategorien har fått en ny vurdering. Om opptjening skal hente arbeidsforhold fra Aa-registeret på nytt ved ny vilkårsprøving, blir en egen regel i opptjening, og en ny henting med samme resultat føyes til den eksisterende opptjeningsvurderingen. Det må vurderes for hver domenetjeneste, blant annet fordi en vurdering kan være gjort manuelt.
+- **Skal domenetjenestene følge samme mønster?** Besvart i ADR 0012: ja. En domenetjeneste gjenbruker vurderingen og ID-en når den ville gjort samme subsumsjon, og lager en ny vurdering når subsumsjonen er en annen, også om utfallet er det samme.
 - **Når gjeldende avgjørelse er fra saksbehandler** og en ny automatisk vurdering kommer til en annen konklusjon, skal ikke den automatiske vurderingen overstyre saksbehandleren i det stille. Hva skal skje i stedet: varsel i Spleis, ny oppgave, eller at behovet blir liggende?
 - **Når vurderingen gir samme konklusjon som en saksbehandleravgjørelse**, føyes den til som en bekreftelse. Skal saksbehandleren få vite om det?
 - **Ny kodeversjon som gir samme konklusjon**: skal den gi en ny vurdering når søknadssettet er det samme, eller bare når faktaene endres?
