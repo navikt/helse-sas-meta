@@ -6,7 +6,7 @@ Når Spleis beregner en periode, sender den behovet `GraderteAndreYtelserForBere
 
 Ansvaret er delt etter hvem som vet hva. Bare sp-andre-ytelser vet om saksbehandler tok ytelsene fra sykdommen eller fra arbeidet, så den regner ut trekket. Bare Spleis vet hva sykdomsgraden er nå, så den trekker fra og lager et varsel når sykdomsgraden ikke er den saksbehandler så.
 
-Sporingen ligger på endringen i behandlingen, ikke på hver dag. Alle dagene i en endring kommer fra samme løsning, så versjonen sier nøyaktig hvilke fordelinger behandlingen bygde på. Totalgraden avhenger også av de andre yrkesaktivitetene, men Spleis beregner overlappende perioder samlet, og endringene i de andre behandlingene lagrer sine egne versjoner. Historikken per dag finnes i hendelsesloggen i sp-andre-ytelser. Dette skiller seg fra ADR 0005, der én vurdering gjelder personen og må kopieres til nye behandlinger. Her gjelder fordelingen én yrkesaktivitet, og Spleis spør på nytt hver gang den beregner.
+Sporingen ligger på endringen i behandlingen, ikke på hver dag. Alle dagene i en endring kommer fra samme løsning, så versjonen sier nøyaktig hvilke fordelinger behandlingen bygde på. Totalgraden avhenger også av de andre yrkesaktivitetene, men Spleis beregner overlappende perioder samlet, og endringene i de andre behandlingene lagrer sine egne versjoner. Historikken per dag finnes i hendelsesloggen i sp-andre-ytelser. Spleis spør på nytt hver gang den beregner. ADR 0005 bruker det samme mønsteret for avslagsdager.
 
 Graderte andre ytelser ligger heller ikke på sykdomstidslinjen. De endrer bare graden, ikke hva dagen er, så skjæringstidspunkt og arbeidsgiverperiode påvirkes ikke.
 
