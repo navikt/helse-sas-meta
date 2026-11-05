@@ -34,6 +34,14 @@ _Unngå_: Yrkesaktivitetstype, kategori
 Den delen av rettighetskategorien som velger hovedregelsettet, for eksempel Arbeidstaker, Selvstendig næringsdrivende eller Arbeidstaker og selvstendig næringsdrivende. «Ingen» når personen ikke passer i noen.
 _Unngå_: Kombinert (bruk den presise kombinasjonen)
 
+**Tilleggskategori**:
+En egenskap ved personen som gir egne regler i tillegg til hovedkategorien, uten å endre den. En rettighetskategori kan ha null eller flere tilleggskategorier. Jordbruker er den første.
+_Unngå_: Spesiell yrkesgruppe, undertype
+
+**Jordbruker**:
+Tilleggskategorien for en person som har sendt minst én søknad med arbeidssituasjonen jordbruker i sykefraværstilfellet. Den gjelder sammen med hovedkategorien Selvstendig næringsdrivende eller Arbeidstaker og selvstendig næringsdrivende. Reindrift og fiske er ikke jordbruker.
+_Unngå_: Jordbruker som yrkesaktivitetstype eller hovedkategori
+
 **Backfill**:
 Når en domenetjeneste lager avgjørelser for ID-er som bare finnes i Spleis, med data fra spleis-api og eventuelt andre tjenester som eier historikken i dag. Avgjørelser fra backfill har kilden `spleis`.
 _Unngå_: Innfylling, migrering (migreringsloggen er bare loggen over backfill per person)
