@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rettighetskategori: ny tilleggskategori, samme opptjening?</title>
+<style>
+  :root {
+    --bg: #f7f7f8; --fg: #1f2328; --muted: #59636e; --card: #fff; --line: #d0d7de;
+    --rk: #e8f0fe; --rk-b: #3b6fd4;
+    --opp: #f4ecfb; --opp-b: #8250df;
+    --sok: #fff8e6; --sok-b: #b7791f;
+    --ok: #e6f6ea; --ok-b: #2e8b57;
+    --warn: #fff1e6; --warn-b: #c4520f;
+    --old: #f1f1f1; --old-b: #8c959f;
+    --a: #0e7c86; --a-bg: #f2fafa;
+    --b: #8250df; --b-bg: #faf7fd;
+    --hl: #f0b400;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--fg); }
+  main { max-width: 1240px; margin: 0 auto; padding: 20px 20px 60px; }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; }
+  h2 { font-size: 1.15rem; margin: 32px 0 8px; }
+  p.lead { color: var(--muted); margin: 0 0 14px; max-width: 80ch; }
+  .tilbake { font-size: .9rem; color: #3b6fd4; text-decoration: none; }
+  .begreper { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 6px; }
+  .begrep { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: .95rem; }
+  .begrep b { display: block; }
+
+  .kontroller { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .knapper { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  button { font: inherit; border: 1px solid var(--line); background: var(--card); border-radius: 8px; padding: 6px 14px; cursor: pointer; color: var(--fg); }
+  button:hover:not(:disabled) { border-color: var(--fg); }
+  button:disabled { opacity: .4; cursor: default; }
+  button:focus-visible { outline: 3px solid var(--hl); outline-offset: 2px; }
+  button.primær { background: var(--fg); color: #fff; border-color: var(--fg); }
+  .prikker { display: flex; gap: 6px; margin-left: auto; }
+  .prikker button { width: 34px; height: 34px; padding: 0; border-radius: 50%; font-size: .85rem; }
+  .prikker button[aria-current=step] { background: var(--fg); color: #fff; border-color: var(--fg); }
+  .forteller { margin-top: 10px; background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--hl); border-radius: 10px; padding: 10px 16px; min-height: 96px; }
+  .forteller h3 { margin: 0 0 4px; font-size: 1.05rem; }
+  .forteller p { margin: 0; max-width: 100ch; }
+
+  .tavle { display: grid; grid-template-columns: 130px 1fr 1fr; column-gap: 14px; margin-top: 14px; }
+  .felt { grid-column: 2 / 4; border: 2px solid var(--line); border-top: 0; border-bottom: 0; background: #fff; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; box-shadow: inset 0 1px 0 var(--line); }
+  .felt.første { border-top: 2px solid var(--line); border-radius: 10px 10px 0 0; }
+  .felt.siste { border-bottom: 2px solid var(--line); border-radius: 0 0 10px 10px; }
+  .felles-tittel { grid-column: 2 / 4; font-size: .85rem; color: var(--muted); padding: 0 2px 4px; }
+  .felles-tittel b { color: var(--fg); }
+  .mellomrom { grid-column: 1 / 4; height: 18px; }
+  .kolonnetittel { padding: 10px 14px; border-radius: 10px 10px 0 0; border: 2px solid; border-bottom: 0; }
+  .kolonnetittel h2 { margin: 0; font-size: 1.05rem; }
+  .kolonnetittel small { color: var(--muted); }
+  .kA { border-color: var(--a); background: var(--a-bg); }
+  .kB { border-color: var(--b); background: var(--b-bg); }
+  .banenavn { font-weight: 600; font-size: .9rem; color: var(--muted); padding: 14px 0; border-top: 1px dashed var(--line); }
+  .banenavn small { display: block; font-weight: 400; font-size: .78rem; }
+  .bane { border: 2px solid; border-top: 0; border-bottom: 0; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; min-height: 64px; box-shadow: inset 0 1px 0 var(--line); }
+  .bane.siste { border-bottom: 2px solid; border-radius: 0 0 10px 10px; }
+  .kA.bane { border-color: var(--a); background: #fff; }
+  .kB.bane { border-color: var(--b); background: #fff; }
+  .rad { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-start; }
+
+  .kort { background: var(--card); border: 2px solid var(--line); border-radius: 10px; padding: 8px 12px; font-size: .92rem; }
+  .kort .tittel { font-weight: 700; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .kort .detalj { color: var(--muted); font-size: .85rem; }
+  .søknad { background: var(--sok); border-color: var(--sok-b); }
+  .rk { background: var(--rk); border-color: var(--rk-b); }
+  .opp { background: var(--opp); border-color: var(--opp-b); }
+  .ok { background: var(--ok); border-color: var(--ok-b); }
+  .advarsel { background: var(--warn); border-color: var(--warn-b); }
+  .merke { font-size: .72rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; border: 1px solid; background: #fff; }
+  .merke.gjeldende { color: var(--ok-b); border-color: var(--ok-b); }
+  .merke.erstattet { color: #57606a; border-color: #57606a; }
+  .merke.utfall { color: var(--opp-b); border-color: var(--opp-b); }
+  .merke.gjenbrukt { color: var(--a); border-color: var(--a); }
+  .kort.er-erstattet { background: var(--old); border-color: var(--old-b); border-style: dashed; }
+  .kort.er-erstattet > :not(.tittel) { opacity: .7; }
+
+  .kategorier { margin: 6px 0 2px; display: grid; grid-template-columns: max-content 1fr; gap: 3px 10px; font-size: .86rem; align-items: center; }
+  .kategorier dt { color: var(--muted); }
+  .kategorier dd { margin: 0; }
+  .verdi { display: inline-block; background: #fff; border: 1px solid var(--rk-b); border-radius: 6px; padding: 1px 8px; }
+  .verdi.ingen { border-style: dashed; color: var(--muted); }
+  .verdi.endret { border: 2px solid var(--warn-b); background: var(--warn); font-weight: 700; }
+  .linse { display: inline-block; margin-top: 4px; font-size: .8rem; color: var(--opp-b); }
+
+  .melding { align-self: flex-start; display: inline-flex; gap: 6px; align-items: center; font-weight: 700; font-size: .88rem; padding: 4px 12px; border-radius: 999px; border: 2px solid var(--rk-b); background: #fff; color: var(--rk-b); }
+  .melding::before { content: "Spleis sender rettighetskategori"; font-weight: 400; color: var(--muted); }
+  .melding.ny-id { border-color: var(--warn-b); color: var(--warn-b); }
+
+  .spørsmål { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; }
+  .spørsmål .kort { height: 100%; }
+  .eller { font-weight: 700; color: var(--muted); }
+
+  .kjede { display: flex; flex-direction: column; gap: 4px; font-size: .88rem; }
+  .ledd { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .ledd .node { border: 1px solid var(--line); background: #fff; border-radius: 6px; padding: 2px 8px; }
+  .ledd .pil { color: var(--muted); }
+  .node.rk { border-color: var(--rk-b); background: var(--rk); }
+  .node.opp { border-color: var(--opp-b); background: var(--opp); }
+  .node.vedtak { border-color: var(--fg); font-weight: 700; }
+  .node.gammel { border-style: dashed; background: var(--old); border-color: var(--old-b); }
+  .pluss, .minus { margin: 4px 0 0; padding-left: 0; list-style: none; font-size: .88rem; }
+  .pluss li::before { content: "+ "; color: var(--ok-b); font-weight: 700; }
+  .minus li::before { content: "– "; color: var(--warn-b); font-weight: 700; }
+
+  .skjult { visibility: hidden; }
+  .borte { display: none !important; }
+  .ny { animation: inn .7s ease-out both, puls 1.6s .7s ease-out 1; }
+  .banenavn.ny, .bane.ny, .kolonnetittel.ny, .mellomrom.ny, .felt.ny, .detalj.ny { animation: inn .7s ease-out both; }
+  .melding.ny { animation: send 1.2s cubic-bezier(.2,.7,.3,1) both; }
+  .kort.byttet { animation: puls 1.6s ease-out 1; }
+  @keyframes inn { from { opacity: 0; transform: translateY(-10px) scale(.97); } to { opacity: 1; transform: none; } }
+  @keyframes puls { 0% { box-shadow: 0 0 0 0 #f0b400cc; } 100% { box-shadow: 0 0 0 14px #f0b40000; } }
+  @keyframes send { 0% { opacity: 0; transform: translateY(-90px) scale(.85); } 50% { opacity: 1; } 100% { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .ny, .melding.ny, .kort.byttet { animation: none; } }
+
+  .sammenligning { width: 100%; border-collapse: collapse; background: var(--card); font-size: .93rem; }
+  .sammenligning th, .sammenligning td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+  .sammenligning thead th { background: #f0f2f4; }
+  .sammenligning th[scope=row] { width: 26%; font-weight: 600; background: #fafbfc; }
+  ul.åpne { margin: 6px 0 0; padding-left: 20px; }
+  ul.åpne li { margin-bottom: 4px; }
+  @media (max-width: 900px) {
+    .tavle { grid-template-columns: 1fr; }
+    .tavle > .hjørne { display: none; }
+    .felt, .felles-tittel, .mellomrom { grid-column: 1; }
+    .banenavn { border-top: 0; padding-bottom: 0; }
+    .begreper { grid-template-columns: 1fr; }
+    .spørsmål { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <a class="tilbake" href="./">← Ny avgjørelse eller nye vurderinger?</a>
+  <h1>Rettighetskategori: ny tilleggskategori, samme opptjening?</h1>
+  <p class="lead">Hva skal opptjening gjøre når rettighetskategorien får en ny ID, men den delen opptjening bruker, er den samme? Skissen følger én selvstendig næringsdrivende gjennom sju steg. Saksbehandleren legger til tilleggskategorien jordbruker, og vi viser to måter opptjening kan svare på. Ingen av dem er bestemt.</p>
+
+  <div class="begreper">
+    <div class="begrep"><b>Rettighetskategori</b>Én hovedkategori og null eller flere tilleggskategorier. Hver avgjørelse om rettighetskategori har en egen ID. Endres kategoriene, blir det en ny avgjørelse med ny ID.</div>
+    <div class="begrep"><b>Hovedkategori og tilleggskategori</b>Hovedkategorien velger hovedregelsettet, her selvstendig næringsdrivende. En tilleggskategori, her jordbruker, kan endre enkelte regler, men ikke alle.</div>
+    <div class="begrep"><b>Opptjening</b>Vilkåret i sp-vilkarsproving. Opptjening slår opp rettighetskategorien fra ID-en, men leser bare hovedkategorien. Tilleggskategorien jordbruker betyr ingenting for opptjening.</div>
+  </div>
+
+  <div class="kontroller">
+    <div class="knapper">
+      <button id="forrige">← Forrige</button>
+      <button id="neste" class="primær">Neste →</button>
+      <button id="spill">▶ Spill av</button>
+      <button id="nullstill">Start på nytt</button>
+      <div class="prikker" id="prikker" aria-label="Steg"></div>
+    </div>
+    <div class="forteller" aria-live="polite">
+      <h3 id="steg-tittel"></h3>
+      <p id="steg-tekst"></p>
+    </div>
+  </div>
+
+  <div class="tavle">
+    <div class="hjørne"></div>
+    <div class="felles-tittel"><b>Likt i begge</b> · steg 1–5</div>
+
+    <div class="banenavn">Hendelser<small>søknad og saksbehandler</small></div>
+    <div class="felt første"><div class="rad">
+      <div class="kort søknad" data-vis="1"><div class="tittel">Søknad</div><div class="detalj">Selvstendig næringsdrivende · gårdsbruk · sendt 3. jan</div></div>
+      <div class="kort søknad" data-vis="4"><div class="tittel">Saksbehandler vurderer rettighetskategorien manuelt</div><div class="detalj">Personen driver jordbruk · legger til tilleggskategorien jordbruker · 12. jan</div></div>
+    </div></div>
+
+    <div class="banenavn">Rettighetskategori<small>sp-rettighetskategori</small></div>
+    <div class="felt"><div class="rad">
+      <div class="kort rk" data-vis="2" data-erstattet="4">
+        <div class="tittel">Avgjørelse ID 1
+          <span class="merke gjeldende" data-vis="2" data-skjul="4">Gjeldende</span>
+          <span class="merke erstattet" data-vis="4">Erstattet</span></div>
+        <dl class="kategorier">
+          <dt>Hovedkategori</dt><dd><span class="verdi">Selvstendig næringsdrivende</span></dd>
+          <dt>Tilleggskategorier</dt><dd><span class="verdi ingen">ingen</span></dd>
+        </dl>
+        <div class="detalj">Automatisk · bygger på søknaden · 3. jan</div>
+      </div>
+      <div class="kort rk" data-vis="4">
+        <div class="tittel">Avgjørelse ID 2 <span class="merke gjeldende">Gjeldende</span></div>
+        <dl class="kategorier">
+          <dt>Hovedkategori</dt><dd><span class="verdi">Selvstendig næringsdrivende</span> <small class="detalj">uendret</small></dd>
+          <dt>Tilleggskategorier</dt><dd><span class="verdi endret">Jordbruker</span> <small class="detalj">ny</small></dd>
+        </dl>
+        <div class="detalj">Saksbehandler · 12. jan · ny konklusjon, derfor ny ID</div>
+      </div>
+    </div></div>
+
+    <div class="banenavn">Opptjening<small>sp-vilkarsproving</small></div>
+    <div class="felt siste">
+      <div class="melding" data-vis="3" data-skjul="5" data-plass="borte">ID 1</div>
+      <div class="melding ny-id" data-vis="5" data-plass="borte">ID 2</div>
+      <div class="rad">
+        <div class="kort opp" data-vis="3" data-skjul="6" data-plass="borte">
+          <div class="tittel">Opptjeningsvurdering 1 <span class="merke utfall">Oppfylt</span></div>
+          <div>Regelen for selvstendig næringsdrivende</div>
+          <div class="detalj">Bygger på rettighetskategori ID 1 · 3. jan</div>
+          <span class="linse">Leste: hovedkategori = selvstendig næringsdrivende</span>
+        </div>
+        <div class="kort advarsel" data-vis="5" data-skjul="6" data-plass="borte">
+          <div class="tittel">Ny ID. Hva skal opptjening gjøre?</div>
+          <div>Opptjening slår opp ID 2 og leser hovedkategorien: fortsatt selvstendig næringsdrivende. Opptjening bruker ikke jordbruker til noe.</div>
+          <div class="detalj">Svaret blir det samme som sist. Spørsmålet er om vi skal gjenbruke vurdering 1, eller lage en ny vurdering fordi ID-en er ny.</div>
+        </div>
+      </div>
+      <div class="detalj" data-vis="6" data-plass="borte">Hva opptjening gjør med ID 2, avhenger av tilnærmingen. Se A og B under.</div>
+      <div class="spørsmål" data-vis="5" data-skjul="6" data-plass="borte">
+        <div class="kort" style="border-color: var(--a)"><div class="tittel" style="color: var(--a)">A · Gjenbruke vurderingen</div><div>Hovedkategorien er den samme, så vurdering 1 gjelder fortsatt.</div></div>
+        <div class="eller">eller</div>
+        <div class="kort" style="border-color: var(--b)"><div class="tittel" style="color: var(--b)">B · Vurdere på nytt</div><div>ID-en er ny, så vi lager en ny vurdering som viser til den.</div></div>
+      </div>
+    </div>
+    <div class="mellomrom" data-vis="6" data-plass="borte"></div>
+
+    <div class="hjørne"></div>
+    <div data-plass="borte" class="kolonnetittel kA" data-vis="6">
+      <h2>A · Gjenbruke vurderingen og ID-en</h2>
+      <small>Opptjening ser at det den bruker, ikke er endret</small>
+    </div>
+    <div data-plass="borte" class="kolonnetittel kB" data-vis="6">
+      <h2>B · Ny vurdering fordi ID-en er ny</h2>
+      <small>Opptjening vurderer hver gang den får en ny ID</small>
+    </div>
+
+    <div data-plass="borte" class="banenavn" data-vis="6">Opptjening<small>etter ID 2</small></div>
+    <div data-plass="borte" class="bane kA" data-vis="6">
+      <div class="kort opp byttbar" data-byttet="6">
+        <div class="tittel">Opptjeningsvurdering 1 <span class="merke utfall">Oppfylt</span> <span class="merke gjenbrukt">Gjelder også ID 2</span></div>
+        <div>Regelen for selvstendig næringsdrivende</div>
+        <div class="detalj">Bygger på rettighetskategori ID 1 · 3. jan</div>
+        <div class="detalj"><b>Ny:</b> registrert at den også gjelder ID 2 · 12. jan</div>
+      </div>
+      <div class="kort ok">
+        <div class="tittel">Ingen ny vurdering</div>
+        <div>Opptjening sammenligner ID 2 med ID 1 og ser at hovedkategorien er den samme. Vurdering 1 og ID-en til den beholdes.</div>
+      </div>
+    </div>
+    <div data-plass="borte" class="bane kB" data-vis="6">
+      <div class="rad">
+        <div class="kort opp er-erstattet">
+          <div class="tittel">Opptjeningsvurdering 1 <span class="merke erstattet">Erstattet</span></div>
+          <div>Regelen for selvstendig næringsdrivende</div>
+          <div class="detalj">Bygger på rettighetskategori ID 1 · 3. jan</div>
+        </div>
+        <div class="kort opp">
+          <div class="tittel">Opptjeningsvurdering 2 <span class="merke utfall">Oppfylt</span> <span class="merke gjeldende">Gjeldende</span></div>
+          <div>Regelen for selvstendig næringsdrivende</div>
+          <div class="detalj">Bygger på rettighetskategori ID 2 · 12. jan</div>
+        </div>
+      </div>
+      <div class="kort ok">
+        <div class="tittel">Ny vurdering, samme svar</div>
+        <div>Opptjening trenger ikke vite hvorfor ID-en er ny. Den vurderer på nytt med samme regel og kommer til samme svar.</div>
+      </div>
+    </div>
+
+    <div data-plass="borte" class="banenavn" data-vis="7">Vedtak og sporing<small>hva kan vi vise?</small></div>
+    <div data-plass="borte" class="bane kA" data-vis="7">
+      <div class="kjede">
+        <div class="ledd"><span class="node vedtak">Vedtak</span><span class="pil">→</span><span class="node rk">ID 2 · næringsdrivende + jordbruker</span></div>
+        <div class="ledd"><span class="node opp">Opptjening 1</span><span class="pil">→</span><span class="node rk gammel">ID 1 · næringsdrivende</span></div>
+        <div class="ledd"><span class="node opp">Opptjening 1</span><span class="pil">gjelder også</span><span class="node rk">ID 2</span></div>
+      </div>
+      <ul class="pluss">
+        <li>Ingen ny vurdering når det opptjening bruker, ikke er endret.</li>
+        <li>Vi ser at opptjeningen ble vurdert én gang, 3. jan.</li>
+      </ul>
+      <ul class="minus">
+        <li>Opptjening må vite hvilke deler av rettighetskategorien den bruker, og sammenligne med forrige ID.</li>
+        <li>Vurderingen viser til en avgjørelse som er erstattet. Koblingen til ID 2 må lagres i tillegg.</li>
+        <li>Begynner opptjening å bruke en tilleggskategori senere, må sammenligningen endres samtidig.</li>
+      </ul>
+    </div>
+    <div data-plass="borte" class="bane kB" data-vis="7">
+      <div class="kjede">
+        <div class="ledd"><span class="node vedtak">Vedtak</span><span class="pil">→</span><span class="node rk">ID 2 · næringsdrivende + jordbruker</span></div>
+        <div class="ledd"><span class="node opp">Opptjening 2</span><span class="pil">→</span><span class="node rk">ID 2 · næringsdrivende + jordbruker</span></div>
+      </div>
+      <ul class="pluss">
+        <li>Vedtaket og opptjeningen viser til samme avgjørelse.</li>
+        <li>Enkel regel: ny ID gir ny vurdering. Opptjening trenger ikke vite hva som ble endret.</li>
+      </ul>
+      <ul class="minus">
+        <li>Ny vurdering hver gang rettighetskategorien endres, også når endringen ikke gjelder opptjening.</li>
+        <li>Hentes opplysninger på nytt, kan svaret bli et annet enn sist, selv om rettighetskategorien ikke var grunnen.</li>
+        <li>Var opptjeningen vurdert manuelt, må saksbehandleren kanskje vurdere den igjen.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Sammenligning</h2>
+  <table class="sammenligning">
+    <thead><tr><th></th><th>A · Gjenbruke vurderingen og ID-en</th><th>B · Ny vurdering fordi ID-en er ny</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Når vurderer opptjening på nytt?</th><td>Når noe opptjening bruker, er endret, her hovedkategorien.</td><td>Hver gang rettighetskategorien får ny ID.</td></tr>
+      <tr><th scope="row">Hva må opptjening vite?</th><td>Hvilke deler av rettighetskategorien den bruker, og hva de var forrige gang.</td><td>Bare ID-en den vurderte sist.</td></tr>
+      <tr><th scope="row">Hva viser vedtaket?</th><td>Opptjening fra 3. jan, gjort med ID 1 og registrert som gyldig for ID 2.</td><td>Opptjening fra 12. jan, gjort med ID 2.</td></tr>
+      <tr><th scope="row">Manuell opptjeningsvurdering</th><td>Beholdes.</td><td>Må kanskje gjøres på nytt.</td></tr>
+      <tr><th scope="row">Juridisk spørsmål</th><td>Er det nok å vise at hovedkategorien var den samme, når vurderingen ble gjort før jordbruker ble lagt til?</td><td>Er det nødvendig å vurdere opptjening på nytt når det eneste som er endret, ikke har betydning for opptjening?</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Spørsmål til produkteier og jurist</h2>
+  <ul class="åpne">
+    <li>Må vi kunne vise at opptjening ble vurdert <em>etter</em> at jordbruker ble lagt til, eller holder det å vise at hovedkategorien var den samme?</li>
+    <li>Var opptjeningen vurdert manuelt, skal saksbehandleren da se på den igjen når en tilleggskategori som ikke gjelder opptjening, blir lagt til?</li>
+    <li>Skal alle domenetjenestene gjøre det på samme måte, eller kan hver tjeneste velge ut fra hva den bruker?</li>
+    <li>Gjelder svaret også når hovedkategorien er den samme, men en annen tilleggskategori endres, for eksempel en som påvirker dekningsgraden og ikke opptjening?</li>
+  </ul>
+  <p class="lead" style="margin-top: 14px">ADR 0006 gjelder ikke her. Den handler om nye vurderinger som gir samme konklusjon. Når saksbehandleren legger til jordbruker, er konklusjonen endret, og rettighetskategorien får ny ID uansett.</p>
+</main>
+
+<script>
+  const steg = [
+    { tittel: "Utgangspunkt", tekst: "Personen driver gårdsbruk og er sykmeldt fra 1. januar. Vi følger hva som skjer med rettighetskategorien og opptjeningen. Trykk «Neste» eller bruk piltastene." },
+    { tittel: "1. Søknaden kommer inn", tekst: "Personen søker om sykepenger som selvstendig næringsdrivende." },
+    { tittel: "2. Vi avgjør rettighetskategorien", tekst: "sp-rettighetskategori ser på søknaden og konkluderer med hovedkategorien selvstendig næringsdrivende, uten tilleggskategorier. Avgjørelsen får ID 1." },
+    { tittel: "3. Vi vurderer opptjening", tekst: "Spleis sender ID 1 til opptjening. Opptjening slår opp rettighetskategorien, leser hovedkategorien og bruker regelen for selvstendig næringsdrivende. Vilkåret er oppfylt." },
+    { tittel: "4. Saksbehandleren endrer rettighetskategorien", tekst: "Saksbehandleren ser at personen driver jordbruk, og legger til tilleggskategorien jordbruker. Hovedkategorien er den samme. Konklusjonen er likevel endret, så det blir en ny avgjørelse med ID 2, som erstatter ID 1." },
+    { tittel: "5. Spleis vilkårsprøver på nytt", tekst: "Spleis sender ID 2 til opptjening. Opptjening leser bare hovedkategorien, og den er fortsatt selvstendig næringsdrivende. Svaret blir det samme som sist. Hva skal opptjening lagre?" },
+    { tittel: "6. To mulige svar", tekst: "I A ser opptjening at hovedkategorien er den samme, beholder vurdering 1 og registrerer at den også gjelder ID 2. I B lager opptjening en ny vurdering mot ID 2, med samme regel og samme svar." },
+    { tittel: "7. Vedtak: hva kan vi vise?", tekst: "Vedtaket viser til ID 2 i begge. I A viser opptjeningen til ID 1, med en kobling til ID 2. I B viser opptjeningen til ID 2, men vi har gjort en ny vurdering som ikke endret noe." },
+  ];
+  const sisteSteg = steg.length - 1;
+  let nå = 0;
+  let spiller = null;
+
+  const prikker = document.getElementById("prikker");
+  steg.forEach((_, i) => {
+    const b = document.createElement("button");
+    b.textContent = i;
+    b.setAttribute("aria-label", `Gå til steg ${i}`);
+    b.addEventListener("click", () => { stopp(); gåTil(i); });
+    prikker.append(b);
+  });
+
+  function restartAnimasjon(el, klasse) {
+    el.classList.remove(klasse);
+    void el.offsetWidth;
+    el.classList.add(klasse);
+  }
+
+  function vis(i, forrige) {
+    document.querySelectorAll("[data-vis]").forEach((el) => {
+      const fra = Number(el.dataset.vis);
+      const til = el.dataset.skjul ? Number(el.dataset.skjul) : Infinity;
+      const synlig = i >= fra && i < til;
+      // Merker og meldinger skal ikke holde av plass når de ikke vises.
+      const tarIkkePlass = el.classList.contains("merke") || el.dataset.plass === "borte";
+      el.classList.toggle("skjult", !synlig && !tarIkkePlass);
+      el.classList.toggle("borte", !synlig && tarIkkePlass);
+      el.classList.remove("ny");
+      if (synlig && i === fra && i === forrige + 1) restartAnimasjon(el, "ny");
+    });
+    document.querySelectorAll("[data-erstattet]").forEach((el) => {
+      const fra = Number(el.dataset.erstattet);
+      el.classList.toggle("er-erstattet", i >= fra);
+      el.classList.remove("byttet");
+      if (i === fra && i === forrige + 1) restartAnimasjon(el, "byttet");
+    });
+    document.querySelectorAll("[data-byttet]").forEach((el) => {
+      el.classList.remove("byttet");
+      if (i === Number(el.dataset.byttet) && i === forrige + 1) restartAnimasjon(el, "byttet");
+    });
+    for (const kolonne of ["kA", "kB"]) {
+      const baner = [...document.querySelectorAll(`.bane.${kolonne}`)];
+      baner.forEach((el) => el.classList.remove("siste"));
+      baner.filter((el) => !el.classList.contains("borte")).at(-1)?.classList.add("siste");
+    }
+    document.getElementById("steg-tittel").textContent = steg[i].tittel;
+    document.getElementById("steg-tekst").textContent = steg[i].tekst;
+    [...prikker.children].forEach((b, j) => j === i ? b.setAttribute("aria-current", "step") : b.removeAttribute("aria-current"));
+    document.getElementById("forrige").disabled = i === 0;
+    document.getElementById("neste").disabled = i === sisteSteg;
+    history.replaceState(null, "", `#${i}`);
+  }
+
+  function gåTil(i) {
+    const forrige = nå;
+    nå = Math.max(0, Math.min(sisteSteg, i));
+    vis(nå, forrige);
+  }
+  function stopp() { clearInterval(spiller); spiller = null; document.getElementById("spill").textContent = "▶ Spill av"; }
+  function spill() {
+    if (spiller) return stopp();
+    if (nå === sisteSteg) gåTil(0);
+    document.getElementById("spill").textContent = "⏸ Pause";
+    spiller = setInterval(() => { if (nå >= sisteSteg) return stopp(); gåTil(nå + 1); }, 5000);
+  }
+
+  document.getElementById("forrige").addEventListener("click", () => { stopp(); gåTil(nå - 1); });
+  document.getElementById("neste").addEventListener("click", () => { stopp(); gåTil(nå + 1); });
+  document.getElementById("spill").addEventListener("click", spill);
+  document.getElementById("nullstill").addEventListener("click", () => { stopp(); gåTil(0); });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight") { stopp(); gåTil(nå + 1); }
+    if (e.key === "ArrowLeft") { stopp(); gåTil(nå - 1); }
+  });
+
+  const fraUrl = Number(location.hash.slice(1));
+  nå = Number.isInteger(fraUrl) ? Math.max(0, Math.min(sisteSteg, fraUrl)) : 0;
+  vis(nå, -1);
+</script>
+</body>
+</html>
