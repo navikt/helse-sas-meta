@@ -12,7 +12,7 @@ Resolve old Markdown spec and ticket paths to their migrated GitHub issues as de
 
 The code itself lives in the app repo(s) checked out underneath sas-meta, named on the ticket's **Repo** line. Each app repo is its own git repository.
 
-Assign the issue to yourself (`--add-assignee @me`) when you start, and tick off the acceptance criteria you've met in the issue body. When every criterion is met, comment with a short summary and the commits, then close the issue.
+Assign the issue to yourself (`--add-assignee @me`) when you start, and tick off the acceptance criteria you've met in the issue body.
 
 Call the Skill tool with "tdd" where possible, at pre-agreed seams.
 
@@ -21,3 +21,5 @@ Compile regularly, run single test classes regularly, and run the full test suit
 Once done, call the Skill tool with "code-review" to review the work.
 
 Commit your work to the current branch of the app repo.
+
+Then ask the user to confirm that the commits are pushed to `main`, and wait for the answer. The issue stays open until the user confirms. Once confirmed and every criterion is met, comment with a short summary and the commits, then close the issue.
