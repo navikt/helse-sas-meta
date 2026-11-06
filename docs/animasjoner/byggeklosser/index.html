@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fra skreddersøm til byggeklosser</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="scene" id="scene">
+
+    <section class="lysbilde tittel" data-notat="I seks år la vi til støtte for nye grupper sykmeldte én kategori om gangen. Hver kategori ble sydd inn i Spleis, Speil og Spesialist. Nå bygger vi kapabiliteter, og en ny kategori settes sammen av dem.">
+      <div class="klosser-pynt" id="pynt" aria-hidden="true"></div>
+      <p class="overlinje">Team SAS · kategorier og kapabiliteter 2019–2026</p>
+      <h1>Fra skreddersøm<br><span class="aksent">til byggeklosser</span></h1>
+      <p class="ingress">Slik har vi lagt til støtte for nye grupper sykmeldte, før og nå</p>
+      <p class="hint">→ eller klikk for å gå videre · F for fullskjerm · N for notater</p>
+    </section>
+
+    <section class="lysbilde" id="perioder" data-notat="Hver periode hadde sin store kategori. Som ett team bygde vi arbeidstaker. Tigerteamene tok flere arbeidsgivere. Som to team gikk vi løs på selvstendig, frilans, arbeidsledig og jordbruker, én om gangen. Etter april har vi bygd kapabiliteter i stedet.">
+      <p class="overlinje">Fire perioder</p>
+      <h2>Hver periode hadde sin kategori</h2>
+      <div class="periodekort" id="periodekort"></div>
+    </section>
+
+    <section class="lysbilde" id="sporlysbilde" data-notat="Hver rad er en kategori, fra første til siste commit. Frilans og arbeidsledig ble tatt inn i modellen, men forkastes fortsatt. Selvstendig tok to forsøk. Den nederste raden er kapabilitetene: seks nye tjenester på seks måneder.">
+      <p class="overlinje">Kategori for kategori</p>
+      <h2>Ett spor per kategori</h2>
+      <svg class="diagram" id="spor" viewBox="0 0 1420 560"></svg>
+    </section>
+
+    <section class="lysbilde" id="stackenlysbilde" data-notat="Hver prikk er commits om kategorien i én app. En ny kategori betydde endringer i Spleis, Speil og Spesialist, og ofte i Spedisjon, Sparkel og Spre. Selvstendig berørte ni apper.">
+      <p class="overlinje">Kategori for kategori</p>
+      <h2>Hver kategori gikk gjennom hele stacken</h2>
+      <div class="stacken" id="stacken"></div>
+      <p class="fotnote">Commits der emnet nevner kategorien, fram til april 2026. Prikken er større jo flere commits.</p>
+    </section>
+
+    <section class="lysbilde" id="tilstandlysbilde" data-notat="I oktober hadde Spleis 41 tilstander. 19 av dem gjaldt bare én kategori. 19. og 20. oktober ble de fjernet. 2. november kom én felles tilstand som spør sp-rettighetskategori.">
+      <p class="overlinje">Spor i Spleis</p>
+      <h2>Kategoriene fikk egne tilstander</h2>
+      <div class="tilstander" id="tilstander"></div>
+      <div class="tilstandforklaring" id="tilstandforklaring"></div>
+      <div class="tilstandtekster">
+        <p data-kun="0"><b>41</b> tilstander i oktober 2026. <b>19</b> av dem gjaldt bare én kategori.</p>
+        <p data-kun="1">19. og 20. oktober fjernet vi alle de kategori-spesifikke tilstandene.</p>
+        <p data-kun="2">2. november kom <b>én</b> felles tilstand som spør sp-rettighetskategori. Nå har Spleis <b>23</b>.</p>
+      </div>
+      <span data-steg="2" hidden></span>
+      <p class="fotnote">TilstandType i Spleis 18. oktober og 6. november 2026.</p>
+    </section>
+
+    <section class="lysbilde" id="linjelysbilde" data-notat="Linjer i produksjonskoden til Spleis-modellen som nevner selvstendig, frilans, arbeidsledig eller jordbruker. Hvert spor la kategori-spesifikk kode inn i kjernen. Etter skiftet ble tre firedeler fjernet på to uker.">
+      <p class="overlinje">Spor i Spleis</p>
+      <h2>Kategori-kode i kjernen av Spleis</h2>
+      <svg class="diagram" id="linjer" viewBox="0 0 1420 520"></svg>
+      <p class="fotnote">Linjer i <code>sykepenger-model/src/main</code> som nevner Selvstendig, Frilans, Arbeidsledig eller Jordbruker.</p>
+    </section>
+
+    <section class="lysbilde" id="hublysbilde" data-notat="Hver regel i kapittel 8 blir en kapabilitet. Spleis sender et behov, kapabiliteten svarer, og Spleis lagrer ID-en til svaret. Kategorien er også et svar, fra sp-rettighetskategori.">
+      <p class="overlinje">Skiftet</p>
+      <h2>Spleis spør, kapabilitetene svarer</h2>
+      <svg class="diagram" id="hub" viewBox="0 0 1420 450"></svg>
+      <pre class="kode" data-steg="1"><span class="k">enum class</span> Hovedkategori { ARBEIDSTAKER, SELVSTENDIG_NÆRINGSDRIVENDE, ARBEIDSTAKER_OG_SELVSTENDIG_NÆRINGSDRIVENDE }
+<span class="dempet">// sp-rettighetskategori: Hovedkategori.avgjør(yrkesaktiviteter)</span></pre>
+    </section>
+
+    <section class="lysbilde" id="dag" data-notat="22. mai 2026 i sp-forsikring. Seks commits samme dag, hver med én regel og en test. Jordbruker, fisker på blad B og frilanser fikk forsikringsreglene sine. Frilanser forkastes fortsatt i Spleis, men forsikringsregelen er klar når kategorien kommer.">
+      <p class="overlinje">En ny kategori nå</p>
+      <h2>Én dag i sp-forsikring</h2>
+      <div class="logg" id="logg"></div>
+      <div class="kontrast" data-steg="1">
+        <div><span class="tall">36</span><span>commits i 7 apper fra august til desember 2025 for å ta inn jordbruker, fisker og barnepasser gjennom hele stacken</span></div>
+        <div><span class="tall aksent">6</span><span>commits i 1 app 22. mai 2026 for forsikringsreglene til jordbruker, fisker og frilanser</span></div>
+      </div>
+      <p class="fotnote" data-steg="1">Ikke samme oppgave: til høyre er én regel, til venstre en hel kategori. Frilanser forkastes fortsatt i Spleis, men forsikringsregelen er klar.</p>
+    </section>
+
+    <section class="lysbilde" id="matriselysbilde" data-notat="Hva hver kategori vi mangler trenger, ut fra analysen av kapittel 8. R er en ny regel i kapabiliteten, D er en ny datakilde. Tomme ruter gjenbrukes uendret. Dette er planen, ikke målt.">
+      <p class="overlinje">Neste kategori</p>
+      <h2>Nye regler i noen klosser, resten gjenbrukes</h2>
+      <div class="matrise" id="matrise"></div>
+      <p class="fotnote">Fra <code>docs/abstraksjoner-kap8.md</code>. R er ny regel, D er ny datakilde. Planen er ikke målt.</p>
+    </section>
+
+    <section class="lysbilde" id="forbehold" data-notat="Skiftet er nytt. Vi har ikke tatt i bruk en hel ny kategori gjennom kapabilitetene ennå.">
+      <p class="overlinje">Forbehold</p>
+      <h2>Hva vi ikke vet ennå</h2>
+      <div class="kort">
+        <article data-steg="0">
+          <h3>Ingen ny kategori ennå</h3>
+          <p>Frilans og arbeidsledig forkastes fortsatt i Spleis. Vi har ikke tatt i bruk en hel ny kategori bare gjennom kapabilitetene.</p>
+        </article>
+        <article data-steg="1">
+          <h3>Mange regler bor i Spleis</h3>
+          <p>Minsteinntekt, dekning, arbeidsgiverperiode, arbeidsuførhet og maksdato er ikke trukket ut. Andre ytelser og avslagsdager er under arbeid.</p>
+        </article>
+        <article data-steg="2">
+          <h3>Grove mål</h3>
+          <p>Nøkkelord i commit-meldinger fanger ikke alt arbeid. Arbeidstaker og flere arbeidsgivere var også tidlig i livet til Spleis.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="lysbilde konklusjon" data-notat="Før sydde vi hver kategori gjennom hele stacken. Nå legger vi en regel i én kapabilitet, og kategorien er et svar.">
+      <p class="overlinje">Svaret</p>
+      <div class="to-svar">
+        <div>
+          <h3>2019 til mars 2026</h3>
+          <p class="svarord skredder">Skreddersøm</p>
+          <p class="svarundertekst">Én kategori om gangen</p>
+          <p>Hver kategori fikk sitt eget spor gjennom Spleis, Speil, Spesialist og appene rundt, med egne tilstander i Spleis.</p>
+        </div>
+        <div data-steg="1">
+          <h3>Fra april 2026</h3>
+          <p class="svarord klosser">Byggeklosser</p>
+          <p class="svarundertekst">Én regel om gangen</p>
+          <p>En ny kategori er noen nye regler i kapabilitetene som trenger dem. Spleis har felles tilstander for alle.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="lysbilde metode" data-notat="">
+      <p class="overlinje">Metode og kilder</p>
+      <h2>Slik regnet vi</h2>
+      <ul>
+        <li><code>git log --no-merges</code> i repoene som er sjekket ut i sas-meta, 6. november 2026. Commits fra bots er tatt ut.</li>
+        <li>Kategori-sporene er funnet med nøkkelord i commit-emnet: «flere arbeidsgivere», «selvstendig» og «næringsdrivende», «frilans» og «arbeidsledig», «jordbruk», «fisker» og «barnepass». Start, stopp og prod er hentet fra commit-meldingene.</li>
+        <li>Tilstandene er telt i <code>TilstandType</code> i Spleis. Kategori-koden er linjer i <code>sykepenger-model/src/main</code> som nevner Selvstendig, Frilans, Arbeidsledig eller Jordbruker, målt ved første commit i hver måned.</li>
+        <li>Kapabilitetene starter med første commit i repoet. Prod er dagen Spleis tok tjenesten i bruk, samlet i <a href="../../tidslinje.html">tidslinjen for team SAS</a>.</li>
+        <li>Matrisen over nye kategorier er fra <code>docs/abstraksjoner-kap8.md</code>. Den er en plan, ikke et mål.</li>
+        <li>Periodene: ett team 2019 til september 2020, tigerteam oktober 2020 til september 2022, to team oktober 2022 til mars 2026 og ett team igjen fra april 2026.</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <div class="notat" id="notat" hidden></div>
+  <div class="fremdrift"><div id="fremdrift"></div></div>
+  <div class="teller" id="teller"></div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
