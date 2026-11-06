@@ -249,7 +249,7 @@ window.Kapitler.push({
     const alY = ROW0 + 3 * STEP;
     k.ink(catmull([[col.x - 6, alY - 28], [col.x + 70, alY - 8], [col.x + 136, alY + 8]], false, 10), { key: 'strek3', color: C.terra, width: 3, start: S + 700, dur: 400 });
     const note = k.paper({ key: 'notat46', cx: 1350, cy: 802, w: 360, h: 74, fill: C.paper, start: S + 1100, restRot: 1.4 });
-    text(note.content, '19.–20. oktober 2026: 46 → 25 tilstander', -164, -6, { size: 15, weight: 600, maxW: 330 });
+    text(note.content, '19.–20. oktober 2026: 41 → 23 tilstander', -164, -6, { size: 15, weight: 600, maxW: 330 });
     text(note.content, 'Selvstendig ble generisk. Frilans og arbeidsledig forkastes.', -164, 16, { size: 12.5, fill: C.inkSoft, maxW: 330 });
     k.text('1 strek = 5 commits der emnet nevner kategorien. Kilde: git log.', 60, 836, { size: 13, fill: C.inkSoft, start: S + 1400 });
     return k;
@@ -343,13 +343,13 @@ window.Kapitler.push({
   bygg(root) {
     const k = M.nyttKapittel(root, this);
     k.header('Farten: fra måneder til dager', 'Dager fra første commit til første versjon i prod. Selvstendig som eget spor, mot kapabilitetene i 2026.');
-    const BX = 420, PX = 7, ROW0 = 262, STEP = 82;
+    const BX = 420, MAKS = 360, PX = 1050 / MAKS, ROW0 = 262, STEP = 82;
     const axisY = ROW0 + D.fart.length * STEP - 22;
-    k.ink(catmull([[BX, axisY], [BX + 150 * PX, axisY + 1]], false, 16), { key: 'fartakse', width: 1.6, start: 200, dur: 700 });
-    for (let d = 0; d <= 150; d += 30) {
+    k.ink(catmull([[BX, axisY], [BX + MAKS * PX, axisY + 1]], false, 16), { key: 'fartakse', width: 1.6, start: 200, dur: 700 });
+    for (let d = 0; d <= MAKS; d += 60) {
       const x = BX + d * PX;
-      k.ink([[x, axisY - 5], [x, axisY + 5]], { key: 'ft' + d, width: 1.4, start: 400 + d * 3, dur: 120 });
-      k.text(d + (d === 150 ? ' dager' : ''), x, axisY + 22, { size: 12.5, anchor: 'middle', fill: C.inkSoft, start: 450 + d * 3 });
+      k.ink([[x, axisY - 5], [x, axisY + 5]], { key: 'ft' + d, width: 1.4, start: 400 + d * 1.5, dur: 120 });
+      k.text(d + (d === MAKS ? ' dager' : ''), x, axisY + 22, { size: 12.5, anchor: 'middle', fill: C.inkSoft, start: 450 + d * 1.5 });
     }
     let start = 800;
     D.fart.forEach((f, i) => {
@@ -393,7 +393,7 @@ window.Kapitler.push({
       if (i !== 2) text(slip.content, '—', -256, -36 + i * 26, { size: 15, fill: C.terra });
       text(slip.content, line, -234, -36 + i * 26, { size: 15, maxW: 490 });
     });
-    k.text('Målt til første versjon i prod, ikke til ferdig funksjonalitet. Selvstendig hadde i tillegg et forsøk i 2023. Kilde: git log.',
+    k.text('Målt til første versjon i prod, ikke til ferdig funksjonalitet. Selvstendig hadde i tillegg et forsøk i 2023. Forsikring for selvstendige startet i Spleis i oktober 2025. sp-forsikring er bare den siste delen av det arbeidet. Kilde: git log.',
       60, 836, { size: 13, fill: C.inkSoft, start: S + 400, maxW: 1100 });
     this.varighet = S + 1400;
     k.varighet = this.varighet;
@@ -407,7 +407,7 @@ window.Kapitler.push({
   varighet: 9000,
   bygg(root) {
     const k = M.nyttKapittel(root, this);
-    k.header('Takten før, under og etter delingen', 'Høsten 2022 ble vi delt i Speilvendt og Spleiselaget. I april 2026 ble vi ett team igjen. Vi skrev minst like mye kode mens vi var delt. Det som har endret seg mest, er tiden fra vi begynner på noe til det er på i prod.');
+    k.header('Takten før, under og etter delingen', 'Ett team til høsten 2020, så tigerteam. Høsten 2022 ble vi delt i Speilvendt og Spleiselaget, og i april 2026 ble vi ett team igjen. Vi skrev minst like mye kode mens vi var delt. Det som har endret seg mest, er tiden fra vi begynner på noe til det er på i prod.');
     const Q = D.takt, X0 = 170, X1 = 1540, YT = 276, YB = 404, MAKS = 260;
     const xMnd = m => X0 + m * (X1 - X0) / 84;
     const xDato = s => xMnd((+s.slice(0, 4) - 2020) * 12 + (+s.slice(5, 7) - 1) + (+s.slice(8, 10) - 1) / 30.5);
@@ -419,7 +419,7 @@ window.Kapitler.push({
     D.teamperioder.forEach((p, i) => {
       const a = xKv(p.fra), b = xKv(p.til) + (X1 - X0) / 28, w = b - a;
       const band = el('g', { opacity: 0 }, k.g);
-      roughShape(band, w - 6, G0 + 2 * GS + 30 - (YT - 40), 'teamband' + p.id, { fill: p.farge === 'sage' ? C.sage : C.terra, opacity: p.farge === 'sage' ? 0.16 : 0.1, transform: `translate(${a + w / 2} ${(YT - 40 + G0 + 2 * GS + 30) / 2})` }, 1);
+      roughShape(band, w - 6, G0 + 3 * GS + 30 - (YT - 40), 'teamband' + p.id, { fill: p.farge === 'sage' ? C.sage : C.terra, opacity: p.farge === 'sage' ? 0.16 : 0.1, transform: `translate(${a + w / 2} ${(YT - 40 + G0 + 3 * GS + 30) / 2})` }, 1);
       k.fade(band, 300 + i * 200, 500);
       k.text(p.navn.toUpperCase(), a + 12, YT - 20, { size: 12, weight: 600, ls: '0.12em', fill: farge(p), start: 400 + i * 200, maxW: w - 20 });
     });
@@ -498,19 +498,19 @@ window.Kapitler.push({
       k.text(r.tekst || `${r.navn} · ${varighet(r.fra, r.prod)}`, tx, y - 9, { size: 12, weight: ny ? 600 : 400, fill: ny ? C.sageDark : C.ink, start: start + 300 });
     });
 
-    const KS = LS + D.ledetid.length * 220 + 900, CW = 466, CY = 692;
+    const KS = LS + D.ledetid.length * 220 + 900, CW = 352, CY = 692;
     D.teamperioder.forEach((p, i) => {
-      const cx = 60 + CW / 2 + i * (CW + 31);
+      const cx = 60 + CW / 2 + i * (CW + 24);
       const kort = k.paper({ key: 'teamkort' + p.id, cx, cy: CY, w: CW, h: 184, fill: p.id === 'to' ? C.paperDim : C.paper, start: KS + i * 450, restRot: 1 });
       const L = -CW / 2 + 24, c = kort.content;
       text(c, p.navn.toUpperCase(), L, -64, { size: 12, weight: 600, ls: '0.12em', fill: farge(p), maxW: CW - 48 });
       text(c, p.tid, L, -45, { size: 12.5, fill: C.inkSoft });
-      text(c, p.toggleDager, L, -2, { family: CONFIG.fonts.serif, size: 38, fill: farge(p) });
-      text(c, `fra ny toggle i Spleis til på for alle (median av ${p.toggleAntall})`, L, 22, { size: 12.5, fill: C.inkSoft, maxW: CW - 48 });
-      text(c, `${p.commitsUke} commits i uka · ${p.perUtvikler} per utvikler`, L, 48, { size: 14, maxW: CW - 48 });
+      text(c, p.sammeDag, L, -2, { family: CONFIG.fonts.serif, size: 38, fill: farge(p) });
+      text(c, 'dager i uka der noen committet i både backend og frontend', L, 22, { size: 12.5, fill: C.inkSoft, maxW: CW - 48 });
+      text(c, `${p.commitsUke} commits i uka`, L, 48, { size: 14, maxW: CW - 48 });
       text(c, p.poeng, L, 72, { size: 14, weight: 600, maxW: CW - 48 });
     });
-    k.text('Commits fra alle repoene som er sjekket ut i sas-meta, uten bots. Toggle-tallene gjelder Spleis, og en toggle telles i perioden den ble fjernet. 2026 K4 gjelder bare oktober og starten av november. Kilde: git log.',
+    k.text('Commits fra repoer med team-sas eller tbd i CODEOWNERS, uten bots og merges. Backend er Spleis og Spenn, frontend er Speil og Spesialist. Flere arbeidsgivere er målt til første utvalgte arbeidsgivere i prod. 2026 K4 gjelder bare oktober og starten av november. Kilde: git log.',
       60, 836, { size: 13, fill: C.inkSoft, start: KS + 1600, maxW: 1480 });
     this.varighet = KS + 2600;
     k.varighet = this.varighet;

@@ -1,4 +1,4 @@
-// Tallene er hentet fra git log i spleis, speil, spesialist og sp-*-repoene 4. november 2026.
+// Tallene er hentet fra git log i spleis, speil, spesialist og sp-*-repoene 6. november 2026.
 // Commit-tallene teller commits der emnet nevner kategorien. De undervurderer arbeidet, men viser formen.
 window.SKISSE_DATA = (() => {
   const spor = [
@@ -10,9 +10,9 @@ window.SKISSE_DATA = (() => {
     },
     {
       id: 'flere', navn: 'Flere arbeidsgivere', farge: 'sand',
-      under: '217 commits i tre apper',
-      fra: '2020-05-14', til: '2022-08-10',
-      merker: [{ dato: '2022-08-10', tekst: 'siste toggle fjernet' }],
+      under: '180 commits i tre apper · eget tigerteam',
+      fra: '2020-05-14', til: '2022-09-08',
+      merker: [{ dato: '2021-02-15', tekst: 'utvalgte' }, { dato: '2022-09-08', tekst: 'alle' }],
     },
     {
       id: 'arbeidsledig', navn: 'Arbeidsledig og frilans', farge: 'sand',
@@ -28,7 +28,7 @@ window.SKISSE_DATA = (() => {
     },
     {
       id: 'sn2', navn: 'Selvstendig, forsøk 2', farge: 'terra',
-      under: '255 commits · 15 egne tilstander',
+      under: '236 commits i tre apper · 13 egne tilstander',
       fra: '2025-04-28', til: '2026-10-22',
       merker: [
         { dato: '2025-09-16', tekst: 'i prod etter 141 dager' },
@@ -45,7 +45,7 @@ window.SKISSE_DATA = (() => {
       id: 'kapabiliteter', navn: 'Nye kapabiliteter', farge: 'ink',
       under: 'Seks tjenester på seks måneder',
       fra: '2026-05-19', til: '2026-11-04',
-      prikker: ['2026-05-19', '2026-08-18', '2026-10-19', '2026-10-28', '2026-11-02', '2026-11-03'],
+      prikker: ['2026-05-19', '2026-08-18', '2026-10-19', '2026-10-26', '2026-11-02', '2026-11-03'],
       merker: [],
     },
   ];
@@ -93,20 +93,21 @@ window.SKISSE_DATA = (() => {
     },
   ];
 
-  // Commits per uke per kvartal: [kvartal, Spleis + Speil + Spesialist, andre apper].
-  // Alle repoene som er sjekket ut i sas-meta, uten bots og merge-commits. 2026-4 gjelder 1. oktober–4. november.
+  // Commits per uke per kvartal: [kvartal, Spleis + Spenn + Speil + Spesialist, andre apper].
+  // Samme tall som i leveransetakt: repoer med team-sas eller tbd i CODEOWNERS, uten bots og merge-commits.
+  // 2026-4 gjelder 1. oktober–5. november.
   const takt = [
-    ['2020-1', 84, 37], ['2020-2', 78, 30], ['2020-3', 53, 9], ['2020-4', 72, 12],
-    ['2021-1', 61, 43], ['2021-2', 56, 35], ['2021-3', 42, 37], ['2021-4', 74, 36],
-    ['2022-1', 88, 44], ['2022-2', 70, 53], ['2022-3', 72, 50], ['2022-4', 74, 46],
-    ['2023-1', 108, 59], ['2023-2', 96, 44], ['2023-3', 76, 31], ['2023-4', 89, 70],
-    ['2024-1', 90, 130], ['2024-2', 80, 53], ['2024-3', 72, 47], ['2024-4', 135, 115],
-    ['2025-1', 125, 59], ['2025-2', 73, 33], ['2025-3', 53, 51], ['2025-4', 97, 31],
-    ['2026-1', 91, 60], ['2026-2', 52, 72], ['2026-3', 56, 59], ['2026-4', 75, 116],
+    ['2020-1', 93, 28], ['2020-2', 84, 24], ['2020-3', 54, 9], ['2020-4', 73, 12],
+    ['2021-1', 63, 32], ['2021-2', 60, 27], ['2021-3', 43, 33], ['2021-4', 75, 29],
+    ['2022-1', 89, 35], ['2022-2', 71, 39], ['2022-3', 72, 43], ['2022-4', 76, 36],
+    ['2023-1', 108, 53], ['2023-2', 101, 36], ['2023-3', 76, 27], ['2023-4', 89, 62],
+    ['2024-1', 94, 112], ['2024-2', 81, 47], ['2024-3', 74, 41], ['2024-4', 139, 106],
+    ['2025-1', 126, 55], ['2025-2', 73, 29], ['2025-3', 54, 49], ['2025-4', 98, 28],
+    ['2026-1', 92, 54], ['2026-2', 53, 72], ['2026-3', 57, 57], ['2026-4', 78, 140],
   ];
   // Fra første commit til første gang funksjonen var på i prod. Samme datoer som i storeLoft og fart.
   const ledetid = [
-    { navn: 'Flere arbeidsgivere', fra: '2020-05-14', prod: '2022-08-10', bane: 0 },
+    { navn: 'Flere arbeidsgivere', fra: '2020-05-14', prod: '2021-02-15', bane: 0 },
     { navn: 'Revurdering', fra: '2021-02-10', prod: '2021-06-15', bane: 1 },
     { navn: 'Utbetaling til sykmeldt', fra: '2021-10-19', prod: '2023-02-20', bane: 2 },
     { navn: 'Totrinnsvurdering', fra: '2022-05-12', prod: '2022-06-30', bane: 1 },
@@ -114,42 +115,48 @@ window.SKISSE_DATA = (() => {
     { navn: 'Avviksvurdering', fra: '2023-10-17', prod: '2024-01-02', bane: 1 },
     { navn: 'Tilkommen inntekt', fra: '2023-11-14', prod: '2025-10-22', bane: 2 },
     { navn: 'Selvstendig', fra: '2025-04-28', prod: '2025-09-16', bane: 0 },
+    { navn: 'Forsikring for selvstendige', fra: '2025-10-13', prod: '2026-09-07', bane: 3 },
     { navn: 'sp-forsikring', fra: '2026-05-19', prod: '2026-06-15', bane: 0 },
-    { navn: 'sp-vilkarsproving', fra: '2026-08-18', prod: '2026-08-27', bane: 1 },
-    { navn: 'tre til', fra: '2026-10-28', prod: '2026-11-04', bane: 2, deler: [['2026-10-28', '2026-11-02'], ['2026-11-02', '2026-11-02'], ['2026-11-03', '2026-11-04']], tekst: 'tre til · 0–5 dager' },
+    { navn: 'sp-vilkarsproving', fra: '2026-08-18', prod: '2026-10-01', bane: 1 },
+    { navn: 'to til', fra: '2026-10-19', prod: '2026-11-04', bane: 2, deler: [['2026-10-19', '2026-11-04'], ['2026-10-26', '2026-11-02']], tekst: 'sp-medlemskap og sp-rettighetskategori · 7–16 dager' },
   ];
-  // Toggle-tallene er levetiden til togglene i Spleis sin Toggle.kt, fra de ble lagt inn til de ble fjernet.
-  // Togglen telles i perioden den ble fjernet.
+  // Snitt og sammeDag er de samme tallene som i leveransetakt.
+  // sammeDag: dager per uke der samme person committet både i Spleis/Spenn og i Speil/Spesialist.
   const teamperioder = [
     {
-      id: 'ett', navn: 'Ett team', tid: '2020 – sommeren 2022', fra: '2020-1', til: '2022-3', farge: 'sage',
-      commitsUke: 103, perUtvikler: '6', toggleDager: '77 dager', toggleAntall: 43,
-      poeng: 'Store løft tok måneder, noen over to år.',
+      id: 'ett', navn: 'Ett team', tid: '2019 – september 2020', fra: '2020-1', til: '2020-3', farge: 'sage',
+      commitsUke: 97, sammeDag: '2,3',
+      poeng: 'Alle jobbet i hele stacken.',
     },
     {
-      id: 'to', navn: 'Speilvendt og Spleiselaget', tid: 'høsten 2022 – mars 2026', fra: '2022-4', til: '2026-1', farge: 'terra',
-      commitsUke: 149, perUtvikler: '9', toggleDager: '22 dager', toggleAntall: 62,
+      id: 'tiger', navn: 'Tigerteam', tid: 'oktober 2020 – september 2022', fra: '2020-4', til: '2022-3', farge: 'sage',
+      commitsUke: 100, sammeDag: '2,3',
+      poeng: 'Flere arbeidsgivere tok over to år til alle.',
+    },
+    {
+      id: 'to', navn: 'Speilvendt og Spleiselaget', tid: 'oktober 2022 – mars 2026', fra: '2022-4', til: '2026-1', farge: 'terra',
+      commitsUke: 144, sammeDag: '0,3',
       poeng: 'Mer kode i uka, men store løft tok fortsatt måneder.',
     },
     {
       id: 'igjen', navn: 'Ett team igjen', tid: 'fra april 2026', fra: '2026-2', til: '2026-4', farge: 'sage',
-      commitsUke: 131, perUtvikler: '9', toggleDager: '2,5 dager', toggleAntall: 12,
-      poeng: 'Nye kapabiliteter går i prod på dager.',
+      commitsUke: 136, sammeDag: '2,0',
+      poeng: 'Nye kapabiliteter i prod på 7–44 dager.',
     },
   ];
 
   const apper = ['Spleis', 'Speil', 'Spesialist'];
   const sporIApper = [
-    { navn: ['Flere', 'arbeidsgivere'], commits: [155, 49, 13], tilstander: 0 },
-    { navn: ['Selvstendig', 'næringsdrivende'], commits: [180, 39, 36], tilstander: 15 },
-    { navn: ['Jordbruker, fisker,', 'barnepasser'], commits: [32, 3, 4], tilstander: 0 },
-    { navn: ['Arbeidsledig', 'og frilans'], commits: [62, 3, 11], tilstander: 6 },
+    { navn: ['Flere', 'arbeidsgivere'], commits: [132, 41, 7], tilstander: 0 },
+    { navn: ['Selvstendig', 'næringsdrivende'], commits: [142, 49, 45], tilstander: 13 },
+    { navn: ['Jordbruker, fisker,', 'barnepasser'], commits: [22, 3, 4], tilstander: 0 },
+    { navn: ['Arbeidsledig', 'og frilans'], commits: [48, 2, 6], tilstander: 6 },
   ];
 
   // status: prod | pågår | spec | spleis (regelen bor fortsatt i Spleis og er ikke trukket ut ennå)
   const kapabiliteter = [
     { id: 'inntekt', navn: ['Inntekt'], tjeneste: 'sp-inntekt', status: 'spec', rad: 0 },
-    { id: 'medlemskap', navn: ['Medlemskap'], tjeneste: 'sp-medlemskap', status: 'pågår', rad: 0 },
+    { id: 'medlemskap', navn: ['Medlemskap'], tjeneste: 'sp-medlemskap', status: 'prod', rad: 0 },
     { id: 'rettighetskategori', navn: ['Rettighets-', 'kategori'], tjeneste: 'sp-rettighetskategori', status: 'prod', rad: 0 },
     { id: 'opptjening', navn: ['Opptjening'], tjeneste: 'sp-vilkarsproving', status: 'prod', rad: 0 },
     { id: 'sykepengegrunnlag', navn: ['Sykepenge-', 'grunnlag'], tjeneste: 'sp-sykepengegrunnlag', status: 'spec', rad: 0 },
@@ -276,12 +283,12 @@ window.SKISSE_DATA = (() => {
   // Dette er ikke tiden til ferdig funksjonalitet.
   const fart = [
     { navn: 'Selvstendig', under: 'gammelt spor, forsøk 2', fra: '2025-04-28', til: '2025-09-16', gammel: true, notat: 'toggle på i prod' },
+    { navn: 'Forsikring for selvstendige', under: 'startet under delingen', fra: '2025-10-13', til: '2026-09-07', gammel: true, notat: 'toggle på i prod' },
     { navn: 'sp-forsikring', under: 'første kapabilitet', fra: '2026-05-19', til: '2026-06-15', notat: 'skrudd på i prod' },
-    { navn: 'sp-vilkarsproving', under: 'opptjening', fra: '2026-08-18', til: '2026-08-27', notat: 'deployet i prod' },
-    { navn: 'sp-rettighetskategori', under: 'ny tilstand i Spleis', fra: '2026-10-28', til: '2026-11-02', notat: 'toggle fjernet i Spleis' },
-    { navn: 'sp-andre-ytelser', under: 'graderte andre ytelser', fra: '2026-11-02', til: '2026-11-02', notat: 'dev og prod første dag' },
-    { navn: 'sp-avslagsdager', under: 'oppholdskravet', fra: '2026-11-03', til: '2026-11-04', notat: 'fire tickets ferdig' },
+    { navn: 'sp-vilkarsproving', under: 'opptjening', fra: '2026-08-18', til: '2026-10-01', notat: 'i bruk fra Spleis i prod' },
+    { navn: 'sp-medlemskap', under: 'kopi av sp-vilkarsproving', fra: '2026-10-19', til: '2026-11-04', notat: 'i bruk fra Spleis i prod' },
+    { navn: 'sp-rettighetskategori', under: 'ny tilstand i Spleis', fra: '2026-10-26', til: '2026-11-02', notat: 'toggle fjernet i Spleis' },
   ];
 
-  return { spor, storeLoft, takt, ledetid, teamperioder, apper, sporIApper, kapabiliteter, kategorier, fart, idag: '2026-11-04' };
+  return { spor, storeLoft, takt, ledetid, teamperioder, apper, sporIApper, kapabiliteter, kategorier, fart, idag: '2026-11-06' };
 })();

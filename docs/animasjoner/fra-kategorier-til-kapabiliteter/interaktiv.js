@@ -89,7 +89,7 @@ window.Kapitler.push({
     const S3 = slip(2, 'NYE TILSTANDER I SPLEIS', 'sum3', 1560);
     const S4 = slip(3, 'SELVSTENDIG SOM EGET SPOR', 'sum4', 1640);
     S4.a.shape.setAttribute('fill', C.paperDim);
-    setSlip(S4, '15', 'egne tilstander', '141 dager til prod · tre apper', C.terraDark);
+    setSlip(S4, '13', 'egne tilstander', '141 dager til prod · tre apper', C.terraDark);
 
     function setSlip(s, tall, etter, under, farge = C.ink) {
       s.tall.textContent = tall;
