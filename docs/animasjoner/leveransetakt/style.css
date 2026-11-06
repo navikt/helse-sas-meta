@@ -1,0 +1,278 @@
+:root {
+  --bunn: #0b1220;
+  --flate: #131d2e;
+  --flate-2: #1b2840;
+  --linje: #2a3a57;
+  --tekst: #e6edf7;
+  --dempet: #8ea0bd;
+  --ett: #5eead4;
+  --tiger: #7dd3fc;
+  --speilvendt: #fbbf24;
+  --spleiselaget: #fb7185;
+  --nye: #a78bfa;
+  --mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+  --sans: 'Source Sans 3', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: radial-gradient(ellipse at 20% 0%, #15233b 0%, var(--bunn) 60%);
+  color: var(--tekst);
+  font-family: var(--sans);
+  overflow: hidden;
+  user-select: none;
+}
+
+.scene {
+  position: absolute;
+  width: 1600px;
+  height: 900px;
+  left: 50%;
+  top: 50%;
+  transform-origin: center;
+}
+
+.lysbilde {
+  position: absolute;
+  inset: 0;
+  padding: 70px 90px 60px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(16px);
+  transition: opacity 450ms ease, transform 450ms ease;
+}
+
+.lysbilde.aktiv {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+.overlinje {
+  margin: 0 0 10px;
+  font-family: var(--mono);
+  font-size: 20px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ett);
+}
+
+h1 { font-size: 132px; line-height: 1; margin: 0; letter-spacing: -0.02em; }
+h2 { font-size: 54px; margin: 0 0 24px; letter-spacing: -0.01em; }
+h3 { font-size: 30px; margin: 0 0 12px; }
+
+.aksent { color: var(--ett); }
+
+.fotnote {
+  position: absolute;
+  left: 90px;
+  right: 90px;
+  bottom: 56px;
+  margin: 0;
+  color: var(--dempet);
+  font-size: 20px;
+}
+
+[data-steg] {
+  transition: opacity 450ms ease, transform 450ms ease;
+}
+
+.skjult {
+  opacity: 0 !important;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+
+svg .skjult { transform: none; }
+
+/* Tittel */
+.tittel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.tittel .ingress { font-size: 36px; color: var(--dempet); margin: 36px 0 0; }
+.tittel .hint { position: absolute; bottom: 56px; font-family: var(--mono); font-size: 18px; color: var(--dempet); opacity: 0.7; }
+
+/* Spørsmål */
+.sporsmal { display: flex; flex-direction: column; justify-content: center; }
+.stor { font-size: 96px; margin: 0 0 20px; }
+.dempet { color: var(--dempet); }
+.svar { font-size: 34px; max-width: 1150px; line-height: 1.4; margin-top: 40px; color: var(--ett); }
+
+/* Diagrammer */
+.diagram { width: 100%; height: auto; display: block; overflow: visible; }
+.diagram text { fill: var(--dempet); font-family: var(--mono); font-size: 18px; }
+.diagram .akse { stroke: var(--linje); stroke-width: 1; }
+.diagram .rutenett { stroke: var(--linje); stroke-width: 1; stroke-dasharray: 2 6; }
+
+.diagram .band { opacity: 0.08; }
+.diagram .band.ett { fill: var(--ett); }
+.diagram .band.tiger { fill: var(--tiger); }
+.diagram .band.to { fill: var(--speilvendt); opacity: 0.06; }
+.diagram .band.igjen { fill: var(--ett); }
+.diagram .bandnavn { font-size: 17px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+.søyle { transform-box: fill-box; transform-origin: bottom; transform: scaleY(0); transition: transform 700ms cubic-bezier(.2,.8,.2,1); }
+.aktiv .søyle { transform: scaleY(1); }
+.søyle.ett, .søyle.igjen { fill: var(--ett); }
+.søyle.to { fill: var(--speilvendt); }
+.søyle.tiger { fill: var(--tiger); }
+.søyle.delvis { opacity: 0.45; }
+
+.snitt { stroke-width: 4; stroke-linecap: round; }
+.snitt.ett, .snitt.igjen { stroke: #ccfbf1; }
+.snitt.to { stroke: #fef3c7; }
+.snitt.tiger { stroke: #e0f2fe; }
+.diagram .snittekst { font-size: 30px; font-weight: 700; fill: var(--tekst); }
+.diagram .merke { font-size: 40px; font-weight: 800; }
+.diagram .merke.opp { fill: var(--ett); }
+.diagram .merke.ned { fill: var(--dempet); }
+
+/* Spor (tre perioder) */
+.spor-ett { fill: none; stroke: var(--ett); stroke-width: 38; stroke-linecap: round; }
+.spor-tiger { fill: none; stroke: var(--tiger); stroke-width: 14; stroke-linecap: round; }
+.spor-speilvendt { fill: none; stroke: var(--speilvendt); stroke-width: 26; stroke-linecap: round; }
+.spor-spleiselaget { fill: none; stroke: var(--spleiselaget); stroke-width: 26; stroke-linecap: round; }
+.diagram .spornavn { font-family: var(--sans); font-size: 26px; font-weight: 700; }
+.diagram .sporundertekst { font-family: var(--sans); font-size: 19px; }
+.milepal circle { fill: var(--bunn); stroke: var(--tekst); stroke-width: 3; }
+.milepal text { font-family: var(--sans); font-size: 17px; fill: var(--tekst); }
+.milepal.tiger circle { stroke: var(--tiger); }
+.milepal.igjen circle { stroke: var(--ett); }
+.milepal.igjen text { fill: var(--ett); font-weight: 600; }
+
+/* Forbehold */
+.kort { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 50px; }
+.kort article { background: var(--flate); border: 1px solid var(--linje); border-radius: 16px; padding: 34px; }
+.kort p { font-size: 25px; line-height: 1.45; color: #c6d2e4; margin: 0; }
+
+/* Konklusjon */
+.konklusjon { display: flex; flex-direction: column; justify-content: center; }
+.to-svar { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; }
+.to-svar h3 { font-size: 34px; color: var(--dempet); font-weight: 600; }
+.to-svar p { font-size: 28px; line-height: 1.4; }
+.svarord { font-size: 120px !important; font-weight: 800; margin: 10px 0 20px; line-height: 1; }
+.svarord.nei { color: var(--speilvendt); }
+.svarord.ja { color: var(--ett); }
+
+/* Metode */
+.metode ul { font-size: 23px; line-height: 1.45; padding-left: 26px; max-width: 1350px; }
+.metode li { margin-bottom: 14px; color: #c6d2e4; }
+.metode code { font-family: var(--mono); font-size: 0.9em; color: var(--ett); }
+.metode a { color: var(--ett); }
+
+/* Hypoteser */
+.hypoteser { font-size: 36px; line-height: 1.5; margin: 30px 0 0; padding-left: 50px; color: #c6d2e4; }
+.hypoteser li { margin-bottom: 14px; }
+.hypoteser li::marker { color: var(--ett); font-family: var(--mono); }
+
+/* Broer */
+.diagram .søyletall { font-size: 16px; fill: var(--tekst); }
+.sammedag { margin-top: 18px; }
+.sammedag .tittellinje { font-size: 22px; color: var(--dempet); margin-bottom: 8px; }
+.sammedag .rad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
+.sammedag .celle { border-left: 5px solid; padding-left: 16px; display: flex; align-items: baseline; gap: 16px; }
+.sammedag .celle.ett, .sammedag .celle.igjen { border-color: var(--ett); }
+.sammedag .celle.to { border-color: var(--speilvendt); }
+.sammedag .celle.tiger { border-color: var(--tiger); }
+.sammedag .tall { font-family: var(--mono); font-size: 54px; font-weight: 700; }
+.sammedag .navn { font-size: 22px; color: var(--dempet); }
+
+/* Kontrakt */
+.kontrakt { display: grid; gap: 44px; margin-top: 40px; }
+.kontraktblokk .hode { display: flex; align-items: baseline; gap: 20px; margin-bottom: 14px; }
+.kontraktblokk .hode .navn { font-size: 32px; font-weight: 700; font-family: var(--mono); }
+.kontraktblokk .hode .grense { font-size: 22px; color: var(--spleiselaget); }
+.kontraktblokk.kontroll .hode .grense { color: var(--dempet); }
+.kontraktrad, .flytrad { display: grid; grid-template-columns: 260px 1fr; align-items: center; gap: 24px; margin-bottom: 10px; }
+.kontraktrad .periode { font-size: 22px; color: var(--dempet); }
+.kontraktrad .spor, .flytrad .spor { position: relative; height: 42px; background: rgba(255,255,255,0.03); border-radius: 8px; }
+.kontraktrad .fyll, .flytrad .fyll { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 8px; transition: width 1000ms cubic-bezier(.2,.8,.2,1); }
+.aktiv .kontraktrad .fyll, .aktiv .flytrad .fyll { width: var(--b); }
+.kontraktrad.ett .fyll, .kontraktrad.igjen .fyll, .flytrad.ett .fyll, .flytrad.igjen .fyll { background: var(--ett); }
+.kontraktrad.to .fyll, .flytrad.to .fyll { background: var(--speilvendt); }
+.kontraktrad.tiger .fyll, .flytrad.tiger .fyll { background: var(--tiger); }
+.kontraktblokk.kontroll .fyll { opacity: 0.45; }
+.kontraktrad .verdi, .flytrad .verdi { position: absolute; top: 50%; transform: translateY(-50%); left: calc(var(--b) + 14px); font-family: var(--mono); font-size: 26px; font-weight: 700; }
+
+/* Sitat */
+#sitat { display: flex; flex-direction: column; justify-content: center; }
+#sitat blockquote { font-family: var(--mono); font-size: 52px; line-height: 1.3; margin: 0 0 50px; padding-left: 36px; border-left: 8px solid var(--spleiselaget); }
+
+/* Stafett */
+.stafett { margin-top: 6px; display: grid; gap: 7px; }
+.stafettskille { font-family: var(--mono); font-size: 16px; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 8px; }
+.stafettskille.ett, .stafettskille.igjen { color: var(--ett); }
+.stafettskille.to { color: var(--speilvendt); }
+.stafettskille.tiger { color: var(--tiger); }
+.stafettrad { display: grid; grid-template-columns: 330px 1fr 120px; align-items: center; gap: 24px; }
+.stafettrad .navn { font-size: 21px; text-align: right; }
+.stafettrad .lengde { font-family: var(--mono); font-size: 18px; color: var(--dempet); }
+.stafettrad.igjen .lengde { color: var(--ett); font-weight: 700; }
+.bane { position: relative; height: 34px; border-left: 2px solid var(--linje); border-right: 2px solid var(--linje); background: rgba(255,255,255,0.02); }
+.bane i { position: absolute; width: 7px; margin-left: -3px; border-radius: 3px; }
+.bane i.s { top: 4px; height: 11px; background: var(--spleiselaget); }
+.bane i.v { bottom: 4px; height: 11px; background: var(--speilvendt); }
+.bane i.bro { top: 0; bottom: 0; width: 9px; margin-left: -4px; background: var(--ett); opacity: 0.3; border-radius: 0; }
+.tegnforklaring { position: absolute; left: 90px; bottom: 40px; display: flex; gap: 32px; font-size: 19px; color: var(--dempet); }
+.tegnforklaring span::before { content: ''; display: inline-block; width: 14px; height: 14px; border-radius: 3px; margin-right: 8px; vertical-align: -1px; }
+.tegnforklaring .s::before { background: var(--spleiselaget); }
+.tegnforklaring .v::before { background: var(--speilvendt); }
+.tegnforklaring .b::before { background: var(--ett); opacity: 0.5; }
+
+/* Flyt */
+.flyt { margin-top: 20px; display: grid; gap: 4px; }
+.flytrad { grid-template-columns: 330px 1fr 190px; margin-bottom: 0; }
+.flytrad .navn { font-size: 21px; text-align: right; }
+.flytrad .spor { height: 34px; }
+.flytrad .verdi { font-size: 21px; }
+.flytrad .lengde { font-family: var(--mono); font-size: 16px; color: var(--dempet); }
+
+/* Folk */
+.figurer { display: flex; gap: 22px; margin-top: 70px; flex-wrap: wrap; }
+.figur { width: 70px; height: 150px; position: relative; opacity: 0; transform: translateY(20px); transition: opacity 400ms ease, transform 400ms ease; transition-delay: calc(var(--i) * 70ms); }
+.aktiv .figur { opacity: 1; transform: none; }
+.figur::before { content: ''; position: absolute; left: 15px; top: 0; width: 40px; height: 40px; border-radius: 50%; background: currentColor; }
+.figur::after { content: ''; position: absolute; left: 0; top: 50px; width: 70px; height: 100px; border-radius: 35px 35px 8px 8px; background: currentColor; }
+.figur.speilvendt { color: var(--speilvendt); }
+.figur.spleiselaget { color: var(--spleiselaget); }
+.figur.ny { color: var(--ett); }
+.folk .forklaring { display: flex; gap: 70px; margin-top: 50px; }
+.folk .gruppe { display: flex; align-items: baseline; gap: 14px; }
+.folk .gruppe .tall { font-family: var(--mono); font-size: 72px; font-weight: 700; }
+.folk .gruppe .navn { font-size: 26px; color: var(--dempet); }
+.folk .gruppe.speilvendt .tall { color: var(--speilvendt); }
+.folk .gruppe.spleiselaget .tall { color: var(--spleiselaget); }
+.folk .gruppe.ny .tall { color: var(--ett); }
+
+.svarundertekst { font-size: 34px !important; color: var(--dempet); margin: -6px 0 24px; text-transform: uppercase; letter-spacing: 0.12em; }
+.svarord.stafett-ord { color: var(--spleiselaget); }
+
+/* Ramme rundt */
+.fremdrift { position: fixed; left: 0; right: 0; bottom: 0; height: 5px; background: rgba(255,255,255,0.05); }
+.fremdrift div { height: 100%; width: 0; background: var(--ett); transition: width 300ms ease; }
+.teller { position: fixed; right: 20px; bottom: 14px; font-family: var(--mono); font-size: 14px; color: var(--dempet); }
+
+.notat {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  max-width: 900px;
+  padding: 14px 22px;
+  background: rgba(19, 29, 46, 0.95);
+  border: 1px solid var(--linje);
+  border-radius: 12px;
+  font-size: 18px;
+  line-height: 1.45;
+  color: #c6d2e4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}

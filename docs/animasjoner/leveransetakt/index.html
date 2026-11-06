@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fra stafett til lagtempo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="scene" id="scene">
+
+    <section class="lysbilde tittel" data-notat="Det føles som om vi får gjort mye mer nå enn da vi var to team. Spørsmålet er om det synes i git-historikken. I en stafett løper én om gangen mens resten venter. I lagtempo sykler hele laget sammen hele veien og bytter på å dra.">
+      <p class="overlinje">Team SAS · gjennomføringsevne 2020–2026</p>
+      <h1>Fra stafett<br><span class="aksent">til lagtempo</span></h1>
+      <p class="ingress">Etter tur eller samtidig: hva git-historikken sier om overleveringer og venting</p>
+      <p class="hint">→ eller klikk for å gå videre · F for fullskjerm · N for notater</p>
+    </section>
+
+    <section class="lysbilde" id="perioder" data-notat="Fra 2019 var vi ett team. Fra høsten 2020 var vi fortsatt ett team, men jobbet i tigerteam med ansvar for en hel feature, som flere arbeidsgivere, eller for en brukergruppe, som saksbehandlerne. Høsten 2022 ble vi delt i Speilvendt og Spleiselaget. I april 2026 ble vi ett team igjen.">
+      <p class="overlinje">Fire perioder</p>
+      <h2>Ett team, tigerteam, to team, ett team</h2>
+      <svg class="diagram" id="spor" viewBox="0 0 1500 640"></svg>
+    </section>
+
+    <section class="lysbilde sporsmal" data-notat="Tiden som to team føltes preget av overleveringer og venting. Det skal synes som tre ting i git.">
+      <h2 class="stor">Merkes overleveringene i git?</h2>
+      <ol class="hypoteser">
+        <li data-steg="1">Færre jobber på begge sider av Spleis og Speil.</li>
+        <li data-steg="2">Den som endrer API-et i Spleis, er sjelden den som tilpasser Spesialist.</li>
+        <li data-steg="3">Features går som en stafett: én side først, den andre etterpå.</li>
+      </ol>
+    </section>
+
+    <section class="lysbilde" id="bro" data-notat="En bro er en utvikler med minst tre commits både i Spleis eller Spenn og i Speil eller Spesialist i samme kvartal.">
+      <p class="overlinje">1 · Hvem jobber på begge sider</p>
+      <h2>Utviklere i både Spleis og Speil samme kvartal</h2>
+      <svg class="diagram" id="brodiagram" viewBox="0 0 1500 520"></svg>
+      <div class="sammedag" data-steg="1" id="sammedag"></div>
+    </section>
+
+    <section class="lysbilde" id="kontrakt" data-notat="Når Spleis endret GraphQL-API-et, hvem oppdaterte Spesialist? Under delingen var det nesten alltid noen i Speilvendt, ikke den som endret Spleis. Inne i Speilvendt var det motsatt.">
+      <p class="overlinje">2 · Endringer i API-et</p>
+      <h2>Samme person gjør begge endringene</h2>
+      <div class="kontrakt" id="kontraktdiagram"></div>
+      <p class="fotnote">Andel kontraktsendringer der samme person oppdaterte konsumenten innen 14 dager.</p>
+    </section>
+
+    <section class="lysbilde" id="sitat" data-notat="To commit-meldinger fra Spleis under delingen. De viser hvordan arbeidet ble avtalt mellom teamene.">
+      <p class="overlinje">Fra Spleis-loggen, to team</p>
+      <blockquote data-steg="0">tilpasser hendelseIder etter avklaring med speilvendt</blockquote>
+      <blockquote data-steg="1">Endret på godkjenningsbehovet enligt kontraktet med speilvendt</blockquote>
+    </section>
+
+    <section class="lysbilde" id="stafettlysbilde" data-notat="Hver rad er en feature, fra første commit til prod. Korall er Spleis-siden, gul er Speil-siden, mint er dager med noen som jobbet på begge sider.">
+      <p class="overlinje">3 · Etter tur eller samtidig</p>
+      <h2>Hvem jobbet når, feature for feature</h2>
+      <div class="stafett" id="stafett"></div>
+      <div class="tegnforklaring">
+        <span class="s">Spleis-siden</span><span class="v">Speil-siden</span><span class="b">Noen jobbet på begge sider</span>
+      </div>
+    </section>
+
+    <section class="lysbilde" id="flyt" data-notat="Andelen kalenderdager med commits mellom første commit og prod. Store løft var trege også før delingen. Forsikring startet under delingen og hadde arbeid på 11 % av dagene fram til april. Etter at sp-forsikring ble opprettet i mai, var det arbeid på 52 % av dagene. De nye featurene etter april ligger på 51–67 %.">
+      <p class="overlinje">3 · Etter tur eller samtidig</p>
+      <h2>Dager med arbeid, fra start til prod</h2>
+      <div class="flyt" id="flytdiagram"></div>
+      <p class="fotnote">Fra første commit om featuren til Spleis tok den i bruk i prod. Avslagsdager og graderte andre ytelser er under arbeid og er ikke med.</p>
+    </section>
+
+
+    <section class="lysbilde" id="kunnskap" data-notat="Av de 14 som committer i Spleis nå, jobbet 8 på Speil-siden under delingen.">
+      <p class="overlinje">Kunnskapen har flyttet seg</p>
+      <h2>Hvem committer i Spleis nå</h2>
+      <div class="folk" id="folk"></div>
+      <p class="fotnote">Utviklere med minst 5 commits i Spleis eller Spenn etter april 2026, etter hvor de jobbet under delingen.</p>
+    </section>
+
+
+    <section class="lysbilde" id="forbehold" data-notat="Ikke selg dette som at sammenslåingen alene forklarer alt.">
+      <p class="overlinje">Forbehold</p>
+      <h2>Hva tallene ikke sier</h2>
+      <div class="kort">
+        <article data-steg="1">
+          <h3>Store løft var trege før også</h3>
+          <p>I tigerteam-perioden var det commits på 12–16 % av dagene i de store løftene. Å jobbe samtidig gjør ikke store ting raske alene.</p>
+        </article>
+        <article data-steg="2">
+          <h3>Nye tjenester er mindre</h3>
+          <p>Etter april lager vi mest små, avgrensede tjenester rundt Spleis. Det er lettere å holde dem i flyt.</p>
+        </article>
+        <article data-steg="3">
+          <h3>KI-agenter og kort tid</h3>
+          <p>I 2026 begynte vi å bruke Copilot-agenter i det daglige arbeidet. Perioden etter sammenslåingen er bare sju måneder.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="lysbilde konklusjon" data-notat="Overleveringene synes i git. Nå tar de samme folkene hele veien.">
+      <p class="overlinje">Svaret</p>
+      <div class="to-svar">
+        <div>
+          <h3>Som to team</h3>
+          <p class="svarord stafett-ord">Stafett</p>
+          <p class="svarundertekst">Etter tur</p>
+          <p>Spleis gjorde sin del, og Speil-siden tok over senere. Nesten ingen jobbet på begge sider. Når Spleis endret API-et, tilpasset noen i Speilvendt Spesialist etterpå.</p>
+        </div>
+        <div data-steg="1">
+          <h3>Som ett team igjen</h3>
+          <p class="svarord ja">Lagtempo</p>
+          <p class="svarundertekst">Samtidig</p>
+          <p>De samme folkene tar hele veien fra Spleis til Speil. Begge sider jobber fra første uke, og nye features kommer i prod på uker, ikke måneder.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="lysbilde" id="commits" data-notat="Bilag. Mengden kode falt ikke under delingen. Det var flyten mellom teamene som ble dårligere.">
+      <p class="overlinje">Bilag · mengden kode</p>
+      <h2>Commits per uke, alle repoer</h2>
+      <svg class="diagram" id="kvartalsdiagram" viewBox="0 0 1500 620"></svg>
+      <p class="fotnote">Snitt per kvartal. Siste søyle gjelder bare 1. oktober til 5. november 2026.</p>
+    </section>
+
+    <section class="lysbilde metode" data-notat="">
+      <p class="overlinje">Metode og kilder</p>
+      <h2>Slik regnet vi</h2>
+      <ul>
+        <li><code>git log --no-merges</code> med filnavn for Spleis, Spenn, Speil, Spesialist og repoene rundt. Commits fra bots er tatt ut. Samme person med flere navn eller e-poster er slått sammen.</li>
+        <li>Spleis-siden er Spleis og Spenn, og i feature-analysen også de nye sp-tjenestene. Speil-siden er Speil og Spesialist, og i feature-analysen også Spekemat og Sporhund.</li>
+        <li>Kontraktsendringer: commits som endrer GraphQL-API-et i Spleis eller skjemaet i Spesialist, og den neste commiten som endrer Spleis-klienten i Spesialist eller de genererte typene i Speil.</li>
+        <li>Features er funnet med nøkkelord i commit-meldingene på tvers av repoene, fra første commit til prod-datoen i tidslinjen. For de nye sp-tjenestene teller også commits i Spleis før repoet ble opprettet, og prod er dagen Spleis tok tjenesten i bruk. Metoden er grov og fanger ikke alt arbeid.</li>
+        <li>Prod-datoer er dagen featuren ble slått på i prod, funnet i commit-meldinger om toggles og prodsetting, og samlet i <a href="../../tidslinje.html">tidslinjen for team SAS</a>.</li>
+        <li>Periodene: ett team 2019 til september 2020, tigerteam oktober 2020 til september 2022, to team oktober 2022 til mars 2026 og ett team igjen fra april 2026 til 5. november 2026. Vi har satt starten på tigerteamene til 1. oktober 2020. Tallene starter i januar 2020.</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <div class="notat" id="notat" hidden></div>
+  <div class="fremdrift"><div id="fremdrift"></div></div>
+  <div class="teller" id="teller"></div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
