@@ -137,3 +137,7 @@ _Unngå_: Reservasjon, tildelt oppgave
 **Totrinnsvurdering**:
 Kontrollen der en beslutter må godkjenne saksbehandlerens vurdering før vedtaket fattes. En person har høyst én aktiv totrinnsvurdering. Den har bare betydning når personen har en aktiv oppgave, men blir liggende til neste oppgave.
 _Unngå_: Totrinnskontroll, beslutterkontroll
+
+**Subsumsjon**:
+Anvendelsen av én lovregel på fakta i en sak, med lovreferanse, fakta og utfall. Det er en subsumsjon også når den ikke endrer sykepengene, for eksempel når en gradert annen ytelse bare tas fra arbeidet.
+_Unngå_: Etterlevelse, hjemmel (hjemmelen er bare lovreferansen)
