@@ -183,9 +183,11 @@ svg .skjult { transform: none; }
 /* Hub */
 .hub-spleis { fill: var(--blekk); }
 .hub-kapabilitet { fill: var(--flate); stroke: var(--blekk); stroke-width: 2; }
-.hub-kapabilitet.arbeid { stroke-dasharray: 6 5; fill: transparent; }
+.hub-kapabilitet.arbeid { stroke-dasharray: 6 5; fill: var(--papir); }
 .hub-kant { stroke: var(--ett); stroke-width: 2; fill: none; }
 .hub-kant.arbeid { stroke: var(--linje); stroke-dasharray: 4 6; }
+.hub-kapabilitet.planlagt { stroke-dasharray: 2 5; stroke-width: 1.5; }
+.hub-kant.planlagt { stroke-dasharray: 2 7; opacity: .7; }
 .hub-navn { font-family: var(--mono) !important; font-size: 17px; font-weight: 700; }
 .hub-regel { font-size: 15px; fill: var(--dempet) !important; }
 .hub-pakke { fill: var(--ett); }

@@ -59,7 +59,7 @@ window.KLOSSER = (() => {
     },
   ];
 
-  // start: repoet ble opprettet. prod: Spleis tok tjenesten i bruk i prod.
+  // start: repoet ble opprettet. prod: Spleis tok tjenesten i bruk i prod. planlagt: beskrevet i ADR 0008, ikke laget ennå.
   const kapabiliteter = [
     { navn: 'sp-forsikring', regel: 'Forsikring', start: '2026-05-19', prod: '2026-06-15' },
     { navn: 'sp-vilkarsproving', regel: 'Opptjening', start: '2026-08-18', prod: '2026-10-01' },
@@ -67,6 +67,8 @@ window.KLOSSER = (() => {
     { navn: 'sp-rettighetskategori', regel: 'Rettighetskategori', start: '2026-10-26', prod: '2026-11-02' },
     { navn: 'sp-andre-ytelser', regel: 'Andre ytelser', start: '2026-11-02' },
     { navn: 'sp-avslagsdager', regel: 'Avslagsdager', start: '2026-11-03' },
+    { navn: 'sp-inntekt', regel: 'Inntektsavklaring', planlagt: true },
+    { navn: 'sp-sykepengegrunnlag', regel: 'Sykepengegrunnlag', planlagt: true },
   ];
 
   // Commits om kategorien fram til april 2026, per app.

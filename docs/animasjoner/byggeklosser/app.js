@@ -100,7 +100,7 @@
     const yK = 440;
     svg('text', { class: 'spor-rad', x: 0, y: yK + 22, fill: 'var(--ett)' }, g, 'Kapabiliteter');
     svg('text', { class: 'spor-under', x: 0, y: yK + 42 }, g, 'seks nye tjenester på seks måneder');
-    D.kapabiliteter.forEach((k, i) => {
+    D.kapabiliteter.filter(k => k.start).forEach((k, i) => {
       const kx = x(k.start);
       svg('rect', {
         x: kx, y: yK + i * 14 - 8, width: 14, height: 12, rx: 2,
@@ -223,22 +223,23 @@
   (() => {
     const s = document.getElementById('hub');
     const sx = 140, sy = 140, sb = 300, sh = 170;
+    const kanter = svg('g', {}, s);
     D.kapabiliteter.forEach((k, i) => {
-      const kx = 820 + (i % 2) * 310, ky = 20 + Math.floor(i / 2) * 145, kb = 270, kh = 110;
+      const kx = 820 + (i % 2) * 310, ky = 12 + Math.floor(i / 2) * 108, kb = 270, kh = 96;
       const d = `M${sx + sb} ${sy + sh / 2} C ${sx + sb + 220} ${sy + sh / 2}, ${kx - 200} ${ky + kh / 2}, ${kx} ${ky + kh / 2}`;
-      const arbeid = !k.prod;
-      svg('path', { class: `hub-kant${arbeid ? ' arbeid' : ''}`, d, id: `kant-${i}` }, s);
+      const arbeid = !k.prod, ekstra = k.planlagt ? ' arbeid planlagt' : arbeid ? ' arbeid' : '';
+      svg('path', { class: `hub-kant${ekstra}`, d, id: `kant-${i}` }, kanter);
       if (!arbeid) {
         for (const [fra, til] of [[0, 1], [1, 0]]) {
-          const c = svg('circle', { r: 6, class: 'hub-pakke', opacity: fra ? 0.5 : 1 }, s);
+          const c = svg('circle', { r: 6, class: 'hub-pakke', opacity: fra ? 0.5 : 1 }, kanter);
           const am = svg('animateMotion', { dur: '3.2s', repeatCount: 'indefinite', begin: `${i * 0.45 + fra * 1.6}s`, keyPoints: `${fra};${til}`, keyTimes: '0;1', calcMode: 'linear' }, c);
           svg('mpath', { href: `#kant-${i}` }, am);
         }
       }
-      svg('rect', { class: `hub-kapabilitet${arbeid ? ' arbeid' : ''}`, x: kx, y: ky, width: kb, height: kh, rx: 8 }, s);
-      svg('text', { class: 'hub-navn', x: kx + 18, y: ky + 34 }, s, k.navn);
-      svg('text', { class: 'hub-regel', x: kx + 18, y: ky + 60 }, s, k.regel);
-      svg('text', { class: 'hub-regel', x: kx + 18, y: ky + 88 }, s, k.prod ? `i prod ${langDato(k.prod)}` : 'under arbeid');
+      svg('rect', { class: `hub-kapabilitet${ekstra}`, x: kx, y: ky, width: kb, height: kh, rx: 8 }, s);
+      svg('text', { class: 'hub-navn', x: kx + 18, y: ky + 30 }, s, k.navn);
+      svg('text', { class: 'hub-regel', x: kx + 18, y: ky + 54 }, s, k.regel);
+      svg('text', { class: 'hub-regel', x: kx + 18, y: ky + 78 }, s, k.prod ? `i prod ${langDato(k.prod)}` : k.planlagt ? 'planlagt' : 'under arbeid');
     });
     svg('rect', { class: 'hub-spleis', x: sx, y: sy, width: sb, height: sh, rx: 12 }, s);
     svg('text', { x: sx + sb / 2, y: sy + 76, 'text-anchor': 'middle', 'font-size': 44, 'font-weight': 700, style: 'fill: var(--papir)' }, s, 'Spleis');
