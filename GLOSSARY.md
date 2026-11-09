@@ -154,6 +154,10 @@ En dialogmelding som en saksbehandler sender til en behandler. En dialog kan ha 
 En dialogmelding som Nav sender automatisk til en behandler når en forespørsel ikke er besvart innen fristen.
 _Unngå_: Påminnelse
 
+**Svar**:
+En dialogmelding fra en behandler som svarer på en forespørsel. Et svar er tatt inn når det er knyttet til en dialog og saksbehandler kan se det.
+_Unngå_: Svarmelding, melding fra behandler
+
 **Behandler**:
 Helsepersonellet som Nav sender dialogmeldinger til og mottar dialogmeldinger fra.
 _Unngå_: Lege, fastlege
