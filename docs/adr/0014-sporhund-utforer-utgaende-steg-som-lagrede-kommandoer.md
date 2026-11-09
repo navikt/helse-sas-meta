@@ -9,7 +9,7 @@ LagDialogmeldingPdf ──┬─> SendDialogmeldingPåKafka
                       └─> JournalførDialogmelding
 ```
 
-- PDF-en lages én gang fra et øyeblikksbilde av meldingen og lagres i en egen tabell. Kommandoene inneholder bare ID-er.
+- PDF-en lages én gang og lagres i en egen tabell. Kommandoene inneholder ID-er, og hvert steg henter meldingen og dialogen fra databasen. Det går fordi verken meldingen eller søker og fagområde på dialogen endres etter at de er lagret. Unntaket er navnet på saksbehandleren. Det lagres ikke i dialogen og følger derfor med `LagDialogmeldingPdf`.
 - En kommando venter på kommandoen som laget den og på eldre kommandoer av samme type i samme dialog. En feil stopper bare dialogen den gjelder. Kafka-sending og journalføring stopper ikke hverandre.
 - En kommando som feiler, prøves på nytt i det uendelige med eksponentiell backoff og blir aldri forkastet. Etter mange forsøk logges en feil, og det går en alarm. Kafka-sending skjer minst én gang. Mottakeren tåler duplikater med samme `dialogmeldingUuid`, og Dokarkiv tåler gjentatte kall fordi vi sender `eksternReferanseId`.
 
