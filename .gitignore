@@ -14,6 +14,7 @@
 /sas-issues
 /sp-andre-ytelser
 /sp-avslagsdager
+/sp-bakrommet
 /sp-bigquery-terraform
 /sp-data-analyse
 /sp-dbt
@@ -21,6 +22,8 @@
 /sp-forsikring-statistikk
 /sp-medlemskap
 /sp-rettighetskategori
+/sp-sas-ticket-graf
+/sp-spillerom
 /sp-vilkarsproving
 /spaghet
 /spalten
@@ -68,4 +71,3 @@
 /trygdhetens-voktere
 /vedtaksfeed
 /web
-/sp-sas-ticket-graf
