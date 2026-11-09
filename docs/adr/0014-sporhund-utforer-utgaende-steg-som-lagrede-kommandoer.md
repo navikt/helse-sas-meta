@@ -16,12 +16,13 @@ LagDialogmeldingPdf ──┬─> SendDialogmeldingPåKafka
 ## Vurderte alternativer
 
 - **Kjede av outbox-meldinger.** Sporhund bruker dette mønsteret i dag. Rekkefølgen finnes bare implisitt i koden, hver type trenger sin egen jobb, og `PgOutbox` låser alle usendte rader på tvers av typer.
+- **Outbox med PDF-en laget når meldingen opprettes.** Endepunktet og purringsjobben lager PDF-en i Sprinter og lagrer den i samme transaksjon som outbox-meldingene. Kafka-senderen og journalføreren henter den fra tabellen. Kjeden blir flat, så en vanlig outbox holder, og mønsteret er kjent for teamet. Vi valgte det bort fordi Sprinter da blir en del av arbeidsflyten til saksbehandleren: er Sprinter nede eller treg, kan hun ikke sende. Vi vil ha så få avhengigheter som mulig der. Purringsjobben måtte også kalle Sprinter og ville stoppe for dialogen når Sprinter er nede. Outboxen ville også trengt rekkefølge per dialog og backoff, og dermed fått det meste av det kommandokøen har.
 - **Status for utsending på dialogmeldingen.** Teknisk framdrift blir blandet med domenet, og de parallelle stegene trenger hver sin status.
 - **Bibliotek for jobbkø** (db-scheduler, JobRunr). Det er et nytt mønster og en ny avhengighet for tre steg. Hvis behovet vokser, kan vi bytte senere, fordi kommandoene allerede er data.
-- **Lage PDF-en synkront når meldingen opprettes.** Da får saksbehandleren en feil hvis Sprinter er nede, og purringsjobben stopper.
 
 ## Konsekvenser
 
+- Kommandokøen er et mønster teamet ikke kjenner fra før. I praksis er den en outbox der et steg kan legge til nye steg.
 - Kommandoene erstatter `NyDialogmeldingFraNav` og `OpprettUtgåendeJournalpost` i outboxen. Den gamle outbox-løkka kjører til køen er tom og fjernes deretter. `KnyttInnkommendeJournalpost` flyttes senere.
 - Meldinger som ligger i outboxen ved overgangen, og meldinger som allerede er sendt, får ikke vedlegg.
 - Purringer journalføres nå på samme måte som forespørsler, med sin egen Sprinter-mal.
