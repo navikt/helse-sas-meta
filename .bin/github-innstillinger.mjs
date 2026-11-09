@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process'
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 import { createInterface } from 'node:readline/promises'
 import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const BIN_MAPPE = dirname(fileURLToPath(import.meta.url))
 const META_FIL = join(BIN_MAPPE, '..', '.meta')
@@ -13,6 +13,10 @@ const SAMTIDIGE_REPOER = 6
 
 // I disse seksjonene er også ekstra nøkler et avvik, f.eks. et team som har fått admin uten å stå i fasiten.
 const EKSAKTE_SEKSJONER = new Set(['teams', 'direkteSamarbeidspartnere', 'rulesets'])
+const REPO_UNNTAK = {
+    'navikt/trygdhetens-voktere': [['direkteSamarbeidspartnere']],
+    'navikt/sas-issues': [['repo', 'has_issues'], ['repo', 'has_projects']],
+}
 
 const bruk = `Sjekker og retter GitHub-innstillingene til repoene i .meta mot fasiten i .bin/github-innstillinger.json.
 Tokenet hentes med 'gh auth token', så du må være logget inn med 'gh auth login'.
@@ -48,6 +52,10 @@ Hva som sjekkes:
   workflowPermissions         Standardtilgangen til GITHUB_TOKEN i workflows.
 
 Bare nøklene som står i fasiten, blir sjekket. Fjern nøkler du ikke vil sjekke eller rette.
+
+Unntak i både sjekk og patch:
+  - navikt/trygdhetens-voktere: direkteSamarbeidspartnere
+  - navikt/sas-issues: repo.has_issues og repo.has_projects
 
 Dette retter ikke patch:
   - arkiverte repoer og endringer i archived
@@ -297,7 +305,7 @@ function sortertKopi(verdi) {
     return verdi
 }
 
-function sammenlign(forventet, faktisk, sti = [], avvik = []) {
+export function sammenlign(forventet, faktisk, sti = [], avvik = []) {
     if (erFeil(faktisk)) {
         avvik.push({ sti: sti.join('.'), forventet, faktisk: `kunne ikke hentes (${faktisk.feil})` })
         return avvik
@@ -346,11 +354,20 @@ function lesForventet() {
     return { kilde, forventet }
 }
 
+export function forventetForRepo(forventet, { owner, repo }) {
+    const resultat = structuredClone(forventet)
+    for (const [seksjon, nøkkel] of REPO_UNNTAK[`${owner}/${repo}`] ?? []) {
+        if (nøkkel === undefined) delete resultat[seksjon]
+        else if (erObjekt(resultat[seksjon])) delete resultat[seksjon][nøkkel]
+    }
+    return resultat
+}
+
 async function hentOgSammenlign(forventet, repoer) {
     return iParallell(repoer, SAMTIDIGE_REPOER, async (r) => {
         try {
             const hentet = await hentRepo(r)
-            return { ...r, ...hentet, avvik: sammenlign(forventet, hentet.innstillinger) }
+            return { ...r, ...hentet, avvik: sammenlign(forventetForRepo(forventet, r), hentet.innstillinger) }
         } catch (e) {
             return { ...r, feil: e.message }
         }
@@ -413,7 +430,8 @@ function flett(faktisk, forventet) {
 
 const SAMARBEIDSPARTNER_TILGANG = { read: 'pull', write: 'push' }
 
-function planleggPatch(forventet, { owner, repo, branch, rulesetIder, innstillinger: faktisk, avvik }) {
+export function planleggPatch(forventet, { owner, repo, branch, rulesetIder, innstillinger: faktisk, avvik }) {
+    forventet = forventetForRepo(forventet, { owner, repo })
     const base = `/repos/${owner}/${repo}`
     const operasjoner = []
     const manuelle = []
@@ -630,9 +648,11 @@ async function main() {
     }
 }
 
-main()
-    .then((kode) => process.exit(kode))
-    .catch((e) => {
-        console.error(e.message)
-        process.exit(2)
-    })
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+    main()
+        .then((kode) => process.exit(kode))
+        .catch((e) => {
+            console.error(e.message)
+            process.exit(2)
+        })
+}
