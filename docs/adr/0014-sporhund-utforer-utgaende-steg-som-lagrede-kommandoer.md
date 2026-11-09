@@ -24,6 +24,6 @@ LagDialogmeldingPdf ──┬─> SendDialogmeldingPåKafka
 ## Konsekvenser
 
 - Kommandokøen er et mønster teamet ikke kjenner fra før. I praksis er den en outbox der et steg kan legge til nye steg.
-- Kommandoene erstatter `NyDialogmeldingFraNav` og `OpprettUtgåendeJournalpost` i outboxen. Den gamle outbox-løkka kjører til køen er tom og fjernes deretter. `KnyttInnkommendeJournalpost` flyttes senere.
+- Kommandoene erstatter `NyDialogmeldingFraNav` og `OpprettUtgåendeJournalpost` i outboxen. Den gamle outbox-løkka kjørte til køen var tom og er fjernet. `KnyttInnkommendeJournalpost` er også flyttet til kommandokøen, og outboxen er fjernet.
 - Meldinger som ligger i outboxen ved overgangen, og meldinger som allerede er sendt, får ikke vedlegg.
 - Purringer journalføres nå på samme måte som forespørsler, med sin egen Sprinter-mal.
