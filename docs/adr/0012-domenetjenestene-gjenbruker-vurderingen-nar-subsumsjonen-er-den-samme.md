@@ -1,5 +1,5 @@
 ---
-status: til vurdering
+status: akseptert
 ---
 
 # Domenetjenestene gjenbruker vurderingen når subsumsjonen er den samme
@@ -16,6 +16,14 @@ Samme utfall er ikke nok. Endres hovedkategorien fra Selvstendig næringsdrivend
 2. Saksbehandleren legger til tilleggskategorien jordbruker. Det blir avgjørelse ID 2.
 3. Spleis vilkårsprøver på nytt og sender ID 2 til opptjening. Hovedkategorien er den samme, så opptjening ville brukt samme regel på samme fakta. Opptjening registrerer at vurdering 1 også gjelder ID 2, og svarer med opptjeningsvurdering 1.
 4. Endrer saksbehandleren senere hovedkategorien til Arbeidstaker og selvstendig næringsdrivende, gir det avgjørelse ID 3. Opptjening ville nå brukt en annen regel og lager opptjeningsvurdering 2 mot ID 3, også om den er oppfylt.
+
+## Slik gjør opptjening det
+
+1. Er rettighetskategori-ID-en allerede koblet til en opptjeningsvurdering, svarer opptjening med den nyeste av dem uten å slå opp rettighetskategorien.
+2. Er ID-en ukjent, slår opptjening opp hovedkategorien. Finnes det en gjeldende vurdering for samme person, skjæringstidspunkt og hovedkategori, gjenbrukes den og kobles til ID-en. Det gjelder også manuelle vurderinger og vurderinger fra Infotrygd.
+3. Ellers lager opptjening en ny vurdering og kobler den til ID-en.
+
+Opptjening vurderer ikke hovedkategorien Arbeidstaker og selvstendig næringsdrivende ennå.
 
 ## Vurderte alternativer
 
@@ -34,4 +42,5 @@ Samme utfall er ikke nok. Endres hovedkategorien fra Selvstendig næringsdrivend
 
 ## Åpne spørsmål
 
-- **Andre domenetjenester:** Hvilke deler av rettighetskategorien avgjør subsumsjonen i forsikring og medlemskap? Det må avklares for hver tjeneste før de tar i bruk mønsteret.
+- **Andre domenetjenester:** Hvilke deler av rettighetskategorien avgjør subsumsjonen i forsikring og medlemskap? Det må avklares for hver tjeneste før de tar i bruk mønsteret. Forsikring gjenbruker i dag bare når rettighetskategori-ID-en er den samme.
+- **Arbeidstaker og selvstendig næringsdrivende i opptjening:** Hvilken regel gjelder, og teller både arbeidsforhold og næringsvirksomhet? Det må avklares med jurist.

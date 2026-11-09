@@ -47,7 +47,7 @@ En vurdering saksbehandler gjør som overstyrer en eksisterende automatisk vurde
 _Unngå_: Endring av rettighetskategori, korrigering
 
 **Backfill**:
-Når en domenetjeneste lager avgjørelser for ID-er som bare finnes i Spleis, med data fra spleis-api og eventuelt andre tjenester som eier historikken i dag. Avgjørelser fra backfill har kilden `spleis`.
+Når en domenetjeneste fyller inn historikk den skal eie, men som i dag bare finnes i Spleis eller en annen tjeneste. Eksempler er avgjørelser for rettighetskategori-ID-er som bare finnes i Spleis, og hvilke rettighetskategori-ID-er en vurdering gjelder for. Avgjørelser fra backfill har kilden `spleis`.
 _Unngå_: Innfylling, migrering (migreringsloggen er bare loggen over backfill per person)
 
 ### Inntekt og sykepengegrunnlag
