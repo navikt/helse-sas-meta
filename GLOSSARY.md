@@ -176,6 +176,28 @@ _Unngå_: Pause, gap
 Personen har hatt minst 26 uker opphold, og tellingen av sykepengedager starter på nytt ved ny sykdom.
 _Unngå_: Nullstilling, ny maksdato
 
+**Vurdert til og med**:
+Dagen tallet for gjenstående sykedager gjelder for. Dager etter denne dagen er ikke regnet med.
+_Unngå_: Beregningsdato, per dato
+
 **Vedtak uten utbetaling**:
 Et vedtak der ingen dager utbetales, for eksempel fordi alle dagene er etter maksdato.
 _Unngå_: Nullutbetaling
+
+**Siste vedtak**:
+Vedtaket i ny løsning med den seneste siste dagen.
+_Unngå_: Nyeste vedtak, gjeldende vedtak
+
+### Infotrygd
+
+**Infotrygdperiode**:
+En periode i sykepengehistorikken i Infotrygd, enten en utbetaling eller ferie.
+_Unngå_: Infotrygd-historikk (det er alle periodene samlet), Infotrygd-vedtak
+
+**Utbetaling i Infotrygd**:
+En infotrygdperiode der sykepenger er utbetalt. Ferie og andre typer er ikke utbetalinger.
+_Unngå_: Infotrygdperiode (når bare utbetalinger er ment), utbetalingsperiode
+
+**Siste utbetaling i Infotrygd**:
+Utbetalingen i Infotrygd med den seneste siste dagen.
+_Unngå_: Siste infotrygdperiode
