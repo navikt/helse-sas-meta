@@ -141,3 +141,25 @@ _Unngå_: Totrinnskontroll, beslutterkontroll
 **Subsumsjon**:
 Anvendelsen av én lovregel på fakta i en sak, med lovreferanse, fakta og utfall. Det er en subsumsjon også når den ikke endrer sykepengene, for eksempel når en gradert annen ytelse bare tas fra arbeidet.
 _Unngå_: Etterlevelse, hjemmel (hjemmelen er bare lovreferansen)
+
+### Sykepengedager
+
+**Gjenstående sykedager**:
+Antall sykepengedager personen har igjen før maksdato.
+_Unngå_: Resterende sykepengedager, restdager
+
+**Maksdato**:
+Siste dag personen kan få sykepenger hvis sykdommen fortsetter uten opphold.
+_Unngå_: Sluttdato
+
+**Opphold**:
+Dager uten sykepenger. Ikke det samme som opphold i Norge, som oppholdskravet i § 8-9 gjelder.
+_Unngå_: Pause, gap
+
+**Ny rett**:
+Personen har hatt minst 26 uker opphold, og tellingen av sykepengedager starter på nytt ved ny sykdom.
+_Unngå_: Nullstilling, ny maksdato
+
+**Vedtak uten utbetaling**:
+Et vedtak der ingen dager utbetales, for eksempel fordi alle dagene er etter maksdato.
+_Unngå_: Nullutbetaling
