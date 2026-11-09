@@ -142,6 +142,22 @@ _Unngå_: Totrinnskontroll, beslutterkontroll
 Anvendelsen av én lovregel på fakta i en sak, med lovreferanse, fakta og utfall. Det er en subsumsjon også når den ikke endrer sykepengene, for eksempel når en gradert annen ytelse bare tas fra arbeidet.
 _Unngå_: Etterlevelse, hjemmel (hjemmelen er bare lovreferansen)
 
+### Dialogmeldinger
+
+**Dialogmelding**:
+En melding om en person, sendt mellom Nav og en behandler.
+
+**Forespørsel**:
+En dialogmelding som en saksbehandler sender til en behandler. En dialog kan ha flere forespørsler.
+
+**Purring**:
+En dialogmelding som Nav sender automatisk til en behandler når en forespørsel ikke er besvart innen fristen.
+_Unngå_: Påminnelse
+
+**Behandler**:
+Helsepersonellet som Nav sender dialogmeldinger til og mottar dialogmeldinger fra.
+_Unngå_: Lege, fastlege
+
 ### Sykepengedager
 
 **Gjenstående sykedager**:
