@@ -47,7 +47,6 @@
     "spinnvill": "git@github.com:navikt/helse-spinnvill.git",
     "spleis": "git@github.com:navikt/helse-spleis.git",
     "spleis-testdata": "git@github.com:navikt/helse-spleis-testdata.git",
-    "spleisesparkel": "git@github.com:navikt/helse-spleisesparkel.git",
     "spock": "git@github.com:navikt/helse-spock.git",
     "spoiler": "git@github.com:navikt/helse-spoiler.git",
     "spokelse": "git@github.com:navikt/helse-spokelse.git",

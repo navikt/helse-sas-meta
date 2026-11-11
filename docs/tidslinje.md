@@ -178,6 +178,7 @@ Tidslinjen viser når større features, nye apper og avviklinger kom i sykepenge
 | 2026-11-02 | sp-andre-ytelser (graderte andre ytelser) opprettes | sp-andre-ytelser |
 | 2026-11-03 | sp-avslagsdager opprettes, først for oppholdskravet i § 8-9 | sp-avslagsdager |
 | 2026-11-04 | **sp-medlemskap** i prod | sp-medlemskap, spleis |
+| 2026-11-11 | AAP og dagpenger flyttes tilbake til sparkelapper, og spleisesparkel arkiveres | sparkelapper, spleisesparkel |
 
 ## Forbehold
 
