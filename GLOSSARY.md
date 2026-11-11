@@ -172,6 +172,10 @@ _Unngå_: Lege, fastlege
 Antall sykepengedager personen har igjen før maksdato.
 _Unngå_: Resterende sykepengedager, restdager
 
+**Grunnlag for gjenstående sykedager**:
+Hva tallet for gjenstående sykedager bygger på: siste vedtak i ny løsning, siste utbetaling i Infotrygd eller maksdato i Infotrygd. Grunnlaget sier også fra når det ikke finnes noe tall, fordi Infotrygd mangler maksdato eller personen ikke har hatt sykepenger de siste 26 ukene.
+_Unngå_: Kilde, grunnlag alene (det er sykepengegrunnlaget)
+
 **Maksdato**:
 Siste dag personen kan få sykepenger hvis sykdommen fortsetter uten opphold.
 _Unngå_: Sluttdato
