@@ -1,6 +1,6 @@
 ---
 name: gitmoji-commit
-description: "Write commit messages, create commits, or squash commits using this repository's Gitmoji standard. Resolve additional co-authors named by the user from Git history."
+description: "Write commit messages, create commits, or squash commits using this repository's Gitmoji standard. Resolve additional co-authors named by the user from docs/agents/team.json."
 ---
 
 # Gitmoji commits
@@ -9,7 +9,7 @@ Use this standard instead of Conventional Commits.
 
 Accept an optional list of contributing developers by name or handle, for example:
 `/gitmoji-commit co-authors: Kari, Ola`. Naming someone declares their contribution;
-Git history supplies their identity, not proof that they contributed to this change.
+`team.json` or Git history supplies their identity, not proof that they contributed to this change.
 
 ## Workflow
 
@@ -81,16 +81,20 @@ implemented, or one named in the branch name or in commits being squashed.
 - Include the Copilot trailer above for Copilot-assisted work unless the user
   explicitly requests otherwise.
 - Add one `Co-authored-by: Name <email>` trailer per additional developer named by
-  the user. Find their recorded name and email in the target repository's history,
-  including existing co-author trailers. Respect `.mailmap` when present.
+  the user. Look them up in `docs/agents/team.json` at the root of sas-meta first
+  (`navn`, `github`, `epost`; see `docs/agents/team.md`), and use its name and
+  email as written. Fall back to the target repository's history, including
+  existing co-author trailers, only for someone missing from the file; then
+  offer to add them to `team.json`. Respect `.mailmap` when present.
   This command lists author identities and co-author trailers for lookup:
 
   ```shell
   git log --all --format='%aN <%aE>%n%(trailers:key=Co-authored-by,valueonly)'
   ```
 
-- Match names or handles against that evidence. Prefer an unambiguous canonical
-  identity supported by `.mailmap` or consistent recent history. If the identity
+- Match names or handles against `team.json`, or else that history. Prefer an
+  unambiguous canonical identity supported by `.mailmap` or consistent recent
+  history. If the identity
   is missing or ambiguous, ask the user before committing. Never construct an
   email from a handle or choose an arbitrary match. Merely appearing in history
   does not make someone a co-author of the current change.

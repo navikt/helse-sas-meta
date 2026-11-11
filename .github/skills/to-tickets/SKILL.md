@@ -28,6 +28,8 @@ Look for opportunities to prefactor the code to make the implementation easier. 
 
 Before slicing, check that every contract between apps the tickets will touch (behov, events, HTTP APIs) is named field by field in the spec. If a field name, type or allowed value is missing, stop and settle it with the user, then add it to the spec. This is the one change to the source spec this skill makes besides the ticket-index link.
 
+Every item under `Varsler og melding om vedtak` in the spec must land in a ticket: in the ticket that delivers the behaviour behind it, or in its own ticket when the text has a separate owner or approval. Each item gets an acceptance criterion that the text is written and approved by the person the spec names, so it is done before production.
+
 Break the work into **tracer bullet** tickets.
 
 <vertical-slice-rules>
@@ -85,6 +87,8 @@ Title: `<Tittel>`
 Body:
 
 **Spec:** the spec issue, for example `#101`. Omit this line when there is no spec.
+
+**Deltakere:** the `Deltakere` line from the spec, or the participants registered in the conversation. Omit this line when there are none.
 
 **Repo:** the app repo(s) in sas-meta the ticket touches, for example `spleis` or `speil`.
 

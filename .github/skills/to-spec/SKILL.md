@@ -24,6 +24,12 @@ Check with the user that these seams match their expectations.
 
 <spec-template>
 
+**Deltakere:** the participants from `tverrfaglig-oppstart`, as `Navn (@github)`.
+
+**Tverrfaglighet:** the assessment from `tverrfaglig-oppstart`.
+
+Omit both lines when the conversation registered no participants.
+
 ## Problem
 
 The problem that the user is facing, from the user's perspective.
@@ -70,12 +76,16 @@ A list of testing decisions that were made. Include:
 - Which modules will be tested
 - Prior art for the tests (i.e. similar types of tests in the codebase)
 
+## Varsler og melding om vedtak
+
+The result from `after-grilling`: every new or changed varsel and every change to melding om vedtak, with when it applies, the text or what it must say, and who writes and approves it. Write "Ingen endringer" for a part the conversation settled as unchanged. If the conversation never asked, list it under `Andre merknader` as an open question.
+
 ## Utenfor omfang
 
 A description of the things that are out of scope for this spec.
 
 ## Andre merknader
 
-Any further notes about the feature.
+Any further notes about the feature. If `tverrfaglig-oppstart` judged the group not cross-disciplinary enough, include what is missing as an open question naming who should be involved.
 
 </spec-template>

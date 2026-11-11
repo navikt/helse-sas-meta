@@ -14,11 +14,15 @@ Skriv `GLOSSARY.md`, ADR-er i `docs/adr/` og specer og tickets i `navikt/sas-iss
 
 Følg [gitmoji-commit](.github/skills/gitmoji-commit/SKILL.md) når du skriver commit-meldinger, committer eller squasher commits.
 
+## Team
+
+`docs/agents/team.json` har navn, GitHub-brukernavn og e-post for folk i teamet. Bruk den når du skal navngi deltakere, forfattere av ADR-er eller medforfattere av commits. Se `docs/agents/team.md`.
+
 ## Skills fra mattpocock/skills
 
 Disse skillene er hentet fra [mattpocock/skills](https://github.com/mattpocock/skills) og er i bruk i sas-meta. De startes eksplisitt av brukeren:
 
-- [grill-with-docs](.github/skills/grill-with-docs/SKILL.md): grundig utspørring av en plan eller et design som samtidig oppdaterer `GLOSSARY.md` og ADR-er. Bruker [grilling](.github/skills/grilling/SKILL.md) og [domain-modeling](.github/skills/domain-modeling/SKILL.md).
+- [grill-with-docs](.github/skills/grill-with-docs/SKILL.md): grundig utspørring av en plan eller et design som samtidig oppdaterer `GLOSSARY.md` og ADR-er. Starter med [tverrfaglig-oppstart](.github/skills/tverrfaglig-oppstart/SKILL.md), bruker [grilling](.github/skills/grilling/SKILL.md) og [domain-modeling](.github/skills/domain-modeling/SKILL.md), og avslutter med [after-grilling](.github/skills/after-grilling/SKILL.md). De to sjekkpunktene er våre egne.
 - [to-spec](.github/skills/to-spec/SKILL.md): gjør samtalen om til en spec. Specen blir et issue i [`navikt/sas-issues`](https://github.com/navikt/sas-issues/issues) med labelene `spec-issue` og `epic:<spec>`.
 - [to-tickets](.github/skills/to-tickets/SKILL.md): deler en plan, en spec eller samtalen opp i vertikale tickets med avhengigheter. Hver ticket blir et eget issue i [`navikt/sas-issues`](https://github.com/navikt/sas-issues/issues) med labelene `spec-ticket` og `epic:<spec>`, og et sub-issue av specen.
 - [implement](.github/skills/implement/SKILL.md): implementerer en spec eller en ticket fra `navikt/sas-issues` i app-repoet ticketen gjelder. Bruker [tdd](.github/skills/tdd/SKILL.md) og avslutter med [code-review](.github/skills/code-review/SKILL.md).

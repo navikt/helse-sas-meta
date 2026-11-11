@@ -9,10 +9,16 @@ Create the `docs/adr/` directory lazily: only when the first ADR is needed.
 ```md
 # {Short title of the decision}
 
+**Forfattere:** Navn (@github), Navn (@github)
+
 {1-3 sentences: what's the context, what did we decide, and why.}
 ```
 
 That's it. An ADR can be a single paragraph. The value is in recording *that* a decision was made and *why*, not in filling out sections.
+
+## Authors
+
+The `Forfattere` line sits right under the title, so a reader sees who took part in the decision before reading it. List the participants registered by `tverrfaglig-oppstart` who were present when the decision was made, with names and usernames from `docs/agents/team.json`. Omit the line when the session registered no participants.
 
 ## Optional sections
 

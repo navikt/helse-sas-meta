@@ -1,0 +1,22 @@
+{
+  "personer": [
+    { "navn": "Camilla Bårnes Roark", "github": "cbroark", "epost": "camilla.barnes.roark@nav.no" },
+    { "navn": "Christian Skovborg Gule", "github": "chsko", "epost": "59872984+chsko@users.noreply.github.com" },
+    { "navn": "Eirik Gallefoss", "github": "ejgal", "epost": "eirik.gallefoss@nav.no" },
+    { "navn": "Elias Andreassen Thøgersen", "github": "elitho", "epost": "8447409+elitho@users.noreply.github.com" },
+    { "navn": "Golshid Bahadorian", "github": "golshidb93", "epost": "36138378+golshidb93@users.noreply.github.com" },
+    { "navn": "Håvard Andersen", "github": "nav-havard", "epost": "havard.stigen.andersen@nav.no" },
+    { "navn": "Magdalini Fotiadou", "github": "magdalinif", "epost": "magdalini.fotiadou@nav.no" },
+    { "navn": "Martin Remøy Solheim", "github": "MartinMekk", "epost": "3852471+MartinMekk@users.noreply.github.com" },
+    { "navn": "Morten Jonassen Netland", "github": "mnetland", "epost": "morten.jonassen.netland@nav.no" },
+    { "navn": "Nourhan Ragab", "github": "nurrebass1", "epost": "16683497+nurrebass1@users.noreply.github.com" },
+    { "navn": "Preben Aandahl", "github": "paandahl", "epost": "preben.aandahl@nav.no" },
+    { "navn": "Roy A G", "github": "royag-nav", "epost": "43439497+royag-nav@users.noreply.github.com" },
+    { "navn": "Sivert Lunsæter", "github": "sivertflu", "epost": "71376389+sivertflu@users.noreply.github.com" },
+    { "navn": "Solveig Grieg", "github": null, "epost": "solveig.grieg@nav.no" },
+    { "navn": "Svein Elgstøen", "github": "navelgen", "epost": "189128153+navelgen@users.noreply.github.com" },
+    { "navn": "Trine Linderud", "github": "trinelinderud", "epost": "trine.linderud@nav.no" },
+    { "navn": "Øydis Kind Refsum", "github": "oydisrefsum", "epost": "oydis.kind.refsum@nav.no" },
+    { "navn": "Øystein Espedal", "github": "oystein-espedal", "epost": "oystein.espedal@nav.no" }
+  ]
+}

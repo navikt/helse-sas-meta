@@ -4,4 +4,6 @@ description: A relentless interview to sharpen a plan or design, which also crea
 disable-model-invocation: true
 ---
 
-Call the Skill tool twice, for "grilling" and "domain-modeling".
+1. Call the Skill tool for "tverrfaglig-oppstart" and complete it before the first grilling round.
+2. Call the Skill tool for "grilling" and "domain-modeling", and grill until the frontier is empty.
+3. Call the Skill tool for "after-grilling" and complete it. Then ask the user to confirm shared understanding.
