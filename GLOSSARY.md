@@ -200,6 +200,10 @@ _Unngå_: Beregningsdato, per dato
 Et vedtak der ingen dager utbetales, for eksempel fordi alle dagene er etter maksdato.
 _Unngå_: Nullutbetaling
 
+**Annullering**:
+Et vedtak i ny løsning som er trukket tilbake. Dagene i det regnes ikke lenger som utbetalt, og vedtaket teller ikke med i gjenstående sykedager.
+_Unngå_: Tilbaketrekking, kansellering
+
 **Siste vedtak**:
 Vedtaket i ny løsning med den seneste siste dagen.
 _Unngå_: Nyeste vedtak, gjeldende vedtak
