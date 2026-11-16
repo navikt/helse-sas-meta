@@ -18,7 +18,7 @@ Write the spec in Norwegian bokmål and follow the klarspråk principles (see th
 
 Check with the user that these seams match their expectations.
 
-3. Pick the **spec slug**: a short kebab-case name for the feature, for example `avklare-inntekt`. It names the epic, so `/to-tickets` and the ticket graph find the spec and its tickets through the label `epic:<spec-slug>`. Check that no spec issue already uses it (`gh issue list -R navikt/sas-issues --label spec-issue --state all`). If a spec for the same feature already exists, update its body instead of creating a new issue.
+3. Pick the **spec slug**: a short kebab-case name for the feature, for example `avklare-rettighetskategori`. It names the epic, so `/to-tickets` and the ticket graph find the spec and its tickets through the label `epic:<spec-slug>`. Check that no spec issue already uses it (`gh issue list -R navikt/sas-issues --label spec-issue --state all`). If a spec for the same feature already exists, update its body instead of creating a new issue.
 
 4. Write the spec using the template below and publish it as one issue in `navikt/sas-issues`. Use the spec's title as the issue title, and label it `spec-issue` and `epic:<spec-slug>`. Create the epic label first if it doesn't exist (see `docs/agents/issue-tracker.md`). Tell the user the issue number and URL when you're done.
 

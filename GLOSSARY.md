@@ -54,40 +54,6 @@ _Unngå_: Endring av rettighetskategori, korrigering
 Når en domenetjeneste fyller inn historikk den skal eie, men som i dag bare finnes i Spleis eller en annen tjeneste. Eksempler er avgjørelser for rettighetskategori-ID-er som bare finnes i Spleis, og hvilke rettighetskategori-ID-er en vurdering gjelder for. Avgjørelser fra backfill har kilden `spleis`.
 _Unngå_: Innfylling, migrering (migreringsloggen er bare loggen over backfill per person)
 
-### Inntekt og sykepengegrunnlag
-
-**Inntektsavklaring**:
-Alle inntektene som er relevante for ett skjæringstidspunkt, samlet på ett sted: inntektsmeldinger, inntekt fra a-ordningen og pensjonsgivende inntekt, med saksbehandlerens aktivering og deaktivering av inntekter og arbeidsforhold og korrigerte inntekter. Inntektsavklaringen inneholder ingen beregninger.
-_Unngå_: Inntektsgrunnlag, inntektsopplysninger
-
-**Sykepengegrunnlag**:
-Inntektsgrunnlaget sykepengene beregnes ut fra, fastsatt per sykefraværstilfelle ut fra rettighetskategorien og inntektsavklaringen. Det er fordelt på yrkesaktivitetene og begrenset til 6G.
-_Unngå_: Inntektsgrunnlag (Spleis' gamle navn på det samme), grunnlag alene
-
-**Beregningsgrunnlag**:
-Årsinntekten før 6G-begrensningen: summen av fastsatt årsinntekt for yrkesaktivitetene, eller den G-justerte pensjonsgivende inntekten for selvstendig næringsdrivende.
-_Unngå_: Omregnet årsinntekt (det er inntekten før korrigering og skjønn)
-
-**Sammenligningsgrunnlag**:
-Inntekten rapportert til a-ordningen de tolv siste kalendermånedene før skjæringstidspunktet. Det er inntekten avviksvurderingen sammenligner med (§ 8-30 andre ledd).
-_Unngå_: Innrapportert årsinntekt
-
-**Avviksvurdering**:
-Sammenligningen av beregningsgrunnlaget med sammenligningsgrunnlaget. Et avvik på mer enn 25 % gjør at sykepengegrunnlaget må skjønnsfastsettes.
-_Unngå_: Avviksberegning
-
-**Korrigert inntekt**:
-En månedsinntekt som saksbehandler har lagt inn for én yrkesaktivitet fordi inntekten fra inntektsmeldingen eller a-ordningen ikke er riktig (§ 8-28 tredje ledd). Den er en del av inntektsavklaringen, ikke en fastsettelse av sykepengegrunnlaget.
-_Unngå_: Overstyrt inntekt, saksbehandlerinntekt
-
-**Skjønnsfastsettelse**:
-Saksbehandlerens fastsettelse av sykepengegrunnlaget ved skjønn når avviksvurderingen viser mer enn 25 % avvik. Den gjelder alle yrkesaktivitetene eller ingen.
-_Unngå_: Skjønnsmessig fastsettelse, skjønnsfastsetting
-
-**Grunnbeløpsregulering**:
-Ny fastsettelse av et sykepengegrunnlag når grunnbeløpet som gjaldt på skjæringstidspunktet, er endret etter at grunnlaget ble fastsatt.
-_Unngå_: G-regulering (greit i tale), regulering
-
 ### Avslagsdager
 
 **Løpende vilkår**:

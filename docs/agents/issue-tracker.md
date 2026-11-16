@@ -11,7 +11,7 @@ Write titles and bodies in Norwegian bokmål and follow the klarspråk principle
 A spec is one issue with two labels:
 
 - **`spec-issue`**: marks the issue as a spec.
-- **`epic:<spec-slug>`**: the epic. `<spec-slug>` is a short kebab-case name for the feature, for example `epic:avklare-inntekt`.
+- **`epic:<spec-slug>`**: the epic. `<spec-slug>` is a short kebab-case name for the feature, for example `epic:avklare-rettighetskategori`.
 
 Every ticket created from the spec is a **sub-issue** of the spec issue and has two labels:
 
