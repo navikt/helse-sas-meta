@@ -54,6 +54,20 @@ _Unngå_: Endring av rettighetskategori, korrigering
 Når en domenetjeneste fyller inn historikk den skal eie, men som i dag bare finnes i Spleis eller en annen tjeneste. Eksempler er avgjørelser for rettighetskategori-ID-er som bare finnes i Spleis, og hvilke rettighetskategori-ID-er en vurdering gjelder for. Avgjørelser fra backfill har kilden `spleis`.
 _Unngå_: Innfylling, migrering (migreringsloggen er bare loggen over backfill per person)
 
+### Sykepengegrunnlag
+
+**Sykepengegrunnlag**:
+Grunnlaget sykepengene beregnes fra i ett sykefraværstilfelle, sammen med inntektene det bygger på. Det er beregningsgrunnlaget begrenset til 6G. Hver endring gir et nytt sykepengegrunnlag, og det gamle beholdes.
+_Unngå_: Inntektsgrunnlag, vilkårsgrunnlag (vilkårsgrunnlaget i Spleis har også andre vilkår)
+
+**Beregningsgrunnlag**:
+Sykepengegrunnlaget før det begrenses til 6G. For arbeidstakere er det summen av de omregnede årsinntektene. For selvstendig næringsdrivende er det gjennomsnittet av den pensjonsgivende inntekten etter § 8-35.
+_Unngå_: Grunnlag alene, totalinntekt
+
+**Omregnet årsinntekt**:
+Inntekten fra ett arbeidsforhold regnet om til et årsbeløp. Begrepet brukes ikke for selvstendig næringsdrivende.
+_Unngå_: Årsinntekt alene, fastsatt årsinntekt
+
 ### Avslagsdager
 
 **Løpende vilkår**:

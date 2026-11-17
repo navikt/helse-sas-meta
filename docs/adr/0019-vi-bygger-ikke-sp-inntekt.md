@@ -20,8 +20,8 @@ Beslutningen kan gjøres om. Den hindrer oss ikke i å lage sp-inntekt senere. G
 
 ## Konsekvenser
 
-- Tilstandene i Spleis blir `AvventerBlokkerendePeriode → AvventerRettighetskategori → AvventerSykepengegrunnlag → AvventerVilkårsprøving`. Behovet `Rettighetskategori` får ikke noen inntektsavklarings-ID.
-- sp-sykepengegrunnlag henter inntektene selv og lagrer dem sammen med sykepengegrunnlaget. Det gjelder inntektsmeldingene fra Spedisjon med ID-ene fra Spleis, a-ordningen for beregningsperioden og sammenligningsgrunnlaget, og pensjonsgivende inntekt fra Sigrun.
+- Tilstandene i Spleis blir `AvventerBlokkerendePeriode → AvventerRettighetskategori → AvventerVilkårsprøving → AvventerSykepengegrunnlag → AvventerHistorikk`. Behovet `Rettighetskategori` får ikke noen inntektsavklarings-ID. Rekkefølgen var feil i den første versjonen av denne ADR-en.
+- sp-sykepengegrunnlag henter inntektene selv og lagrer dem sammen med sykepengegrunnlaget. Det gjelder inntektsmeldingene fra Spedisjon med ID-ene fra Spleis, a-ordningen for beregningsperioden og sammenligningsgrunnlaget, og pensjonsgivende inntekt. I første versjon hentes pensjonsgivende inntekt fra søknaden i Spedisjon, slik Spleis gjør i dag. Sigrun kommer i et senere steg.
 - sp-rettighetskategori henter inntektene den trenger, når vi avgjør kombinerte kategorier, frilanser og Inaktiv. Det kan for eksempel være pensjonsgivende inntekt for året før fra Sigrun eller de siste månedene fra a-ordningen.
 - Hvem som eier saksbehandlers korrigerte inntekter og aktiverte og deaktiverte arbeidsforhold, avgjør vi når vi spesifiserer sp-sykepengegrunnlag.
 - Speil må hente inntektene fra tjenesten som brukte dem, ikke fra ett felles sted.
