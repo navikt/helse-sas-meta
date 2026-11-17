@@ -5,11 +5,12 @@ import { forventetForRepo, planleggPatch, sammenlign } from './github-innstillin
 const forventet = {
     repo: { archived: false, has_issues: false, has_projects: false, has_wiki: false },
     direkteSamarbeidspartnere: {},
+    teams: { 'team-sas': 'admin' },
 }
 
 function sjekkOgPlanlegg(repo, innstillinger, owner = 'navikt') {
     const identitet = { owner, repo }
-    const avvik = sammenlign(forventetForRepo(forventet, identitet), innstillinger)
+    const avvik = sammenlign(forventetForRepo(forventet, identitet, innstillinger), innstillinger)
     return { avvik, ...planleggPatch(forventet, { ...identitet, innstillinger, avvik }) }
 }
 
@@ -23,6 +24,7 @@ test('direkte samarbeidspartnere er unntatt for trygdhetens-voktere', () => {
 
 test('andre avvik rettes uten at samarbeidspartnere fjernes i trygdhetens-voktere', () => {
     const resultat = sjekkOgPlanlegg('trygdhetens-voktere', {
+        ...forventet,
         repo: { ...forventet.repo, has_wiki: true },
         direkteSamarbeidspartnere: { bidragsyter: 'admin' },
     })
@@ -66,6 +68,7 @@ test('has_projects er bare unntatt for navikt/sas-issues i sjekk og patch', () =
 
 test('unntakene gjelder bare den aktuelle innstillingen og det aktuelle repoet', () => {
     const innstillinger = {
+        ...forventet,
         repo: { ...forventet.repo, has_issues: true },
         direkteSamarbeidspartnere: { bidragsyter: 'admin' },
     }
@@ -80,9 +83,41 @@ test('unntakene gjelder bare den aktuelle innstillingen og det aktuelle repoet',
     }
 })
 
+test('team-sas-alle er unntatt i sas-issues, også når andre team må rettes', () => {
+    for (const tilgang of ['pull', 'push', 'admin']) {
+        const innstillinger = { ...forventet, teams: { ...forventet.teams, 'team-sas-alle': tilgang } }
+        assert.deepEqual(sjekkOgPlanlegg('sas-issues', innstillinger), { avvik: [], operasjoner: [], manuelle: [] })
+
+        const resultat = sjekkOgPlanlegg('sas-issues', {
+            ...innstillinger,
+            teams: { ...innstillinger.teams, 'team-sas': 'pull', uvedkommende: 'push' },
+        })
+        assert.deepEqual(resultat.avvik.map((a) => a.sti), ['teams.team-sas', 'teams.uvedkommende'])
+        assert.deepEqual(resultat.operasjoner.map(({ metode, sti, body }) => ({ metode, sti, body })), [
+            { metode: 'PUT', sti: '/orgs/navikt/teams/team-sas/repos/navikt/sas-issues', body: { permission: 'admin' } },
+            { metode: 'DELETE', sti: '/orgs/navikt/teams/uvedkommende/repos/navikt/sas-issues', body: undefined },
+        ])
+    }
+    assert.deepEqual(sjekkOgPlanlegg('sas-issues', forventet), { avvik: [], operasjoner: [], manuelle: [] })
+})
+
+test('team-sas-alle er ikke unntatt i andre repoer eller organisasjoner', () => {
+    const innstillinger = { ...forventet, teams: { ...forventet.teams, 'team-sas-alle': 'push' } }
+    for (const [owner, repo] of [['navikt', 'helse-spesialist'], ['annen', 'sas-issues']]) {
+        const resultat = sjekkOgPlanlegg(repo, innstillinger, owner)
+        assert.deepEqual(resultat.avvik.map((a) => a.sti), ['teams.team-sas-alle'])
+        assert.deepEqual(resultat.operasjoner.map((o) => [o.metode, o.sti]), [
+            ['DELETE', `/orgs/${owner}/teams/team-sas-alle/repos/${owner}/${repo}`],
+        ])
+    }
+})
+
 test('fasiten endres ikke av repounntak', () => {
     const original = structuredClone(forventet)
-    forventetForRepo(forventet, { owner: 'navikt', repo: 'sas-issues' })
+    const faktisk = { ...forventet, teams: { ...forventet.teams, 'team-sas-alle': 'push' } }
+    const originalFaktisk = structuredClone(faktisk)
+    forventetForRepo(forventet, { owner: 'navikt', repo: 'sas-issues' }, faktisk)
     forventetForRepo(forventet, { owner: 'navikt', repo: 'trygdhetens-voktere' })
     assert.deepEqual(forventet, original)
+    assert.deepEqual(faktisk, originalFaktisk)
 })

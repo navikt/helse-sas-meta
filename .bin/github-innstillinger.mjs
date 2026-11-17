@@ -15,7 +15,7 @@ const SAMTIDIGE_REPOER = 6
 const EKSAKTE_SEKSJONER = new Set(['teams', 'direkteSamarbeidspartnere', 'rulesets'])
 const REPO_UNNTAK = {
     'navikt/trygdhetens-voktere': [['direkteSamarbeidspartnere']],
-    'navikt/sas-issues': [['repo', 'has_issues'], ['repo', 'has_projects']],
+    'navikt/sas-issues': [['repo', 'has_issues'], ['repo', 'has_projects'], ['teams', 'team-sas-alle']],
 }
 
 const bruk = `Sjekker og retter GitHub-innstillingene til repoene i .meta mot fasiten i .bin/github-innstillinger.json.
@@ -55,7 +55,7 @@ Bare nøklene som står i fasiten, blir sjekket. Fjern nøkler du ikke vil sjekk
 
 Unntak i både sjekk og patch:
   - navikt/trygdhetens-voktere: direkteSamarbeidspartnere
-  - navikt/sas-issues: repo.has_issues og repo.has_projects
+  - navikt/sas-issues: repo.has_issues, repo.has_projects og teams.team-sas-alle
 
 Dette retter ikke patch:
   - arkiverte repoer og endringer i archived
@@ -354,11 +354,16 @@ function lesForventet() {
     return { kilde, forventet }
 }
 
-export function forventetForRepo(forventet, { owner, repo }) {
+export function forventetForRepo(forventet, { owner, repo }, faktisk = {}) {
     const resultat = structuredClone(forventet)
     for (const [seksjon, nøkkel] of REPO_UNNTAK[`${owner}/${repo}`] ?? []) {
         if (nøkkel === undefined) delete resultat[seksjon]
-        else if (erObjekt(resultat[seksjon])) delete resultat[seksjon][nøkkel]
+        else if (erObjekt(resultat[seksjon])) {
+            delete resultat[seksjon][nøkkel]
+            if (EKSAKTE_SEKSJONER.has(seksjon) && erObjekt(faktisk[seksjon]) && Object.hasOwn(faktisk[seksjon], nøkkel)) {
+                resultat[seksjon][nøkkel] = structuredClone(faktisk[seksjon][nøkkel])
+            }
+        }
     }
     return resultat
 }
@@ -367,7 +372,7 @@ async function hentOgSammenlign(forventet, repoer) {
     return iParallell(repoer, SAMTIDIGE_REPOER, async (r) => {
         try {
             const hentet = await hentRepo(r)
-            return { ...r, ...hentet, avvik: sammenlign(forventetForRepo(forventet, r), hentet.innstillinger) }
+            return { ...r, ...hentet, avvik: sammenlign(forventetForRepo(forventet, r, hentet.innstillinger), hentet.innstillinger) }
         } catch (e) {
             return { ...r, feil: e.message }
         }
@@ -431,7 +436,7 @@ function flett(faktisk, forventet) {
 const SAMARBEIDSPARTNER_TILGANG = { read: 'pull', write: 'push' }
 
 export function planleggPatch(forventet, { owner, repo, branch, rulesetIder, innstillinger: faktisk, avvik }) {
-    forventet = forventetForRepo(forventet, { owner, repo })
+    forventet = forventetForRepo(forventet, { owner, repo }, faktisk)
     const base = `/repos/${owner}/${repo}`
     const operasjoner = []
     const manuelle = []
