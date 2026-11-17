@@ -21,6 +21,7 @@
     "sp-rettighetskategori": "git@github.com:navikt/sp-rettighetskategori.git",
     "sp-sas-ticket-graf": "git@github.com:navikt/sp-sas-ticket-graf.git",
     "sp-spillerom": "git@github.com:navikt/sp-spillerom.git",
+    "sp-sykepengegrunnlag": "git@github.com:navikt/sp-sykepengegrunnlag.git",
     "sp-vilkarsproving": "git@github.com:navikt/helse-sp-vilkarsproving.git",
     "spaghet": "git@github.com:navikt/helse-spaghet.git",
     "spalten": "git@github.com:navikt/helse-spalten.git",
