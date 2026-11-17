@@ -68,6 +68,18 @@ _Unngå_: Grunnlag alene, totalinntekt
 Inntekten fra ett arbeidsforhold regnet om til et årsbeløp. Begrepet brukes ikke for selvstendig næringsdrivende.
 _Unngå_: Årsinntekt alene, fastsatt årsinntekt
 
+**Opphav**:
+Hvorfor et sykepengegrunnlag ble laget, for eksempel vilkårsprøving, skjønnsfastsettelse eller backfill. Det er ikke det samme som inntektskilden, som sier hvor inntekten til en arbeidsgiver kommer fra.
+_Unngå_: Kilde, årsak
+
+**Avvik**:
+Hvor mye den omregnede årsinntekten skiller seg fra sammenligningsgrunnlaget i avviksvurderingen etter § 8-30.
+_Unngå_: Avvik om andre forskjeller, for eksempel mellom to beregninger av det samme grunnlaget
+
+**Forskjell i skyggedrift**:
+Når en ny tjeneste fastsetter et annet sykepengegrunnlag enn Spleis for det samme skjæringstidspunktet, mens Spleis fortsatt bruker sitt eget grunnlag.
+_Unngå_: Avvik (det er avviksvurderingen etter § 8-30), differanse
+
 ### Avslagsdager
 
 **Løpende vilkår**:
