@@ -9,6 +9,14 @@ Code-review-skillen leser denne filen når den gjennomgår endringer i app-repoe
 - **Skill mellom når noe skjedde og når det ble lagret.** Et fagtidspunkt (for eksempel `vurderingstidspunkt`) settes av applikasjonen og kan komme fra et annet system. Lagringstidspunktet heter `opprettet`, settes med `DEFAULT now()` og leses eller skrives ikke av applikasjonen.
 - **Hver kolonne har en grunn i specen.** Når skjemaet bygger på en tabell i en annen app, skal hver kolonne ha et behov i specen eller ticketen. Kolonner som bare finnes fordi forbildet har dem, fjernes.
 - **Tidspunkter lagres som `timestamptz`.** En `timestamp`-kolonne uten tidssone tolkes i sesjonens tidssone, så samme `Instant` kan bli lagret ulikt fra pod og fra lokal maskin. Datoer uten klokkeslett er `date`.
+- **Beløp lagres som `numeric(19, 2)`.** Vi regner ikke med brøkdeler av øre, så kroner og øre har alltid to desimaler. Kolonnen runder av i stillhet hvis verdien har flere desimaler, så avrund i Kotlin med `setScale(2, RoundingMode...)` før lagring, slik `UtbetalingPerForsikringstypeDao` i sp-forsikring gjør. Andre desimaltall, som satser, prosenter og grunnbeløp med flere desimaler, lagres som `numeric` uten presisjon og skala. Bruk aldri `double precision`, `real` eller `money`.
+
+## Penger og desimaltall
+
+- **Desimaltall er `BigDecimal`.** Bruk `BigDecimal` for penger, satser, prosenter og andre desimaltall, også i domenet. `Double` og `Float` runder av, og hører bare hjemme der en ekstern kontrakt sender dem. Heltall, som antall dager eller hele kroner fra Spleis, kan være `Int` eller `Long`.
+- **Konverter i kanten.** Gjør om en `Double` til `BigDecimal` der meldingen tolkes, med `toBigDecimal()` eller `BigDecimal.valueOf(...)`. Ikke bruk konstruktøren `BigDecimal(0.1)`, den tar med hele binærfeilen.
+- **Sammenlign med `compareTo`.** I Kotlin kaller `==` `equals`, som også sammenligner skalaen, så `1.0` og `1.00` er ulike. Bruk `compareTo`, `<`, `>=` eller `signum()`.
+- **Avrund én gang, med valgt skala og avrundingsregel.** `divide` og `setScale` får alltid skala og `RoundingMode`. Regn med full presisjon underveis og avrund først når resultatet lagres eller sendes ut, slik `VedtakFattetRiver` i sp-forsikring gjør.
 
 ## Tid
 
