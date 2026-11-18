@@ -8,6 +8,47 @@ Code-review-skillen leser denne filen når den gjennomgår endringer i app-repoe
 - **Én identitet per rad.** Velg enten en UUID eller et løpenummer som primærnøkkel, ikke begge. Bruk UUID når ID-en sendes ut av appen.
 - **Skill mellom når noe skjedde og når det ble lagret.** Et fagtidspunkt (for eksempel `vurderingstidspunkt`) settes av applikasjonen og kan komme fra et annet system. Lagringstidspunktet heter `opprettet`, settes med `DEFAULT now()` og leses eller skrives ikke av applikasjonen.
 - **Hver kolonne har en grunn i specen.** Når skjemaet bygger på en tabell i en annen app, skal hver kolonne ha et behov i specen eller ticketen. Kolonner som bare finnes fordi forbildet har dem, fjernes.
+- **Tidspunkter lagres som `timestamptz`.** En `timestamp`-kolonne uten tidssone tolkes i sesjonens tidssone, så samme `Instant` kan bli lagret ulikt fra pod og fra lokal maskin. Datoer uten klokkeslett er `date`.
+
+## Tid
+
+- **Et tidspunkt er en `Instant`.** Bruk `Instant` for alt som har skjedd på et bestemt øyeblikk, også i domenet og i databaselaget. `LocalDateTime` hører bare hjemme der en ekstern kontrakt krever den, for eksempel `@opprettet` på rapiden eller `vedtakFattetTidspunkt` fra Spleis.
+- **Konverter i kanten, med Oslo-tid.** Når en `LocalDateTime` kommer inn eller må ut, konverter med `ZoneId.of("Europe/Oslo")` der meldingen eller responsen tolkes eller bygges. Ikke bruk `ZoneId.systemDefault()` eller la JVM-ens tidssone avgjøre.
+- **Dager avgrenses i Kotlin, ikke i SQL.** Skal en spørring finne tidspunkter innenfor en periode med `LocalDate`, regn ut døgngrensene med `atStartOfDay(Europe/Oslo).toInstant()` og spør med `>= fra AND < til`. Da påvirker ikke databasens tidssone resultatet. Se `UtbetalingPerForsikringstypeDao` i sp-forsikring.
+- **Beslutninger som avhenger av nåtid, får `nå` som parameter.** Kode som sammenligner med nåtid, for eksempel om en frist er passert eller om et nytt forsøk skal kjøres, tar `nå: Instant` eller `nå: () -> Instant = Instant::now` som parameter, slik `PurringJob` og `KommandoJobb` i sporhund gjør. Da kan testen bestemme tiden. Å stemple et nytt objekt med `Instant.now()` i `ny(...)` er greit.
+
+## Domenemodell
+
+- **ID-er har egne typer.** En ID er en `@JvmInline value class` (for eksempel `Forsikringsvurdering.Id`, `PåVentId`), ikke en løs `UUID` eller `Long` som kan byttes om med en annen ID.
+- **Aggregater opprettes gjennom fabrikkfunksjoner.** Konstruktøren er `private`. `ny(...)`, eller et navn fra domenet som `utførVurdering(...)`, lager et nytt objekt og setter selv ID og tidspunkt med `Instant.now()`. `fraLagring(...)` gjenoppretter et lagret objekt, og repositoriet bruker bare den.
+- **Tilstand endres gjennom domenemetoder.** Felter som kan endres, er `var` med `private set`, og endres med en metode som sier hva som skjer (`nyFrist(...)`), ikke ved å sette feltet utenfra.
+- **Strenger fra andre systemer valideres i kanten.** Gjør dem om til domenetyper med `fraString(...)` (for eksempel `Identitetsnummer.fraString`) når meldingen eller requesten tolkes, slik at domenet aldri får en ugyldig verdi.
+- **Aggregater peker på hverandre med ID.** Et aggregat holder ID-en til et annet aggregat (`Behandling.vedtaksperiodeId`), ikke selve objektet. Trenger koden begge, henter den dem fra hvert sitt repository.
+- **ID-en lages i domenet.** Nye aggregater får ID-en sin i `ny(...)`. Et løpenummer fra databasen (`LateIdAggregateRoot` i spesialist) brukes bare der tabellen allerede har det.
+- **Aggregater samler domenehendelser.** Et aggregat som har endret seg på en måte omverdenen skal vite om, legger en hendelse i en liste (`Oppgave.hendelser`). Applikasjonslaget lagrer aggregatet og gjør hendelsene om til utgående meldinger. Domenet kjenner verken Kafka eller observere.
+- **API og meldinger har egne typer.** Domeneklasser serialiseres ikke direkte. API-et har egne typer (`Api*` i `spesialist-api-schema`) og mapper eksplisitt til og fra domenet, slik `DomainToApiMapping` i sporhund gjør.
+
+## Persistering og meldinger
+
+- **Den som kaller, eier transaksjonen.** Et repository får sesjonen eller transaksjonen i konstruktøren og åpner aldri en egen. Riveren eller API-behandleren åpner én transaksjon per melding eller kall og sender den videre. Har appen en `SessionContext`, henter kommandoer og use caser repositoriene derfra i stedet for å få dem i konstruktøren.
+- **Ett repository per aggregat.** Interfacet ligger i applikasjonslaget, Postgres-implementasjonen heter `Pg*Repository`, og testene bruker en `InMemory*Repository`. Repositoriet lagrer og henter hele aggregatet. `finn` kaster hvis aggregatet mangler, `finnOrNull` returnerer `null`, og `lagre` både oppretter og oppdaterer.
+- **SQL er rå SQL med navngitte parametere.** Skriv SQL-strengen med `@Language("PostgreSQL")` og bruk `:navn`-parametere, ikke strengsammenslåing. Enum-verdier lagres med `name`.
+- **Meldinger publiseres etter commit.** En Kafka-melding som følger av en endring i databasen, sendes først når transaksjonen er committet. Ikke kall `publish` midt i en transaksjon. Om meldingen trenger en outbox-tabell, kommer an på hva som skjer hvis appen stopper mellom commit og publisering: tåler use caset at meldingen går tapt eller blir sendt på nytt ved neste forsøk, holder det å samle meldingene i minnet og sende dem etter commit, slik spesialist gjør. Må meldingen garantert komme fram, bruk `outbox` fra sykepenger-libs, slik sp-rettighetskategori gjør.
+- **Kall til andre systemer som må lykkes, går gjennom en kommandokø.** Når en endring skal følges av et kall som kan feile, for eksempel journalføring eller PDF-generering, lagres en kommando i samme transaksjon som endringen. En jobb utfører kommandoene én og én i hver sin transaksjon og prøver igjen med økende ventetid. Se `KommandoKø` og `KommandoJobb` i sporhund.
+
+## Felleskode
+
+- **Bruk sykepenger-libs før du skriver eget.** Finnes det en modul i `libs/` (for eksempel `outbox`, `leader-election`, `postgres`, `logging` eller `testing`), bruk den i stedet for en egen variant i appen.
+
+## API
+
+- **Feil returneres som Problem Details.** Feilsvar følger RFC 9457 med `type`, `title`, `status` og `detail`, slik `ApiHttpProblemDetails` i spesialist og `ProblemResponse` i sp-forsikring gjør.
+
+## Tester
+
+- **Testdata lages med `lag*`-funksjoner.** En fixture som `lagForsikringsvurdering(...)` har standardverdier for alt, og testen overstyrer bare det den handler om.
+- **Fakes framfor mockk.** Test mot en in-memory-implementasjon av interfacet (`InMemoryDialogRepository`, `FakeSpleis`) eller en ekte database med Testcontainers. Ikke bruk mockk i ny kode.
+- **Identitetsnumre genereres.** Bruk `lagIdentitetsnummer()` fra `sykepenger-libs/testing`, ikke hardkodede elleve siffer.
 
 ## Integrasjoner
 
