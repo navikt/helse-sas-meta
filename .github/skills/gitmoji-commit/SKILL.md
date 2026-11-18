@@ -103,4 +103,4 @@ implemented, or one named in the branch name or in commits being squashed.
   co-authors as well. Deduplicate trailers and omit the final primary author
   from the co-author list.
 - Keep trailers at the end of the message. Verify them with
-  `git log -1 --format=%B` and `git log -1 --format=%B | git interpret-trailers --parse`.
+  `git log -1 --format=%B` and `git log -1 --format='%(trailers)'`.
