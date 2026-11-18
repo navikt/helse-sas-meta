@@ -27,8 +27,8 @@ _Unngå_: Innsendt søknad, ferdig søknad
 ### Dokumenter
 
 **Meldingsreferanse-ID**:
-Den interne dokument-ID-en Spedisjon gir et innkommende dokument, som en søknad eller en inntektsmelding. Dokumentet hentes fra Spedisjon med denne ID-en. I behov og eventer heter feltet `<dokument>MeldingsreferanseId`, for eksempel `søknadMeldingsreferanseId` og `inntektsmeldingMeldingsreferanseId`. Dokumentets egen ID, som `inntektsmeldingId` eller søknadens `id`, er en annen ID.
-_Unngå_: Søknads-ID, hendelse-ID, `søknadId` (om ID-en fra Spedisjon)
+Den interne dokument-ID-en Spedisjon gir et innkommende dokument, som en søknad eller en inntektsmelding, og som er `@id` på meldingen Spedisjon sender videre. Dokumentet hentes fra Spedisjon med denne ID-en. I behov og eventer heter feltet `<dokument>MeldingsreferanseId`, for eksempel `søknadMeldingsreferanseId` og `inntektsmeldingMeldingsreferanseId`. ID-en dokumentet fikk der det ble laget, som `søknadId` fra flex eller `inntektsmeldingId`, er en annen ID.
+_Unngå_: Hendelse-ID
 
 ### Rettighetskategori
 
