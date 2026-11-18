@@ -17,6 +17,6 @@ Spesialist og Spregulering sender signalene direkte til sp-sykepengegrunnlag, fo
 ## Konsekvenser
 
 - Spleis behandler `endret_sykepengegrunnlag` på samme måte som andre endrede vurderinger og revurderer perioden.
-- I skyggedrift behandler ikke Spleis `endret_sykepengegrunnlag`. Spleis behandler endringene selv som i dag og fjerner sykepengegrunnlag-ID-en når inntektsgrunnlaget endres uten ny vilkårsprøving. sp-sykepengegrunnlag sammenligner sitt nyeste grunnlag med `sykepengegrunnlagsfakta` i godkjenningsbehovet.
+- I skyggedrift behandler ikke Spleis `endret_sykepengegrunnlag`. Spleis behandler endringene selv som i dag og lagrer ikke sykepengegrunnlag-ID-en. sp-sykepengegrunnlag sammenligner sitt nyeste grunnlag med `sykepengegrunnlagsfakta` i godkjenningsbehovet.
 - Avviksvurderingen og skjønnslogikken blir i Spinnvill og Spesialist inntil videre. sp-sykepengegrunnlag lagrer bare beløpene og begrunnelsen fra skjønnsfastsettelsen.
 - Hvert sykepengegrunnlag har et opphav som sier hvorfor det ble laget: `vilkårsprøving`, `korrigert_inntektsmelding`, `overstyring_inntekt`, `overstyring_arbeidsforhold`, `skjønnsfastsettelse`, `grunnbeløpsregulering`, `backfill_spleis` eller `backfill_infotrygd`.
