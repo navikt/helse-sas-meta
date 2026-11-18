@@ -58,6 +58,15 @@ Code-review-skillen leser denne filen når den gjennomgår endringer i app-repoe
 - **Fakes framfor mockk.** Test mot en in-memory-implementasjon av interfacet (`InMemoryDialogRepository`, `FakeSpleis`) eller en ekte database med Testcontainers. Ikke bruk mockk i ny kode.
 - **Identitetsnumre genereres.** Bruk `lagIdentitetsnummer()` fra `sykepenger-libs/testing`, ikke hardkodede elleve siffer.
 
+## Rapiden
+
+- **Behov heter det de spør om, i PascalCase.** En domenetjeneste som vurderer et vilkår, svarer på to behov: `<Vilkår>vurdering` gjør vurderingen og svarer med ID-en til den, og `<Vilkår>vurderingResultat` tar ID-en og svarer med utfallet. Eksempler er `Opptjeningsvurdering` og `OpptjeningsvurderingResultat`, og `Forsikringsvurdering` og `ForsikringsvurderingResultat`. Endrer et behov kontrakten på en måte som ikke er bakoverkompatibel, får det nytt navn med `V2`-suffiks (`ArbeidsforholdV2`).
+- **Input ligger under behovsnavnet, felles felter på toppnivå.** Input til behovet ligger i et objekt med samme navn som behovet (`Rettighetskategori.skjæringstidspunkt`). `fødselsnummer`, `vedtaksperiodeId`, `behandlingId`, `organisasjonsnummer` og `yrkesaktivitetstype` ligger på toppnivå, slik Spleis sender dem, og slik MDC-oppsettet leser dem.
+- **Løsningen ligger under `@løsning.<Behov>`.** Løsningen er et objekt, også når den bare har ett felt. ID-en til vurderingen heter `id` (`@løsning.Opptjeningsvurdering.id`).
+- **Personen heter `fødselsnummer` på rapiden.** Feltet heter `fødselsnummer` også når verdien er et D-nummer, og meldingen publiseres med fødselsnummeret som key.
+- **Hendelser heter `endret_<vurdering>` i snake_case.** Når en vurdering endrer seg utenom et behov, for eksempel etter en manuell vurdering, publiserer tjenesten `endret_<vilkår>vurdering` med `fødselsnummer`, `skjæringstidspunkt`, `<vilkår>vurderingId` og eventuelt `manuellVurdering`. Spleis tar imot alle disse i `EndretVurderingPåSkjæringstidspunktRiver`, så en ny vurdering må bare legges til der.
+- **Et behov som ikke kan løses, får ikke svar.** Klarer ikke tjenesten å løse behovet, logger den feilen med `loggError` og publiserer ingen løsning. Den svarer aldri med en halv eller gjettet løsning.
+
 ## Integrasjoner
 
 - **Scope og URL kommer fra miljøvariabler.** En klient mot en annen tjeneste leser scopet og base-URL-en fra miljøvariabler som er satt i Nais-manifestet, for eksempel `SP_RETTIGHETSKATEGORI_SCOPE` og `SP_RETTIGHETSKATEGORI_BASE_URL`. Les dem med `env.getValue(...)`, så appen feiler ved oppstart hvis en mangler. Koden skal ikke regne ut scope eller URL fra `NAIS_CLUSTER_NAME` eller ha dem som konstanter. Base-URL-en står i fellesmanifestet, og scopet står i miljøfilene for dev og prod.
