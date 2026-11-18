@@ -6,8 +6,12 @@ Fagspråket for saksbehandling av sykepenger etter folketrygdloven kapittel 8, s
 
 ### Sykefravær
 
+**Skjæringstidspunkt**:
+Første dag i et sykefraværstilfelle.
+_Unngå_: Første fraværsdag, sykmeldt fra og med
+
 **Sykefraværstilfelle**:
-Sammenhengende sykefravær med ett felles skjæringstidspunkt. Avgjørelser som gjelder hele tilfellet, tas én gang per skjæringstidspunkt.
+Sammenhengende sykefravær med ett felles skjæringstidspunkt. Avgjørelser som gjelder hele tilfellet, tas én gang per skjæringstidspunkt. Ferie, permisjon og helg avbryter ikke sykefraværstilfellet, men én dag med arbeid, andre ytelser eller ukjent status gjør det.
 _Unngå_: Sykefraværsperiode, sak
 
 **Yrkesaktivitet**:
