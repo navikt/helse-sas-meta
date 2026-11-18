@@ -22,4 +22,4 @@ Once done, call the Skill tool with "code-review" to review the work.
 
 Commit your work to the current branch of the app repo.
 
-Then ask the user to confirm that the commits are pushed to `main`, and wait for the answer. The issue stays open until the user confirms. Once confirmed and every criterion is met, comment with a short summary and the commits, then close the issue.
+Then ask the user to confirm that the commits are pushed to `main`, and wait for the answer. The issue stays open until the user confirms. Verify the push from the app repo with `git fetch -q https://github.com/navikt/<app-repo>.git main` and `git merge-base --is-ancestor <sha> FETCH_HEAD` for each commit; the sandbox blocks the SSH remote and `gh api` against app repos. Once every commit is on `main` and every criterion is met, comment with a short summary and the commits, then close the issue.

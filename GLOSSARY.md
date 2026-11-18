@@ -24,6 +24,12 @@ _Unngå_: Åpen søknad, sykmeldingsperiode
 En søknad personen har sendt inn, med svarene på spørsmålene i søknaden.
 _Unngå_: Innsendt søknad, ferdig søknad
 
+### Dokumenter
+
+**Meldingsreferanse-ID**:
+Den interne dokument-ID-en Spedisjon gir et innkommende dokument, som en søknad eller en inntektsmelding. Dokumentet hentes fra Spedisjon med denne ID-en. I behov og eventer heter feltet `<dokument>MeldingsreferanseId`, for eksempel `søknadMeldingsreferanseId` og `inntektsmeldingMeldingsreferanseId`. Dokumentets egen ID, som `inntektsmeldingId` eller søknadens `id`, er en annen ID.
+_Unngå_: Søknads-ID, hendelse-ID, `søknadId` (om ID-en fra Spedisjon)
+
 ### Rettighetskategori
 
 **Rettighetskategori**:
