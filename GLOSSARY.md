@@ -100,9 +100,13 @@ _Unngå_: Avslått dag. «Avvist dag» er Spleis' ord for alle dager som ikke gi
 Saksbehandlerens vurdering av ett løpende vilkår for en mengde dager, med svar, utfall per vilkårskode, fritekstbegrunnelse og journalposter. Den gjeldende vurderingen for en dag er den nyeste som omfatter dagen. En omgjøring er en ny vurdering, og ingen vurdering slettes.
 _Unngå_: Overstyring (brukes om endringer i Spleis' tidslinje), avslag
 
-**Syk utenfor EØS**:
-En sykedag der brukeren har oppgitt i søknaden at hen var utenfor EØS. Dagen teller som syk, og saksbehandler må vurdere oppholdskravet for den før perioden kan godkjennes. Dagtypen kommer bare fra søknaden. Saksbehandler kan endre den til en annen dagtype, men ikke velge den.
-_Unngå_: Utlandsdag, ukjent dag (det Spleis brukte for utenlandsopphold før)
+**Dag til vurdering**:
+En dag der et løpende vilkår må vurderes av saksbehandler før vedtaket kan fattes. For oppholdskravet er det en dag der personen har oppgitt opphold utenfor EØS i minst én søknad, og minst én yrkesaktivitet har dagen som sykedag, sykhelgedag, arbeidsgiverdag eller foreldet sykedag. Ferie hos én yrkesaktivitet fjerner ikke behovet for vurdering hos de andre.
+_Unngå_: Åpen dag, vurderingsbehov (behov betyr noe annet på rapiden), syk utenfor EØS (dagtypen fjernes fra Spleis)
+
+**Avslagsdageroppslag**:
+Svaret sp-avslagsdager gir når Spleis beregner en periode. Svaret inneholder de gjeldende vurderingene av løpende vilkår, avslagsdagene og dagene til vurdering, sammen med søknadene og tidslinjene svaret bygde på. Et oppslag endres aldri, og en ny beregning gir et nytt oppslag.
+_Unngå_: Løsning (det er meldingen på rapiden), snapshot
 
 ### Andre ytelser
 

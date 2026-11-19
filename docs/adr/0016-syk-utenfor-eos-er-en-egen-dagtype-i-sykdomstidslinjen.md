@@ -1,4 +1,10 @@
+---
+status: erstattet av ADR 0023
+---
+
 # Syk utenfor EØS er en egen dagtype i sykdomstidslinjen
+
+> Erstattet av ADR 0023. Dagtypen fjernes, og sp-avslagsdager avgjør hvilke dager som må vurderes.
 
 **Forfattere:** Elias Andreassen Thøgersen (@elitho), Golshid Bahadorian (@golshidb93)
 

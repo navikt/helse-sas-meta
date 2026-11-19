@@ -1,4 +1,10 @@
+---
+status: delvis erstattet av ADR 0023
+---
+
 # Spleis lagrer vurderings-ID-ene på endringen, ikke avslagsdagene
+
+> ADR 0023 erstatter delen om vurderingene på endringen og `vurderteDager` i løsningen. Endringen lagrer nå ID-en til avslagsdageroppslaget.
 
 Saksbehandler skal kunne avslå dager etter løpende vilkår, først oppholdskravet i § 8-9. sp-avslagsdager eier vurderingene og historikken deres. Spleis lagrer ikke avslagsdagene. Når Spleis beregner en periode, sender den behovet `Avslagsdager` med beregningsperioden. Løsningen gir alle dagene i perioden som har en gjeldende vurdering, også dager der vilkåret er oppfylt, med vurderings-ID, vilkår, utfall og vilkårskoder (`vurderteDager`, se ADR 0016). Spleis bytter ut avslagsdagene med kilden `sp-avslagsdager` i beregningsperioden med dagene fra løsningen. Vurderingene lagres per dag på endringen i behandlingen, med vurderings-ID og utfall. Byggerne av utbetalingstidslinjen leser avslagstidslinjen som før.
 
