@@ -140,6 +140,22 @@ _Unngå_: Sum andre ytelser, andre ytelser-grad
 
 ### Saksbehandling
 
+**Behandling**:
+Én vurdering av en vedtaksperiode i Spleis. Den ender i vedtak, avslag eller forkasting. En vedtaksperiode kan ha flere behandlinger, for eksempel når den revurderes. Spleis eier behandlingen, og andre tjenester refererer til den med ID-en Spleis har gitt den.
+_Unngå_: Generasjon, Spesialist-behandling
+
+**Avslag**:
+Et vedtak om at den sykmeldte ikke har rett til sykepenger for hele eller deler av vedtaksperioden. Et avslag er et vedtak.
+_Unngå_: Forkasting
+
+**Forkasting**:
+At Spleis kaster ut vedtaksperioden, så den må behandles i Infotrygd. En forkastet vedtaksperiode får ikke vedtak i Spleis.
+_Unngå_: Avslag
+
+**Behandlingspakke**:
+Behandlingen som skal godkjennes, og behandlingene i samme sykefraværstilfelle som starter før den slutter, på tvers av yrkesaktiviteter. Varsler og totrinnsvurdering vurderes for hele pakken samlet.
+_Unngå_: Sykefraværstilfelle (det er sykefraværet, ikke behandlingene)
+
 **Aktiv oppgave**:
 Oppgaven som venter på at en saksbehandler skal vurdere en vedtaksperiode. En person har høyst én aktiv oppgave.
 _Unngå_: Sak, periodeoppgave
