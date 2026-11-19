@@ -105,7 +105,7 @@ En dag der et løpende vilkår må vurderes av saksbehandler før vedtaket kan f
 _Unngå_: Åpen dag, vurderingsbehov (behov betyr noe annet på rapiden), syk utenfor EØS (dagtypen fjernes fra Spleis)
 
 **Avslagsdageroppslag**:
-Svaret sp-avslagsdager gir når Spleis beregner en periode. Svaret inneholder de gjeldende vurderingene av løpende vilkår, avslagsdagene og dagene til vurdering, sammen med søknadene og tidslinjene svaret bygde på. Et oppslag endres aldri, og en ny beregning gir et nytt oppslag.
+Svaret sp-avslagsdager gir når Spleis beregner en periode. Svaret inneholder de gjeldende vurderingene av løpende vilkår, avslagsdagene og dagene til vurdering, sammen med søknadene og tidslinjene svaret bygde på. Et oppslag endres aldri, og en ny beregning gir et nytt oppslag. ID-en kalles avslagsdager-ID-en, men peker på hele oppslaget, også når det ikke har avslagsdager.
 _Unngå_: Løsning (det er meldingen på rapiden), snapshot
 
 ### Andre ytelser
