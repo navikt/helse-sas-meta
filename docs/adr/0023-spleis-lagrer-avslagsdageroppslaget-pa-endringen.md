@@ -4,6 +4,8 @@ status: akseptert
 
 # Spleis lagrer ID-en til avslagsdageroppslaget på endringen, og sp-avslagsdager finner dagene til vurdering
 
+**Forfattere:** Christian Skovborg Gule (@chsko), Solveig Grieg, Morten Jonassen Netland (@mnetland), Golshid Bahadorian (@golshidb93)
+
 Personen kan oppgi opphold utenfor EØS og ferie i hver søknad. Søknadene er per yrkesaktivitet. Ferie hos a1 betyr ikke at dagen er uten betydning for a2 og a3. Derfor må saksbehandler vurdere oppholdskravet (§ 8-9) for en dag når personen har oppgitt opphold utenfor EØS i minst én søknad, og minst én yrkesaktivitet har dagen som sykedag, sykhelgedag, arbeidsgiverdag eller foreldet sykedag. Oppholdet er et faktum om personen, mens dagtypen er et faktum per yrkesaktivitet. Vurderingen og avslagsdagen gjelder personen. Opplysningene danner en matrise med én rad per dag og én kolonne per yrkesaktivitet. Den finnes bare som input til hvert oppslag. Ingen app lagrer den som egen modell.
 
 sp-avslagsdager eier hele regelen. I behovet `Avslagsdager` sender Spleis beregningsperioden og én oppføring per yrkesaktivitet, med dagtypene fra sykdomstidslinja og de interne dokument-ID-ene til søknadene. Behovet har ingen behandlings-ID, fordi sp-avslagsdager ikke skal kjenne behandlingene i Spleis. sp-avslagsdager slår opp hver søknad i Spedisjon første gang dokument-ID-en dukker opp. Den lagrer de oppgitte oppholdene med søknaden som kilde. Kildefaktaene endres ikke, fordi en korrigert søknad har en ny dokument-ID.
