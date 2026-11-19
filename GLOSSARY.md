@@ -153,8 +153,12 @@ Kontrollen der en beslutter må godkjenne saksbehandlerens vurdering før vedtak
 _Unngå_: Totrinnskontroll, beslutterkontroll
 
 **Subsumsjon**:
-Anvendelsen av én lovregel på fakta i en sak, med lovreferanse, fakta og utfall. Det er en subsumsjon også når den ikke endrer sykepengene, for eksempel når en gradert annen ytelse bare tas fra arbeidet.
-_Unngå_: Etterlevelse, hjemmel (hjemmelen er bare lovreferansen)
+Anvendelsen av én lovregel på fakta i en sak, med lovreferanse, fakta og utfall. Det er en subsumsjon også når den ikke endrer sykepengene, for eksempel når en gradert annen ytelse bare tas fra arbeidet. Ordet brukes om meldingene til subsumsjonsloggen. Domenetjenestene sender ikke slike meldinger. De lagrer lovreferansen og utfallet sammen med vurderingen og kaller det ikke subsumsjon.
+_Unngå_: Etterlevelse, hjemmel (hjemmelen er bare lovreferansen), subsumsjon om det domenetjenestene lagrer
+
+**Lovreferanse**:
+Hvilken lovregel en vurdering eller beregning bygger på: lov, paragraf, avsnitt, setning, bokstav og datoen regelen gjelder fra. Domenetjenestene lagrer lovreferansen og utfallet sammen med vurderingen. Fakta som regelen er brukt på, finnes allerede i vurderingen og gjentas ikke.
+_Unngå_: Hjemmel, ledd og punktum (bruk avsnitt og setning), subsumsjon
 
 ### Dialogmeldinger
 
