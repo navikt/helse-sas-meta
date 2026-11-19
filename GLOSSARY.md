@@ -74,6 +74,10 @@ _Unngå_: Grunnlag alene, totalinntekt
 Inntekten fra ett arbeidsforhold regnet om til et årsbeløp. Begrepet brukes ikke for selvstendig næringsdrivende.
 _Unngå_: Årsinntekt alene, fastsatt årsinntekt
 
+**Ghost-arbeidsforhold**:
+Et arbeidsforhold i Aa-registeret som er aktivt på skjæringstidspunktet, men som personen ikke har søkt sykepenger fra. Inntekten hentes fra a-ordningen og tas med i sykepengegrunnlaget. Arbeidsstedet er alltid en organisasjon: sparkel-aareg gir arbeidsforhold hos en privatperson tomt organisasjonsnummer, og Spleis filtrerer dem bort.
+_Unngå_: Ghost alene, arbeidsgiver uten søknad
+
 **Opphav**:
 Hvorfor et sykepengegrunnlag ble laget, for eksempel vilkårsprøving, skjønnsfastsettelse eller backfill. Det er ikke det samme som inntektskilden, som sier hvor inntekten til en arbeidsgiver kommer fra.
 _Unngå_: Kilde, årsak

@@ -34,6 +34,7 @@ Code-review-skillen leser denne filen når den gjennomgår endringer i app-repoe
 - **Aggregater peker på hverandre med ID.** Et aggregat holder ID-en til et annet aggregat (`Behandling.vedtaksperiodeId`), ikke selve objektet. Trenger koden begge, henter den dem fra hvert sitt repository.
 - **ID-en lages i domenet.** Nye aggregater får ID-en sin i `ny(...)`. Et løpenummer fra databasen (`LateIdAggregateRoot` i spesialist) brukes bare der tabellen allerede har det.
 - **Aggregater samler domenehendelser.** Et aggregat som har endret seg på en måte omverdenen skal vite om, legger en hendelse i en liste (`Oppgave.hendelser`). Applikasjonslaget lagrer aggregatet og gjør hendelsene om til utgående meldinger. Domenet kjenner verken Kafka eller observere.
+- **Regler kopiert fra Spleis forklarer regnestykket og peker på kilden.** Tall i regnestykket har navn (`MÅNEDER_I_BEREGNINGSPERIODEN`, ikke `4`). Har regelen en nedre eller øvre grense, en avrunding eller et unntak som ikke står i koden, forklarer en kommentar hvorfor, med lovhjemmel og navnet på funksjonen i Spleis (`Skatteopplysning.omregnetÅrsinntekt`). Uten kommentaren må leseren åpne Spleis for å forstå koden.
 - **API og meldinger har egne typer.** Domeneklasser serialiseres ikke direkte. API-et har egne typer (`Api*` i `spesialist-api-schema`) og mapper eksplisitt til og fra domenet, slik `DomainToApiMapping` i sporhund gjør.
 
 ## Persistering og meldinger
