@@ -2,7 +2,9 @@
 
 **Forfattere:** Håvard Andersen (@nav-havard), Eirik Gallefoss (@ejgal), Øydis Kind Refsum (@oydisrefsum)
 
-Spleis avgjør hvilke arbeidsgivere som er med i sykepengegrunnlaget, når den lager vilkårsgrunnlaget. Arbeidsgivere med søknad på skjæringstidspunktet er med. Ghost-arbeidsforhold er også med. Det er arbeidsforhold i Aa-registeret med inntekt i a-ordningen, men uten søknad. Arbeidsgivere uten arbeidsforhold med orgnummer i Aa-registeret er ikke med. Det gjelder for eksempel når arbeidsgiveren er en person. Arbeidsforholdene fra Aa-registeret blir ikke lagret noe sted.
+Spleis avgjør hvilke arbeidsgivere som er med i sykepengegrunnlaget, når den lager vilkårsgrunnlaget. Arbeidsgivere med søknad på skjæringstidspunktet er med. Ghost-arbeidsforhold er også med. Det er arbeidsforhold i Aa-registeret med inntekt i a-ordningen, men uten søknad. Arbeidsgivere uten arbeidsforhold med orgnummer i Aa-registeret er ikke med. Det gjelder for eksempel når arbeidsgiveren er en person.
+
+Arbeidsforholdene fra Aa-registeret blir bare delvis lagret. Spleis lagrer dem på opptjeningen i vilkårsgrunnlaget, men bare de som inngår i opptjeningsperioden, og uten frilansarbeidsforhold. sp-vilkarsproving lagrer arbeidsforholdene den bruker i opptjeningsvurderingen. Ingen av dem lagrer arbeidsforhold uten orgnummer, for eksempel når arbeidsgiveren er en person. Inntektene fra a-ordningen lagres bare for arbeidsgiverne som er med.
 
 I [#299](https://github.com/navikt/sas-issues/issues/299) flytter vi ikke dette valget til sp-sykepengegrunnlag. Spleis sender listen over arbeidsgivere i behovet `Sykepengegrunnlag`, og sp-sykepengegrunnlag bruker bare inntektene fra a-ordningen for orgnumrene i listen. Grunnen er å begrense omfanget av #299. Vi har ikke avgjort at valget hører hjemme i Spleis.
 
@@ -16,6 +18,6 @@ Valgene våre er åpne. Listen er bare input i behovet, så å flytte valget sen
 
 ## Konsekvenser
 
-- Spleis sender årsaken til at hver arbeidsgiver er med (`SØKNAD` eller `GHOST`), og sp-sykepengegrunnlag lagrer den ([#351](https://github.com/navikt/sas-issues/issues/351)). Da kan vi se i ettertid hvorfor en arbeidsgiver er med. Det gjør det også lettere å flytte valget senere. Det kan vi ikke se for arbeidsgivere som ikke er med, fordi ingen lagrer arbeidsforholdene fra Aa-registeret.
+- Spleis sender årsaken til at hver arbeidsgiver er med (`SØKNAD` eller `GHOST`), og sp-sykepengegrunnlag lagrer den ([#351](https://github.com/navikt/sas-issues/issues/351)). Da kan vi se i ettertid hvorfor en arbeidsgiver er med. Det gjør det også lettere å flytte valget senere. For arbeidsgivere som ikke er med, kan vi bare delvis se hvorfor. Arbeidsforholdene i opptjeningen viser om personen var ansatt, men inntektene fra a-ordningen er ikke lagret for disse arbeidsgiverne, og arbeidsgivere uten orgnummer er ikke lagret i det hele tatt.
 - Spleis trenger fortsatt Aa-registeret og inntektene fra a-ordningen for å finne ghost-arbeidsforhold. Behovet `InntekterForSykepengegrunnlag` kan derfor ikke fjernes så lenge Spleis gjør valget.
 - Aktivering og deaktivering av arbeidsforhold flyttes likevel til sp-sykepengegrunnlag (ADR 0020). Det er saksbehandlerens endring av listen, ikke valget av den.
