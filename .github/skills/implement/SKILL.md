@@ -22,4 +22,11 @@ Once done, call the Skill tool with "code-review" to review the work.
 
 Commit your work to the current branch of the app repo.
 
-Then ask the user to confirm that the commits are pushed to `main`, and wait for the answer. The issue stays open until the user confirms. Verify the push from the app repo with `git fetch -q https://github.com/navikt/<app-repo>.git main` and `git merge-base --is-ancestor <sha> FETCH_HEAD` for each commit; the sandbox blocks the SSH remote and `gh api` against app repos. Once every commit is on `main` and every criterion is met, comment with a short summary and the commits, then close the issue.
+Then ask the user to confirm that the commits are pushed to `main`, and wait for the answer. The issue stays open until the user confirms. Verify the push from the app repo over HTTPS, since the sandbox blocks the SSH remote, `gh api` against app repos and `git cherry`. The folder name can differ from the GitHub repo (`spock` is `navikt/helse-spock`), so take the URL from the remote:
+
+```sh
+git fetch -q "$(git remote get-url origin | sed -E 's#^git@[^:]+:#https://github.com/#; s#^ssh://git@[^/]+/#https://github.com/#')" main
+git log --oneline --cherry-mark --right-only FETCH_HEAD...<last-sha>
+```
+
+`=` marks a commit that is on `main`, also after a rebase. `+` can still be a rebased copy whose surrounding lines changed: find the commit with the same subject in `git log FETCH_HEAD --format='%h %s' -n 50` and compare `git diff -U0 <sha>~ <sha> | grep -v '^@@\|^index '` for both. Identical output means the commit is on `main`. Name the commits by their SHAs on `main`. Once every commit is on `main` and every criterion is met, comment with a short summary and the commits, then close the issue.
