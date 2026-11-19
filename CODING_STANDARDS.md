@@ -55,7 +55,8 @@ Code-review-skillen leser denne filen når den gjennomgår endringer i app-repoe
 ## Tester
 
 - **Testdata lages med `lag*`-funksjoner.** En fixture som `lagForsikringsvurdering(...)` har standardverdier for alt, og testen overstyrer bare det den handler om.
-- **Fakes framfor mockk.** Test mot en in-memory-implementasjon av interfacet (`InMemoryDialogRepository`, `FakeSpleis`) eller en ekte database med Testcontainers. Ikke bruk mockk i ny kode.
+- **Fakes framfor mockk.** Test mot en in-memory-implementasjon av interfacet (`InMemoryDialogRepository`, `FakeSpleis`) eller en ekte database. Ikke bruk mockk i ny kode.
+- **Postgres og Kafka i tester kommer fra sykepenger-libs.** Bruk `TestDatabase` fra test fixtures i `postgres` og `TestKafka` fra `kafka-test`, slik sp-rettighetskategori gjør. De bruker serverne i `TEST_POSTGRES_JDBC_URL` og `TEST_KAFKA_BOOTSTRAP_SERVERS` når variablene er satt, og starter bare testcontainere når de mangler. Da kan testene kjøre i sandkassen til en kodeagent, der Docker ikke er tilgjengelig. Mange repoer bruker fortsatt `postgres-testdatabaser` (`DatabaseContainers`) fra tbd-libs eller egne testcontainere. Bytt dem ut når du likevel endrer repoet, som i spock. Det trengs ingen egen ticket.
 - **Identitetsnumre genereres.** Bruk `lagIdentitetsnummer()` fra `sykepenger-libs/testing`, ikke hardkodede elleve siffer.
 
 ## Rapiden
