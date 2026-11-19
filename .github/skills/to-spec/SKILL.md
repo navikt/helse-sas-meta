@@ -40,12 +40,16 @@ The solution to the problem, from the user's perspective.
 
 ## Faser
 
-Include this section when the work rolls out in phases (for example skyggedrift, verifisering, ekte drift, opprydding). Omit it otherwise. Write a numbered list in this exact form, one item per phase, because the ticket graph reads the number and the bold name:
+Include this section when the work rolls out in phases (for example skyggedrift, verifisering, ekte drift, opprydding). Omit it otherwise. Write a numbered list in this exact form, one item per phase, because the ticket graph reads it:
 
-1. **<Navn på fasen>.** What the phase delivers and when it is done.
+1. **<Navn på fasen>.** What the phase delivers and when it is done. Ticketer: #12 og #13.
 2. **<Navn på fasen>.** ...
 
-Keep names short (two to four words). `/to-tickets` gives every ticket the line `**Fase:** <n>` with the number from this list.
+- The bold name is the phase's title in the ticket graph. Keep it short (two to four words).
+- The text between the name and `Ticketer:` is the description the graph shows on hover. Keep it to two or three sentences, and keep the ticket numbers after `Ticketer:` (or `Ticket:` for one) so they stay out of the description. Before `/to-tickets` has run, end the item after the description.
+- Keep each item on one line, and leave no other numbered list in the section.
+
+`/to-tickets` gives every ticket the line `**Fase:** <n>` with the number from this list, and adds `Ticketer:` to each item.
 
 ## Brukerhistorier
 

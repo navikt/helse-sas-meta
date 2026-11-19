@@ -78,7 +78,7 @@ If tickets for the same epic already exist (`gh issue list -R navikt/sas-issues 
 
 Work the **frontier**: any ticket whose blockers are all closed. For a purely linear chain that means top to bottom.
 
-Do NOT close the spec issue or modify it, except for completing contracts in step 3. The sub-issues already list the tickets under the spec. Tell the user the issue numbers and URLs when you're done.
+Do NOT close the spec issue or modify it, except for completing contracts in step 3 and adding `Ticketer: #a og #b` (or `Ticket: #a`) at the end of each item under `## Faser`, after the description. The sub-issues already list the tickets under the spec. Tell the user the issue numbers and URLs when you're done.
 
 <issue-template>
 
