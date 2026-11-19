@@ -38,6 +38,15 @@ The problem that the user is facing, from the user's perspective.
 
 The solution to the problem, from the user's perspective.
 
+## Faser
+
+Include this section when the work rolls out in phases (for example skyggedrift, verifisering, ekte drift, opprydding). Omit it otherwise. Write a numbered list in this exact form, one item per phase, because the ticket graph reads the number and the bold name:
+
+1. **<Navn på fasen>.** What the phase delivers and when it is done.
+2. **<Navn på fasen>.** ...
+
+Keep names short (two to four words). `/to-tickets` gives every ticket the line `**Fase:** <n>` with the number from this list.
+
 ## Brukerhistorier
 
 A LONG, numbered list of user stories. Each user story should be in the format of:

@@ -92,6 +92,8 @@ Body:
 
 **Repo:** the app repo(s) in sas-meta the ticket touches, for example `spleis` or `speil`.
 
+**Fase:** the number of the ticket's phase from the spec's `## Faser` list, for example `2`. Use the number only, not the name. Omit this line when the spec has no phases.
+
 **Hva skal lages:** the end-to-end behaviour this ticket makes work, from the user's perspective, not a layer-by-layer implementation list.
 
 **Blokkeres av:** the issues that gate this one, for example `#12, #13`, or "Ingen (kan starte med en gang)".

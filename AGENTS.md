@@ -37,6 +37,10 @@ Disse skillene er hentet fra [mattpocock/skills](https://github.com/mattpocock/s
 
 Specer og tickets er GitHub-issues i `navikt/sas-issues`, som er eneste kilde til innhold, status og avhengigheter. En spec har labelene `spec-issue` og `epic:<spec-slug>`, og ticketene fra den har `spec-ticket` og `epic:<spec-slug>` og er sub-issues av specen. Se `docs/agents/issue-tracker.md`.
 
+### Faser
+
+Når du snakker om fasene i en epic, bruk både nummer og navn, for eksempel «fase 2 (Verifisering)». Hvis specen ikke gir fasene navn, bruker du bare nummeret. Navnene står i seksjonen `## Faser` i specen.
+
 ### Domain docs
 
 Single-context: én `GLOSSARY.md` og `docs/adr/` på rota av sas-meta. Se `docs/agents/domain.md`.
