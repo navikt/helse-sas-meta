@@ -34,6 +34,7 @@ Issues that don't come from a spec get none of these labels.
 
 ## Ticket status
 
+- **mangler avklaring**: open and labelled `mangler-avklaring`, whether or not it is assigned or blocked. Use the label when a decision or question must be settled before the ticket can be built, and list what needs settling in a `## Må avklares` section in the body. Remove the label once it is settled: `gh issue edit <n> -R navikt/sas-issues --remove-label mangler-avklaring`.
 - **klar**: open, no assignee, and no open blockers.
 - **pågår**: open and assigned (`gh issue edit <n> -R navikt/sas-issues --add-assignee @me`).
 - **ferdig**: closed.

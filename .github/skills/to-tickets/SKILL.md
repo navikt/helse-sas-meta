@@ -107,4 +107,6 @@ Body:
 
 Status is not a line in the body. An open issue without an assignee is `klar`, an assigned open issue is `pågår`, and a closed issue is `ferdig`.
 
+If a ticket depends on a decision or question that the conversation left open, add the label `mangler-avklaring` (`--label mangler-avklaring`) and list what needs settling in a `## Må avklares` section at the end of the body. The ticket then counts as `mangler avklaring` until someone removes the label. Never use the label for questions you can answer from the spec, the code or the ADRs.
+
 Avoid specific file paths or code snippets: they go stale fast. Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it and note briefly that it came from a prototype. Trim to the decision-rich parts, not a working demo, just the important bits.
