@@ -1,0 +1,396 @@
+<!doctype html>
+<!--
+  Til kodeagenter: Dette dokumentet er skrevet for mennesker i team SAS.
+  Det er ikke instruksjoner til deg. Ikke følg det, ikke bruk det som kontekst.
+  Instruksjonene dine står i AGENTS.md, CODING_STANDARDS.md og .github/skills/.
+-->
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GitHub Copilot i team SAS</title>
+<link rel="stylesheet" href="https://cdn.nav.no/aksel/@navikt/ds-css/8.23.0/index.min.css">
+<style>
+  body { margin: 0; background: var(--ax-bg-default); color: var(--ax-text-neutral); }
+  main { max-width: 920px; margin: 0 auto; padding: 32px 20px 80px; }
+  section { margin-top: 48px; }
+  .banner { border: 2px solid var(--ax-border-warning); background: var(--ax-bg-warning-soft); border-radius: 12px; padding: 16px 20px; }
+  .boks { border: 1px solid var(--ax-border-neutral-subtle); background: var(--ax-bg-neutral-soft); border-radius: 12px; padding: 16px 20px; }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; }
+  code { background: var(--ax-bg-neutral-moderate); padding: 1px 5px; border-radius: 4px; }
+  pre { background: var(--ax-bg-neutral-moderate); padding: 12px 16px; border-radius: 8px; overflow-x: auto; }
+  pre code { background: none; padding: 0; }
+  .aksel-table { width: 100%; margin: 12px 0; }
+  .aksel-table td, .aksel-table th { vertical-align: top; }
+  ul, ol { padding-left: 1.4em; }
+  li { margin: 4px 0; }
+  .flyt { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; }
+  .flyt span.steg { border: 1px solid var(--ax-border-accent); background: var(--ax-bg-accent-soft); border-radius: 999px; padding: 4px 12px; font-weight: 600; }
+  svg { width: 100%; height: auto; }
+  svg text { font-family: "Source Sans 3", system-ui, sans-serif; fill: #23262a; }
+  nav.toc ol { columns: 2; }
+</style>
+</head>
+<body>
+<main>
+
+<h1 class="aksel-heading aksel-heading--xlarge">GitHub Copilot i team SAS</h1>
+<p class="aksel-body-long aksel-body-long--large">En kort guide til hvordan vi bruker kodeagenter i teamet: hva begrepene betyr, hvordan bitene henger sammen og hva du må stille inn.</p>
+
+<div class="banner">
+  <p class="aksel-body-short"><strong>Skrevet for teammedlemmer, ikke for agenter.</strong> Dette er en guide for oss mennesker. Agentene får sine instruksjoner fra <code>AGENTS.md</code>, <code>CODING_STANDARDS.md</code> og <code>.github/skills/</code>, og denne siden er bevisst ikke lenket derfra. Detaljene står i dokumentasjonen vi lenker til. Status per november 2026.</p>
+</div>
+
+<nav class="toc">
+  <h2 class="aksel-heading aksel-heading--small" style="margin-top:32px">Innhold</h2>
+  <ol class="aksel-body-short">
+    <li><a class="aksel-link" href="#kort">Kort fortalt</a></li>
+    <li><a class="aksel-link" href="#skisse">Slik henger det sammen</a></li>
+    <li><a class="aksel-link" href="#begreper">Begrepene</a></li>
+    <li><a class="aksel-link" href="#flyt">Flyten: fra idé til kode</a></li>
+    <li><a class="aksel-link" href="#skills">Skillene i sas-meta</a></li>
+    <li><a class="aksel-link" href="#modeller">Modeller</a></li>
+    <li><a class="aksel-link" href="#oppstart">Kom i gang</a></li>
+    <li><a class="aksel-link" href="#sandkasse">Innstillinger i sandkassen</a></li>
+    <li><a class="aksel-link" href="#appen">Copilot-appen eller CLI?</a></li>
+    <li><a class="aksel-link" href="#web">Copilot på github.com</a></li>
+    <li><a class="aksel-link" href="#tips">Tips til prompting</a></li>
+    <li><a class="aksel-link" href="#lenker">Lenker</a></li>
+  </ol>
+</nav>
+
+<section id="kort">
+  <h2 class="aksel-heading aksel-heading--large">Kort fortalt</h2>
+  <ul class="aksel-body-long">
+    <li>Vi bruker <strong>Copilot CLI</strong> i terminalen, alltid inne i sandkassen <strong>cplt</strong>. Start med <code>cplt</code> direkte. <strong>nav-pilot</strong> er valgfritt og gir bare Navs felles skills, agenter og hooks i tillegg.</li>
+    <li>Vi starter alltid fra <code>helse-sas-meta</code>. Da får agenten med seg ordlisten, ADR-ene, kodestandardene og skillene våre.</li>
+    <li>Større arbeid går slik: <strong>grill → spec → tickets → implement → retro</strong>. Specer og tickets er issues i <a class="aksel-link" href="https://github.com/navikt/sas-issues/issues">navikt/sas-issues</a>.</li>
+    <li>Testene skal kjøre i sandkassen uten <code>allow_docker</code>. Postgres og Kafka kjører utenfor, og testene kobler seg til via miljøvariabler.</li>
+    <li>På Nav-utstyr er sandkasse påkrevd. Copilot-appen går ikke gjennom cplt, så bruk den til oversikt, ikke til agentarbeid i repoene.</li>
+    <li>Copilot på github.com er en annen harness. Den kjører i GitHubs sky uten sas-meta-konteksten vår, så gi den bare små oppgaver i ett repo og PR-gjennomganger.</li>
+  </ul>
+</section>
+
+<section id="skisse">
+  <h2 class="aksel-heading aksel-heading--large">Slik henger det sammen</h2>
+  <svg viewBox="0 0 960 470" role="img" aria-labelledby="skisse-tittel skisse-beskrivelse">
+    <title id="skisse-tittel">Skisse av harnessen vår</title>
+    <desc id="skisse-beskrivelse">Du snakker med Copilot CLI. Den kjører inne i sandkassen cplt, som du starter direkte eller via nav-pilot. Copilot CLI laster kontekst fra sas-meta, skills og MCP, sender den til en valgt modell, og skriver til sas-issues og app-repoene. Copilot-appen ligger utenfor cplt.</desc>
+    <defs>
+      <marker id="pil" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#49515e"/>
+      </marker>
+    </defs>
+
+    <rect x="125" y="10" width="570" height="450" rx="16" fill="#f5f6f7" stroke="#49515e" stroke-dasharray="8 6"/>
+    <text x="145" y="38" font-size="18" font-weight="700">Vår harness</text>
+    <text x="260" y="38" font-size="13">alt rundt modellen som gjør den til en agent</text>
+
+    <rect x="10" y="150" width="90" height="70" rx="10" fill="#ffffff" stroke="#49515e"/>
+    <text x="55" y="183" font-size="16" font-weight="700" text-anchor="middle">Du</text>
+    <text x="55" y="203" font-size="12" text-anchor="middle">prompt</text>
+
+    <rect x="10" y="340" width="100" height="90" rx="10" fill="#ffffff" stroke="#a0a6ad" stroke-dasharray="5 4"/>
+    <text x="60" y="368" font-size="13" font-weight="700" text-anchor="middle" fill="#6a717a">Copilot-</text>
+    <text x="60" y="385" font-size="13" font-weight="700" text-anchor="middle" fill="#6a717a">appen</text>
+    <text x="60" y="405" font-size="11" text-anchor="middle" fill="#6a717a">utenfor cplt,</text>
+    <text x="60" y="420" font-size="11" text-anchor="middle" fill="#6a717a">egen sandkasse</text>
+
+    <rect x="145" y="60" width="270" height="250" rx="12" fill="#fff4e0" stroke="#c77300" stroke-width="2"/>
+    <text x="160" y="84" font-size="15" font-weight="700">cplt – sandkassen</text>
+    <text x="160" y="102" font-size="12">kjernen stopper hemmeligheter, push til main,</text>
+    <text x="160" y="117" font-size="12">Docker og ukjent nettverk</text>
+
+    <rect x="165" y="135" width="230" height="155" rx="10" fill="#e6f0ff" stroke="#2f6bd9" stroke-width="2"/>
+    <text x="180" y="160" font-size="15" font-weight="700">Copilot CLI</text>
+    <text x="180" y="182" font-size="12">agentløkka: tenk → bruk verktøy → se</text>
+    <text x="180" y="198" font-size="12">resultat → gjenta</text>
+    <text x="180" y="222" font-size="12">verktøy: shell, edit, grep, gh,</text>
+    <text x="180" y="238" font-size="12">sub-agenter</text>
+    <text x="180" y="266" font-size="12" font-style="italic">kommandoer: /model, /implement …</text>
+
+    <rect x="145" y="330" width="270" height="110" rx="12" fill="#ecf8ef" stroke="#1f8a43" stroke-width="2" stroke-dasharray="6 4"/>
+    <text x="160" y="355" font-size="15" font-weight="700">nav-pilot <tspan font-weight="400" font-size="12">(valgfritt)</tspan></text>
+    <text x="160" y="377" font-size="12">starter cplt for deg, eller start cplt selv</text>
+    <text x="160" y="394" font-size="12">gir i tillegg Nav-agenter og Nav-skills</text>
+    <text x="160" y="411" font-size="12">og hooks (f.eks. klarspråk)</text>
+    <text x="160" y="428" font-size="12">fra navikt/copilot</text>
+    <line x1="280" y1="330" x2="280" y2="314" stroke="#1f8a43" stroke-width="2" marker-end="url(#pil)"/>
+
+    <text x="445" y="84" font-size="15" font-weight="700">Kontekst som lastes inn</text>
+    <rect x="445" y="100" width="230" height="110" rx="10" fill="#ffffff" stroke="#49515e"/>
+    <text x="458" y="122" font-size="13" font-weight="700">helse-sas-meta</text>
+    <text x="458" y="142" font-size="12">AGENTS.md, GLOSSARY.md</text>
+    <text x="458" y="158" font-size="12">CODING_STANDARDS.md, docs/adr/</text>
+    <text x="458" y="174" font-size="12">docs/agents/ (sas-issues, team)</text>
+    <text x="458" y="196" font-size="12">+ alle app-repoene under seg</text>
+
+    <rect x="445" y="222" width="230" height="110" rx="10" fill="#ffffff" stroke="#49515e"/>
+    <text x="458" y="244" font-size="13" font-weight="700">Skills og agenter</text>
+    <text x="458" y="264" font-size="12">våre: .github/skills/ i sas-meta</text>
+    <text x="458" y="280" font-size="12">Navs: fra nav-pilot (~/.copilot)</text>
+    <text x="458" y="296" font-size="12">lastes inn når de trengs,</text>
+    <text x="458" y="312" font-size="12">eller når du skriver /navn</text>
+
+    <rect x="445" y="344" width="230" height="96" rx="10" fill="#ffffff" stroke="#49515e"/>
+    <text x="458" y="366" font-size="13" font-weight="700">MCP-servere</text>
+    <text x="458" y="386" font-size="12">verktøy fra andre systemer,</text>
+    <text x="458" y="402" font-size="12">for eksempel GitHub</text>
+    <text x="458" y="418" font-size="12">~/.copilot/mcp-config.json</text>
+
+    <line x1="100" y1="185" x2="161" y2="185" stroke="#49515e" stroke-width="2" marker-end="url(#pil)"/>
+    <line x1="445" y1="190" x2="399" y2="190" stroke="#49515e" stroke-width="2" marker-end="url(#pil)"/>
+
+    <rect x="725" y="60" width="225" height="110" rx="12" fill="#f3e8ff" stroke="#7a3fc2" stroke-width="2"/>
+    <text x="740" y="86" font-size="15" font-weight="700">Modellen</text>
+    <text x="740" y="108" font-size="12">Claude, GPT, Gemini …</text>
+    <text x="740" y="124" font-size="12">velges med /model</text>
+    <text x="740" y="146" font-size="12">kjører hos GitHub, betalt via</text>
+    <text x="740" y="162" font-size="12">Copilot-abonnementet</text>
+    <path d="M395 150 L420 150 L420 50 L700 50 L700 100 L721 100" fill="none" stroke="#7a3fc2" stroke-width="2" marker-start="url(#pil)" marker-end="url(#pil)"/>
+    <text x="440" y="68" font-size="12" fill="#7a3fc2">prompt + kontekst ⇄ svar og verktøykall</text>
+
+    <rect x="725" y="250" width="225" height="80" rx="12" fill="#ffffff" stroke="#49515e" stroke-width="2"/>
+    <text x="740" y="276" font-size="15" font-weight="700">navikt/sas-issues</text>
+    <text x="740" y="298" font-size="12">specer og tickets som issues</text>
+    <text x="740" y="314" font-size="12">krever sandbox.repo_dirs</text>
+
+    <rect x="725" y="350" width="225" height="80" rx="12" fill="#ffffff" stroke="#49515e" stroke-width="2"/>
+    <text x="740" y="376" font-size="15" font-weight="700">App-repoene</text>
+    <text x="740" y="398" font-size="12">kode, tester, commits,</text>
+    <text x="740" y="414" font-size="12">PR-er (ikke push til main)</text>
+
+    <path d="M415 280 L430 280 L430 455 L710 455 L710 290 L721 290" fill="none" stroke="#49515e" stroke-width="2" marker-end="url(#pil)"/>
+    <path d="M710 390 L721 390" fill="none" stroke="#49515e" stroke-width="2" marker-end="url(#pil)"/>
+    <text x="560" y="451" font-size="12">skriver</text>
+  </svg>
+</section>
+
+<section id="begreper">
+  <h2 class="aksel-heading aksel-heading--large">Begrepene</h2>
+  <table class="aksel-table aksel-body-short">
+    <thead class="aksel-table__header"><tr class="aksel-table__row">
+      <th class="aksel-table__header-cell">Begrep</th><th class="aksel-table__header-cell">Hva det er</th>
+    </tr></thead>
+    <tbody class="aksel-table__body">
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell"><strong>GitHub Copilot</strong></td><td class="aksel-table__data-cell">Produktet og abonnementet. Det gir tilgang til modellene og til klientene: VS Code, IntelliJ, Copilot CLI, Copilot-appen og agentene på github.com.</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell"><strong>Copilot CLI</strong> (<code>copilot</code>)</td><td class="aksel-table__data-cell">Agenten i terminalen. Den leser filer, kjører kommandoer, redigerer kode og spør modellen om neste steg. Det er denne vi bruker.</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell"><strong>Copilot-appen</strong></td><td class="aksel-table__data-cell">GitHubs skrivebordsapp. Den viser økter, issues og PR-er side om side, og kan kjøre agenter lokalt eller i GitHubs sky. Den går ikke gjennom cplt (<a class="aksel-link" href="#appen">se under</a>).</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell"><strong>Copilot på github.com</strong></td><td class="aksel-table__data-cell">Chat, agent og kodegjennomgang rett på GitHub. Agenten kjører i GitHubs sky, ikke på maskinen din, og er derfor en annen harness enn vår (<a class="aksel-link" href="#web">se under</a>).</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell"><strong>cplt</strong></td><td class="aksel-table__data-cell">Navs sandkasse for kodeagenter (<a class="aksel-link" href="https://github.com/navikt/cplt">navikt/cplt</a>). Den pakker inn <code>copilot</code>, og kjernen i macOS eller Linux håndhever grensene: ingen tilgang til hemmeligheter, ingen push til main, ingen merging, ingen Docker og bare godkjent nettverk.</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell"><strong>nav-pilot</strong></td><td class="aksel-table__data-cell">Navs CLI og agent (<a class="aksel-link" href="https://github.com/navikt/copilot/blob/main/docs/README.nav-pilot.md">navikt/copilot</a>). Den installerer Navs agenter, skills og hooks, og starter Copilot CLI inne i cplt. Uten cplt starter den ikke. Den er valgfri: cplt alene gir samme sandkasse, du får bare ikke Nav-skillene i tillegg. sas-meta er en egen «agentpakke» (<code>.nav-pilot/agentpakke.json</code>).</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell"><strong>Modell</strong></td><td class="aksel-table__data-cell">Språkmodellen som tenker, for eksempel Claude Opus, GPT eller Gemini. Du velger den med <code>/model</code>. Modellen ser bare det harnessen sender den.</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell"><strong>Harness</strong></td><td class="aksel-table__data-cell">Alt rundt modellen som gjør den til en agent: agentløkka, verktøyene, sandkassen, instruksjonene og skillene. <a class="aksel-link" href="#var-harness">Vår harness</a> står under.</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell"><strong>Skill</strong></td><td class="aksel-table__data-cell">En mappe med en <code>SKILL.md</code> som lærer agenten én bestemt oppgave. Agenten laster den inn når beskrivelsen passer, eller når du skriver <code>/navn</code>, for eksempel <code>/implement 304</code>.</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell"><strong>Agent</strong> (custom agent)</td><td class="aksel-table__data-cell">En egen rolle med eget systemprompt, for eksempel <code>@nav-pilot</code> eller <code>security-champion-agent</code>. Hovedagenten kan også starte sub-agenter som jobber i egen kontekst.</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell"><strong>Hook</strong></td><td class="aksel-table__data-cell">Et skript som kjører ved bestemte hendelser i økta, for eksempel før et verktøykall. nav-pilot legger inn noen, som klarspråk-sjekken og loop-vakten.</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell"><strong>MCP</strong></td><td class="aksel-table__data-cell">Model Context Protocol, en standard for å gi agenten verktøy fra andre systemer, som GitHub eller Sanity.</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell"><strong>Spec, ticket og epic</strong></td><td class="aksel-table__data-cell">Issues i <code>navikt/sas-issues</code>. En spec beskriver hele leveransen. Ticketene er vertikale biter av specen, lagt inn som sub-issues. Labelen <code>epic:&lt;navn&gt;</code> binder dem sammen.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="boks" id="var-harness">
+    <h3 class="aksel-heading aksel-heading--small">Vår harness</h3>
+    <p class="aksel-body-long">Harnessen vår består av fem deler:</p>
+    <ul class="aksel-body-long">
+      <li><strong>Copilot CLI</strong>: agentløkka og verktøyene.</li>
+      <li><strong>cplt</strong>: sandkassen.</li>
+      <li><strong>nav-pilot</strong> (valgfritt): legger til Navs skills, agenter og hooks.</li>
+      <li><strong>helse-sas-meta</strong>: <code>AGENTS.md</code>, <code>CODING_STANDARDS.md</code>, <code>GLOSSARY.md</code>, ADR-er og skillene våre.</li>
+      <li><strong>navikt/sas-issues</strong>: specene og ticketene.</li>
+    </ul>
+    <p class="aksel-body-long">Modellen er den delen vi bytter oftest. Resten er det som gjør at agenten jobber på vår måte.</p>
+  </div>
+</section>
+
+<section id="flyt">
+  <h2 class="aksel-heading aksel-heading--large">Flyten: fra idé til kode</h2>
+  <div class="flyt aksel-body-short">
+    <span class="steg">/grill-with-docs</span> → <span class="steg">/to-spec</span> → <span class="steg">/to-tickets</span> → <span class="steg">/implement &lt;nr&gt;</span> → <span class="steg">/code-review</span> → <span class="steg">/retro</span>
+  </div>
+  <table class="aksel-table aksel-body-short">
+    <thead class="aksel-table__header"><tr class="aksel-table__row">
+      <th class="aksel-table__header-cell">Steg</th><th class="aksel-table__header-cell">Hva skjer</th><th class="aksel-table__header-cell">Resultat</th>
+    </tr></thead>
+    <tbody class="aksel-table__body">
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell"><code>/grill-with-docs</code></td><td class="aksel-table__data-cell">Agenten stiller spørsmål om planen i runder, med anbefalte svar, til dere har en felles forståelse. Den starter med <em>tverrfaglig-oppstart</em> (hvem er med?) og avslutter med <em>after-grilling</em> (varsler og melding om vedtak). Gjør dette gjerne i fellesskap med fag, design og juss. <code>/grill-me</code> er den lette varianten uten dokumentasjon.</td><td class="aksel-table__data-cell">Oppdatert <code>GLOSSARY.md</code> og nye ADR-er</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell"><code>/to-spec</code></td><td class="aksel-table__data-cell">Gjør samtalen om til en spec med faser.</td><td class="aksel-table__data-cell">Issue med <code>spec-issue</code> og <code>epic:&lt;navn&gt;</code></td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell"><code>/to-tickets</code></td><td class="aksel-table__data-cell">Deler specen i vertikale tickets, hver med sine avhengigheter.</td><td class="aksel-table__data-cell">Sub-issues med <code>spec-ticket</code></td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell"><code>/implement 304</code></td><td class="aksel-table__data-cell">Én ny økt per ticket. Agenten jobber testdrevet (<em>tdd</em>) i app-repoet og avslutter med <em>code-review</em>.</td><td class="aksel-table__data-cell">Kode, tester og commit</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell"><code>/code-review</code></td><td class="aksel-table__data-cell">Gjennomgår endringene både mot kodestandardene og mot specen. Kan også kjøres alene.</td><td class="aksel-table__data-cell">Funn, side om side</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell"><code>/retro</code></td><td class="aksel-table__data-cell">Kjør den etter økta. Agenten foreslår forbedringer i miljøet: skills, standarder og sjekker.</td><td class="aksel-table__data-cell">Bedre harness neste gang</td></tr>
+    </tbody>
+  </table>
+  <p class="aksel-body-long">Fasene i en epic omtaler vi med både nummer og navn, for eksempel «fase 2 (Verifisering)». Oversikten over issues ligger i <a class="aksel-link" href="https://github.com/navikt/sas-issues/issues">sas-issues</a>.</p>
+</section>
+
+<section id="skills">
+  <h2 class="aksel-heading aksel-heading--large">Skillene i sas-meta</h2>
+  <p class="aksel-body-long">Skillene ligger i <code>.github/skills/</code>. Noen er hentet fra <a class="aksel-link" href="https://github.com/mattpocock/skills">mattpocock/skills</a>, de andre har vi skrevet selv. Navs felles skills, som <code>/observability-debugging</code>, <code>/nais</code> og <code>/security-review</code>, kommer fra nav-pilot hvis du bruker den. Se <a class="aksel-link" href="https://ki-utvikling.nav.no/verktoy">ki-utvikling.nav.no/verktoy</a>.</p>
+  <table class="aksel-table aksel-body-short">
+    <thead class="aksel-table__header"><tr class="aksel-table__row">
+      <th class="aksel-table__header-cell">Gruppe</th><th class="aksel-table__header-cell">Skills</th>
+    </tr></thead>
+    <tbody class="aksel-table__body">
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell">Flyten</td><td class="aksel-table__data-cell"><code>grill-with-docs</code>, <code>grill-me</code>, <code>grilling</code>, <code>to-spec</code>, <code>to-tickets</code>, <code>implement</code>, <code>code-review</code>, <code>retro</code></td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell">Våre sjekkpunkter i grillingen</td><td class="aksel-table__data-cell"><code>tverrfaglig-oppstart</code>, <code>after-grilling</code></td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell">Brukes av flyten</td><td class="aksel-table__data-cell"><code>tdd</code>, <code>domain-modeling</code>, <code>codebase-design</code>, <code>writing-for-agents</code></td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell">Våre fagskills</td><td class="aksel-table__data-cell"><code>gitmoji-commit</code>, <code>readme</code>, <code>sykepenger-logging</code>, <code>sykepenger-logging-api</code>, <code>sykepenger-standardisering</code>, <code>nais-apply-migrering</code></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="modeller">
+  <h2 class="aksel-heading aksel-heading--large">Modeller</h2>
+  <p class="aksel-body-long">Bytt modell med <code>/model</code> midt i en økt. Modellene koster forskjellig: hver forespørsel trekkes fra premium-kvoten med en egen multiplikator. Se <a class="aksel-link" href="https://docs.github.com/en/copilot/reference/ai-models/supported-models">GitHubs modelloversikt</a>. Dette er utgangspunktet vårt, ikke en regel:</p>
+  <table class="aksel-table aksel-body-short">
+    <thead class="aksel-table__header"><tr class="aksel-table__row">
+      <th class="aksel-table__header-cell">Oppgave</th><th class="aksel-table__header-cell">Modell</th><th class="aksel-table__header-cell">Hvorfor</th>
+    </tr></thead>
+    <tbody class="aksel-table__body">
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell">Grilling, spec, arkitektur og review</td><td class="aksel-table__data-cell">Claude Opus</td><td class="aksel-table__data-cell">Resonnerer best og ser konsekvenser</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell"><code>/implement</code> og vanlig kodearbeid</td><td class="aksel-table__data-cell">Standardmodellen i nav-pilot (GPT-6.1 Sol) eller Claude Sonnet</td><td class="aksel-table__data-cell">God balanse mellom kvalitet, fart og pris</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell">Sub-agenter, oppslag og små endringer</td><td class="aksel-table__data-cell">En rask modell (Haiku, Flash)</td><td class="aksel-table__data-cell">Billig og rask nok</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="oppstart">
+  <h2 class="aksel-heading aksel-heading--large">Kom i gang</h2>
+<pre><code>brew install navikt/tap/cplt
+cd ~/git/nav/helse-sas-meta
+cplt doctor               # sjekker oppsettet
+cplt                      # starter Copilot CLI i sandkassen
+cplt -- --model claude-opus-5.5   # alt etter -- går rett til copilot</code></pre>
+  <p class="aksel-body-long">Vil du også ha Navs felles skills, agenter og hooks, installer <code>navikt/tap/nav-pilot</code> og start med <code>nav-pilot</code> i stedet. Den starter den samme cplt-en for deg. Skillene våre i sas-meta får du uansett. Med <code>cplt --shell-install</code> kjører også en vanlig <code>copilot</code> i sandkassen.</p>
+  <ul class="aksel-body-long">
+    <li><strong>Start fra <code>helse-sas-meta</code>, ikke fra app-repoet.</strong> Konteksten følger mappen du står i. Starter du i <code>spleis/</code>, mister agenten ordlisten, ADR-ene og skillene våre.</li>
+    <li>Første gang i et repo med <code>.cplt.toml</code> må du godkjenne policyen med <code>cplt trust</code>.</li>
+    <li>Installasjon og oppsett er beskrevet i <a class="aksel-link" href="https://github.com/navikt/copilot/blob/main/docs/README.nav-pilot.md">README for nav-pilot</a> og <a class="aksel-link" href="https://github.com/navikt/cplt">README for cplt</a>.</li>
+  </ul>
+</section>
+
+<section id="sandkasse">
+  <h2 class="aksel-heading aksel-heading--large">Innstillinger i sandkassen</h2>
+  <p class="aksel-body-long">Kjør kommandoene <strong>utenfor</strong> sandkassen, i en vanlig terminal. De gjelder fra neste gang du starter cplt. Uten <code>--local</code> lagres innstillingen i din globale cplt-konfigurasjon. Med <code>--local</code> gjelder den bare denne checkouten. Se gjeldende oppsett med <code>cplt config show</code> eller <code>cplt settings</code>, og få forklart en nøkkel med <code>cplt config explain &lt;nøkkel&gt;</code>.</p>
+  <table class="aksel-table aksel-body-short">
+    <thead class="aksel-table__header"><tr class="aksel-table__row">
+      <th class="aksel-table__header-cell">Du vil …</th><th class="aksel-table__header-cell">Innstilling</th>
+    </tr></thead>
+    <tbody class="aksel-table__body">
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell">la agenten opprette og endre issues i sas-issues</td><td class="aksel-table__data-cell"><code>cplt config set --local sandbox.repo_dirs sas-issues</code> fra <code>helse-sas-meta</code> (se README)</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell">la agenten skrive i et repo som sandkassen stopper</td><td class="aksel-table__data-cell">Samme kommando med repoet: <code>cplt config set --local sandbox.repo_dirs &lt;repo&gt;</code></td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell">kjøre Gradle og Kotlin-daemonen</td><td class="aksel-table__data-cell"><code>cplt config set sandbox.allow_localhost_any true</code></td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell">bruke MockK eller Mockito inline</td><td class="aksel-table__data-cell"><code>cplt config set sandbox.allow_jvm_attach true</code></td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell">fikse at JVM-en feiler ved oppstart med «Operation not permitted»</td><td class="aksel-table__data-cell"><code>cplt config set sandbox.allow_tmp_exec true --force</code> (bare ved behov)</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell">hente pakker fra GitHub Packages (401 i Gradle)</td><td class="aksel-table__data-cell"><code>cplt config set sandbox.allow_build_credentials true --force</code>, som gir lesetilgang til <code>~/.gradle/gradle.properties</code></td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell">kjøre tester med Postgres og Kafka</td><td class="aksel-table__data-cell">Containerne kjører utenfor sandkassen. Se under.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="boks">
+    <h3 class="aksel-heading aksel-heading--small">Tester med Postgres og Kafka, uten <code>allow_docker</code></h3>
+    <p class="aksel-body-long"><code>allow_docker</code> gir agenten tilgang til Docker-socketen, og det er i praksis root på maskinen. Vi bruker heller <code>TestDatabase</code> fra <code>postgres</code> og <code>TestKafka</code> fra <code>kafka-test</code> i sykepenger-libs (står i <code>CODING_STANDARDS.md</code>). Er miljøvariablene satt, kobler testene seg til serverne der. Er de ikke satt, starter testene egne testcontainere, som før.</p>
+<pre><code># 1. Start containerne utenfor sandkassen
+docker run -d --rm --name test-postgres -e POSTGRES_PASSWORD=test -p 5432:5432 postgres:18-alpine
+docker run -d --rm --name test-kafka -p 9092:9092 apache/kafka-native:3.9.1
+
+# 2. Eksporter variablene i skallet du starter cplt fra (f.eks. i ~/.zshrc)
+export TEST_POSTGRES_JDBC_URL='jdbc:postgresql://localhost:5432/postgres?user=postgres&amp;password=test'
+export TEST_KAFKA_BOOTSTRAP_SERVERS=localhost:9092
+
+# 3. Én gang: slipp variablene og portene inn i sandkassen
+cplt config set sandbox.pass_env TEST_POSTGRES_JDBC_URL
+cplt config set sandbox.pass_env TEST_KAFKA_BOOTSTRAP_SERVERS
+cplt config set allow.localhost 5432
+cplt config set allow.localhost 9092</code></pre>
+    <p class="aksel-body-long">Repoer som fortsatt bruker egne testcontainere, bytter vi over når vi likevel endrer dem. Se README-ene for <code>libs/postgres</code> og <code>libs/kafka-test</code>, og <a class="aksel-link" href="https://github.com/navikt/cplt/blob/main/docs/known-impacts.md#docker-and-testcontainers">cplt: Docker og Testcontainers</a>.</p>
+  </div>
+
+  <div class="boks" id="alias" style="margin-top:16px">
+    <h3 class="aksel-heading aksel-heading--small">Tips: lag et alias</h3>
+    <p class="aksel-body-long">Du slipper å huske flaggene hvis du lager en funksjon i <code>~/.zshrc</code>. Den kan starte Postgres og Kafka hvis de ikke kjører, sende miljøvariablene rett inn med <code>--pass-env</code>, åpne portene for denne økta og velge modell. Da trenger du ikke stegene 2 og 3 over.</p>
+<pre><code>sas() {
+  docker ps -q -f name='^test-postgres$' | grep -q . ||
+    docker run -d --rm --name test-postgres -e POSTGRES_PASSWORD=test -p 5432:5432 postgres:18-alpine
+  docker ps -q -f name='^test-kafka$' | grep -q . ||
+    docker run -d --rm --name test-kafka -p 9092:9092 apache/kafka-native:3.9.1
+
+  cd ~/git/nav/helse-sas-meta &amp;&amp;
+  TEST_POSTGRES_JDBC_URL='jdbc:postgresql://localhost:5432/postgres?user=postgres&amp;password=test' \
+  TEST_KAFKA_BOOTSTRAP_SERVERS=localhost:9092 \
+  cplt --pass-env TEST_POSTGRES_JDBC_URL --pass-env TEST_KAFKA_BOOTSTRAP_SERVERS \
+       --allow-localhost 5432 --allow-localhost 9092 \
+       -- "$@"
+}
+
+alias opus='sas --model claude-opus-5.5'    # grilling og spec
+alias sonnet='sas --model claude-sonnet-5.5'</code></pre>
+    <p class="aksel-body-long">Alt etter <code>--</code> går til <code>copilot</code>, så <code>opus</code> starter med Opus, og <code>sas -p "kjør testene i spleis"</code> kjører én prompt uten interaktiv økt. Se modell-ID-ene med <code>/model</code> i en økt.</p>
+  </div>
+
+  <p class="aksel-body-long">Flere oppskrifter: <a class="aksel-link" href="https://github.com/navikt/cplt/blob/main/docs/configuration.md">konfigurasjon</a> og <a class="aksel-link" href="https://github.com/navikt/cplt/blob/main/docs/known-impacts.md">kjente konsekvenser</a> (Gradle, JVM, Kotlin-daemon).</p>
+</section>
+
+<section id="appen">
+  <h2 class="aksel-heading aksel-heading--large">Copilot-appen eller CLI?</h2>
+  <p class="aksel-body-long">Copilot-appen er fin til å følge med på issues, PR-er og økter, og til agenter som kjører i GitHubs sky. Kjører den agenten lokalt på maskinen din, mister du dette sammenlignet med CLI i cplt:</p>
+  <ul class="aksel-body-long">
+    <li><strong>Ingen cplt.</strong> Appen har sin egen lokale sandkasse, men ikke Navs policy, der kjernen stopper tilgangen til nøkler, tokens og <code>.env</code>-filer.</li>
+    <li><strong>Ingen git- og gh-vakt.</strong> cplt stopper push til main, force-push, merging og releaser.</li>
+    <li><strong>Ingen <code>.cplt.toml</code></strong> per repo og ingen innstillinger fra denne siden. Appens sandkasse stilles inn for seg.</li>
+    <li><strong>Ingen nav-pilot.</strong> Du mister hooks, oppstartsoppsett og OTEL-sporing.</li>
+  </ul>
+  <p class="aksel-body-long">På Nav-utstyr er sandkasse påkrevd (<a class="aksel-link" href="https://ki-utvikling.nav.no/nyheter/sandboxing-er-pakrevd-pa-nav-utstyr">ki-utvikling.nav.no</a>). Slik vi forstår det i november 2026, er cplt den enkleste måten å oppfylle kravet på. Gjør derfor agentarbeid i repoene med <code>cplt</code>, direkte eller via <code>nav-pilot</code>. Se også <a class="aksel-link" href="https://docs.github.com/en/enterprise-cloud@latest/copilot/concepts/security-governance-and-network-settings/about-cloud-and-local-sandboxes">GitHub om lokale sandkasser</a>.</p>
+</section>
+
+<section id="web">
+  <h2 class="aksel-heading aksel-heading--large">Copilot på github.com</h2>
+  <p class="aksel-body-long">Du kan også bruke Copilot rett på GitHub: fra <a class="aksel-link" href="https://github.com/copilot">github.com/copilot</a>, fra fanen <em>Agents</em> i et repo, ved å tildele et issue til Copilot, eller ved å be Copilot gjennomgå en PR. Da kjører agenten i GitHubs sky, enten i en skysandkasse eller på en GitHub Actions-runner. Det er <strong>en annen harness</strong>: samme slags agentløkke, men et annet miljø, en annen sandkasse og en annen kontekst.</p>
+  <table class="aksel-table aksel-body-short">
+    <thead class="aksel-table__header"><tr class="aksel-table__row">
+      <th class="aksel-table__header-cell"></th><th class="aksel-table__header-cell">CLI i cplt (vår harness)</th><th class="aksel-table__header-cell">github.com</th>
+    </tr></thead>
+    <tbody class="aksel-table__body">
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell">Kjører</td><td class="aksel-table__data-cell">På maskinen din, i cplt</td><td class="aksel-table__data-cell">Hos GitHub, i en skysandkasse eller på en Actions-runner</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell">Kontekst</td><td class="aksel-table__data-cell">Hele <code>helse-sas-meta</code>: ordliste, ADR-er, skills og alle repoene</td><td class="aksel-table__data-cell">Repoet (eller repoene) du peker på. Den får bare <code>AGENTS.md</code> og skills i det repoet, ikke sas-meta-oppsettet vårt.</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell">Oppsett</td><td class="aksel-table__data-cell">cplt-innstillingene dine</td><td class="aksel-table__data-cell"><code>.github/workflows/copilot-setup-steps.yml</code> i repoet (Actions-varianten). Det har mange av repoene våre fra standardiseringen.</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell">Nettverk</td><td class="aksel-table__data-cell">cplt-proxyen og det du har åpnet</td><td class="aksel-table__data-cell">GitHubs brannmur med tillatelsesliste (<a class="aksel-link" href="https://docs.github.com/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/customize-the-agent-firewall">innstillinger</a>)</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell">Docker</td><td class="aksel-table__data-cell">Nei, Postgres og Kafka kjører utenfor</td><td class="aksel-table__data-cell">På Actions-runneren går testcontainere som i CI</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell">Resultat</td><td class="aksel-table__data-cell">Commits lokalt, du bestemmer resten</td><td class="aksel-table__data-cell">En branch og en PR som du gjennomgår</td></tr>
+      <tr class="aksel-table__row"><td class="aksel-table__data-cell">Passer til</td><td class="aksel-table__data-cell">Grilling, specer, tickets på tvers av repoer og alt som trenger domenet vårt</td><td class="aksel-table__data-cell">Små, avgrensede oppgaver i ett repo, som avhengigheter, enkle feil og tester. Også kodegjennomgang av PR-er, og spørsmål fra mobilen.</td></tr>
+    </tbody>
+  </table>
+  <p class="aksel-body-long">Den største begrensningen for oss er konteksten. Flyten vår, med ordlisten, ADR-ene, specene i sas-issues og skillene, bor i sas-meta. En agent på github.com som jobber i <code>spleis</code>, ser ingenting av det med mindre du lenker til ticketen og ber den lese den. Gi den derfor en ticket som står på egne ben. Les mer i <a class="aksel-link" href="https://docs.github.com/en/copilot/concepts/copilot-surfaces/copilot-on-github">GitHub: Copilot på github.com</a> og <a class="aksel-link" href="https://docs.github.com/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/customize-the-agent-environment">tilpasse miljøet</a>.</p>
+</section>
+
+<section id="tips">
+  <h2 class="aksel-heading aksel-heading--large">Tips til prompting</h2>
+  <ol class="aksel-body-long">
+    <li><strong>Gi kontekst og «hvorfor» når du starter grillingen.</strong> Eksempel: «/grill-with-docs Vi vil ha en ny abstraksjon, sp-sykepengegrunnlag. Den skal ligge etter AvventerVilkårsprøving … Input fra Spleis i behovet er …»</li>
+    <li><strong>Svar kort på spørsmålsrundene.</strong> Skriv «q1 ja, q2 ja, q5 nei, egen tilstand». Legg til «obs! …» for det agenten ikke har spurt om.</li>
+    <li><strong>Bruk én ny økt per ticket.</strong> Skriv <code>/implement 304</code>. Justeringer kan stå i samme prompt: «/implement 305. Vi vil at ID-en i behovet er søknadMeldingsreferanseId, så oppdater specen også.»</li>
+    <li><strong>Be om oppfølgingstickets underveis.</strong> Eksempel: «… og lag en ticket på å fjerne togglen senere i fase 1».</li>
+    <li><strong>Kjør <code>/retro</code> etter hver implementering.</strong> Det er slik harnessen blir bedre.</li>
+    <li><strong>Still små spørsmål om domenet og koden.</strong> Eksempler: «hva skjer i Spleis hvis arbeidsgiveren er en person?» eller «bruk /observability-debugging: hvorfor feiler sparkel-x i prod?». Alle repoene er sjekket ut under sas-meta, så agenten finner svaret selv.</li>
+    <li><strong>Spør om ADR eller standard før du ber om endringer.</strong> «Er dette en ADR eller CODING_STANDARDS?» gir bedre resultat enn å be agenten skrive med en gang.</li>
+    <li><strong>Når sandkassen stopper noe, ikke be agenten om å gå rundt det.</strong> Fiks innstillingen utenfor sandkassen og start på nytt.</li>
+  </ol>
+</section>
+
+<section id="lenker">
+  <h2 class="aksel-heading aksel-heading--large">Lenker</h2>
+  <ul class="aksel-body-long">
+    <li><a class="aksel-link" href="https://ki-utvikling.nav.no">ki-utvikling.nav.no</a>: Navs side om KI i utvikling, med verktøy, nyheter og sandkasse</li>
+    <li><a class="aksel-link" href="https://github.com/navikt/cplt">navikt/cplt</a>: sandkassen</li>
+    <li><a class="aksel-link" href="https://github.com/navikt/copilot">navikt/copilot</a> og <a class="aksel-link" href="https://github.com/navikt/copilot/blob/main/docs/README.nav-pilot.md">nav-pilot</a>: Navs agenter, skills og MCP</li>
+    <li><a class="aksel-link" href="https://docs.github.com/en/copilot/how-tos/copilot-cli/use-copilot-cli/overview">GitHub: bruke Copilot CLI</a></li>
+    <li><a class="aksel-link" href="https://github.com/mattpocock/skills">mattpocock/skills</a>: opphavet til flyt-skillene</li>
+    <li>I sas-meta: <a class="aksel-link" href="https://github.com/navikt/helse-sas-meta/blob/main/AGENTS.md">AGENTS.md</a>, <a class="aksel-link" href="https://github.com/navikt/helse-sas-meta/blob/main/CODING_STANDARDS.md">CODING_STANDARDS.md</a>, <a class="aksel-link" href="https://github.com/navikt/helse-sas-meta/tree/main/.github/skills">.github/skills</a></li>
+  </ul>
+</section>
+
+</main>
+</body>
+</html>

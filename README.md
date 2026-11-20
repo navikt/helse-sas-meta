@@ -51,6 +51,8 @@ cplt config set --local sandbox.repo_dirs sas-issues
 
 Innstillingen lagres bare hos deg, i `~/.config/cplt/local/`, og ikke i repoet. Den gjelder fra neste gang du starter cplt.
 
+En kort guide til hvordan teamet bruker Copilot, cplt og nav-pilot står i [docs/copilot-i-team-sas.html](docs/copilot-i-team-sas.html). Den er skrevet for teammedlemmer, ikke for agenter.
+
 Dersom du nå åpner `build.gradle.kts` med `Open` (som Project) i IntelliJ så får du alle komponentene inn i ett IntelliJ-oppsett.
 
 ## Legge til nye repos?
