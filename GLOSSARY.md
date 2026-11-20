@@ -52,6 +52,14 @@ _Unngå_: Spesiell yrkesgruppe, undertype
 Tilleggskategorien for en person som driver jordbruk som selvstendig næringsdrivende. Den gjelder sammen med hovedkategorien Selvstendig næringsdrivende eller Arbeidstaker og selvstendig næringsdrivende. Den avgjøres automatisk når personen har sendt minst én søknad med arbeidssituasjonen jordbruker i sykefraværstilfellet, og saksbehandler kan vurdere den manuelt. Reindrift og fiske er ikke jordbruker.
 _Unngå_: Jordbruker som yrkesaktivitetstype eller hovedkategori
 
+**Arbeidstaker på skip**:
+Tilleggskategorien for en person som er sykmeldt fra et maritimt arbeidsforhold på et norsk skip i utenriksfart (§ 8-44). Skipet er norsk når det er registrert i NOR eller NIS. Den gjelder sammen med hovedkategoriene som inneholder arbeidstaker, og avgjøres automatisk ut fra opplysningene i Aa-registeret.
+_Unngå_: Sjømann, sjøfolk, maritim arbeidstaker, skip alene
+
+**Maritimt arbeidsforhold**:
+Et arbeidsforhold som Aa-registeret har registrert som arbeid på skip, med skipsregister og fartsområde. Et maritimt arbeidsforhold gir ikke tilleggskategorien alene. Skipet må være norsk, fartsområdet må være utenriks, og personen må være sykmeldt fra arbeidsforholdet.
+_Unngå_: Skipsarbeidsforhold, sjøarbeidsforhold
+
 **Manuell vurdering av rettighetskategori**:
 En vurdering saksbehandler gjør som overstyrer en eksisterende automatisk vurdering. Den gir en ny avgjørelse med ny ID og kilden `saksbehandler`. Saksbehandler må begrunne vurderingen.
 _Unngå_: Endring av rettighetskategori, korrigering
