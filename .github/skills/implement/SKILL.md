@@ -14,11 +14,11 @@ The code itself lives in the app repo(s) checked out underneath sas-meta, named 
 
 Assign the issue to yourself (`--add-assignee @me`) when you start, and tick off the acceptance criteria you've met in the issue body.
 
-Call the Skill tool with "tdd" where possible, at pre-agreed seams.
+Call the Skill tool with "tdd" where possible, at pre-agreed seams. Propose the seams following `## Tester` in `CODING_STANDARDS.md` (logic on the domain object, the repository against the database, the river at smoke level), and get them confirmed before the first test.
 
 Compile regularly, run single test classes regularly, and run the full test suite of the affected modules once at the end.
 
-Once done, call the Skill tool with "code-review" to review the work.
+Once done, call the Skill tool with "code-review" to review the work. Fix every breach of a documented standard it reports; to leave one in place, ask the user first.
 
 Commit your work to the current branch of the app repo.
 

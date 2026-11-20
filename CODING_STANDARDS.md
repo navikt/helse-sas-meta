@@ -28,7 +28,7 @@ Code-review-skillen leser denne filen når den gjennomgår endringer i app-repoe
 ## Domenemodell
 
 - **ID-er har egne typer.** En ID er en `@JvmInline value class` (for eksempel `Forsikringsvurdering.Id`, `PåVentId`), ikke en løs `UUID` eller `Long` som kan byttes om med en annen ID.
-- **Aggregater opprettes gjennom fabrikkfunksjoner.** Konstruktøren er `private`. `ny(...)`, eller et navn fra domenet som `utførVurdering(...)`, lager et nytt objekt og setter selv ID og tidspunkt med `Instant.now()`. `fraLagring(...)` gjenoppretter et lagret objekt, og repositoriet bruker bare den.
+- **Aggregater opprettes gjennom fabrikkfunksjoner.** Konstruktøren er `private`. `ny(...)`, eller et navn fra domenet som `utførVurdering(...)`, lager et nytt objekt og setter selv ID og tidspunkt med `Instant.now()`. `fraLagring(...)` gjenoppretter et lagret objekt, og repositoriet bruker bare den. `fraLagring` tar imot de lagrede verdiene og regner ingenting på nytt, slik at et objekt som er brukt, ikke endrer seg når reglene endres.
 - **Tilstand endres gjennom domenemetoder.** Felter som kan endres, er `var` med `private set`, og endres med en metode som sier hva som skjer (`nyFrist(...)`), ikke ved å sette feltet utenfra.
 - **Strenger fra andre systemer valideres i kanten.** Gjør dem om til domenetyper med `fraString(...)` (for eksempel `Identitetsnummer.fraString`) når meldingen eller requesten tolkes, slik at domenet aldri får en ugyldig verdi.
 - **Aggregater peker på hverandre med ID.** Et aggregat holder ID-en til et annet aggregat (`Behandling.vedtaksperiodeId`), ikke selve objektet. Trenger koden begge, henter den dem fra hvert sitt repository.
@@ -57,6 +57,7 @@ Code-review-skillen leser denne filen når den gjennomgår endringer i app-repoe
 
 ## Tester
 
+- **Logikken testes på domeneobjektet.** Regler og varianter av utfall testes direkte på aggregatet eller domeneobjektet, slik `SammenligningTest` i sp-sykepengegrunnlag gjør. Repositoriet testes mot en ekte database. Riveren testes på smoke-nivå: at meldingen blir behandlet og gir riktig svar eller metrikk i hovedtilfellene, gjerne gjennom hele løpet, men ikke hver variant av logikken. Logglinjer verifiseres ikke.
 - **Testdata lages med `lag*`-funksjoner.** En fixture som `lagForsikringsvurdering(...)` har standardverdier for alt, og testen overstyrer bare det den handler om.
 - **Fakes framfor mockk.** Test mot en in-memory-implementasjon av interfacet (`InMemoryDialogRepository`, `FakeSpleis`) eller en ekte database. Ikke bruk mockk i ny kode.
 - **Postgres og Kafka i tester kommer fra sykepenger-libs.** Bruk `TestDatabase` fra test fixtures i `postgres` og `TestKafka` fra `kafka-test`, slik sp-rettighetskategori gjør. De bruker serverne i `TEST_POSTGRES_JDBC_URL` og `TEST_KAFKA_BOOTSTRAP_SERVERS` når variablene er satt, og starter bare testcontainere når de mangler. Da kan testene kjøre i sandkassen til en kodeagent, der Docker ikke er tilgjengelig. Mange repoer bruker fortsatt `postgres-testdatabaser` (`DatabaseContainers`) fra tbd-libs eller egne testcontainere. Bytt dem ut når du likevel endrer repoet, som i spock. Det trengs ingen egen ticket.
