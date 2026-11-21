@@ -55,6 +55,8 @@ Issues that don't come from a spec get none of these labels.
 
 Link to a spec issue from a ticket with `#<n>`. Link from a spec issue to ADRs and `GLOSSARY.md` in sas-meta with full URLs, for example `https://github.com/navikt/helse-sas-meta/blob/main/docs/adr/<adr>.md`. Relative links don't work across repos.
 
+Outside `navikt/sas-issues`, write `navikt/sas-issues#<n>`, never a bare `#<n>`. This applies to replies to the user, commit messages and PRs in the app repos. A bare `#<n>` links to the repo you are in, for example `navikt/helse-sas-meta` or `navikt/sp-dbt`.
+
 ## Migrated specs and tickets
 
 All former Markdown specs and tickets have been migrated to GitHub, and `docs/specs/` and `docs/tickets/` have been removed. A spec `docs/specs/<spec-slug>.md` is now the issue labelled `spec-issue` and `epic:<spec-slug>`; its body starts with a note naming the old path. Resolve an old ticket path through Git history to find its title, then locate the issue by epic label and title. Read and update the current issue in GitHub.
