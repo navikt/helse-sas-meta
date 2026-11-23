@@ -4,13 +4,12 @@ import {
   Background,
   Controls,
   MiniMap,
-  applyNodeChanges,
-  applyEdgeChanges,
+  NodeChangeset,
+  EdgeChangeset,
   reconnectEdge,
   type Edge,
   type Node,
   type NodeChange,
-  type EdgeChange,
   type Connection,
   type ReactFlowInstance,
   MarkerType,
@@ -787,15 +786,15 @@ export function FlowPanel({
   // skriver ikke tilbake til *.flow.json-filen eller agentens output.
   // Bare forslag kan slettes (Delete/Backspace) — boksene og koblingene fra
   // flyten beskriver dagens system og skal alltid vises.
-  const onNodesChange = useCallback((changes: NodeChange[]) => {
-    const own = changes.filter((c) => !('id' in c) || !c.id.startsWith('__group__'));
+  const onNodesChange = useCallback((changeset: NodeChangeset) => {
+    const own = changeset.toArray().filter((c) => !('id' in c) || !c.id.startsWith('__group__'));
     const draft = own.filter((c) => 'id' in c && isDraftId(c.id)) as NodeChange<Node<DraftNodeData>>[];
     const real = own.filter((c) => !('id' in c && isDraftId(c.id)) && c.type !== 'remove') as NodeChange<
       Node<FlowNodeData>
     >[];
-    if (real.length > 0) setNodes((nds) => applyNodeChanges(real, nds));
+    if (real.length > 0) setNodes((nds) => new NodeChangeset(real).applyTo(nds));
     if (draft.length > 0) {
-      setDraftNodes((nds) => applyNodeChanges(draft, nds));
+      setDraftNodes((nds) => new NodeChangeset(draft).applyTo(nds));
       const removed = new Set(draft.flatMap((c) => (c.type === 'remove' ? [c.id] : [])));
       if (removed.size > 0) {
         setDraftEdges((eds) => eds.filter((e) => !removed.has(e.source) && !removed.has(e.target)));
@@ -803,11 +802,12 @@ export function FlowPanel({
     }
   }, []);
 
-  const onEdgesChange = useCallback((changes: EdgeChange[]) => {
+  const onEdgesChange = useCallback((changeset: EdgeChangeset) => {
+    const changes = changeset.toArray();
     const draft = changes.filter((c) => 'id' in c && isDraftId(c.id));
     const real = changes.filter((c) => !('id' in c && isDraftId(c.id)) && c.type !== 'remove');
-    if (real.length > 0) setEdges((eds) => applyEdgeChanges(real, eds));
-    if (draft.length > 0) setDraftEdges((eds) => applyEdgeChanges(draft, eds));
+    if (real.length > 0) setEdges((eds) => new EdgeChangeset(real).applyTo(eds));
+    if (draft.length > 0) setDraftEdges((eds) => new EdgeChangeset(draft).applyTo(eds));
   }, []);
 
   const isValidConnection = useCallback(

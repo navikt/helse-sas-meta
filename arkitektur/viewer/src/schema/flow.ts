@@ -15,7 +15,7 @@ import { z } from 'zod';
  * NEVER pass any field from a FlowDocument into `dangerouslySetInnerHTML`,
  * `innerHTML`, or any HTML/markdown renderer that interprets markup.
  *
- * This schema uses `.strict()` on every object so unknown fields fail
+ * This schema uses `z.strictObject` for every object so unknown fields fail
  * validation loudly instead of silently passing through — this makes
  * schema drift between the agent instruction and this file visible early.
  */
@@ -121,14 +121,12 @@ export type Direction = z.infer<typeof DirectionSchema>;
 // Document schemas
 // ---------------------------------------------------------------------------
 
-export const EvidenceSchema = z
-  .object({
-    file: EvidenceFileSchema,
-    line: z.number().int().positive().max(2_000_000).optional(),
-    symbol: SymbolSchema.optional(),
-    note: NoteSchema.optional(),
-  })
-  .strict();
+export const EvidenceSchema = z.strictObject({
+  file: EvidenceFileSchema,
+  line: z.number().int().positive().max(2_000_000).optional(),
+  symbol: SymbolSchema.optional(),
+  note: NoteSchema.optional(),
+});
 export type Evidence = z.infer<typeof EvidenceSchema>;
 
 const EvidenceListSchema = z
@@ -137,57 +135,51 @@ const EvidenceListSchema = z
   .optional()
   .default([]);
 
-export const FlowNodeSchema = z
-  .object({
-    id: IdSchema,
-    type: NodeTypeSchema,
-    label: LabelSchema,
-    summary: SummarySchema.optional(),
-    group: IdSchema.optional(),
-    uncertain: z.boolean().optional().default(false),
-    evidence: EvidenceListSchema,
-  })
-  .strict();
+export const FlowNodeSchema = z.strictObject({
+  id: IdSchema,
+  type: NodeTypeSchema,
+  label: LabelSchema,
+  summary: SummarySchema.optional(),
+  group: IdSchema.optional(),
+  uncertain: z.boolean().optional().default(false),
+  evidence: EvidenceListSchema,
+});
 export type FlowNode = z.infer<typeof FlowNodeSchema>;
 
-export const FlowEdgeSchema = z
-  .object({
-    id: IdSchema,
-    source: IdSchema,
-    target: IdSchema,
-    type: EdgeTypeSchema,
-    label: LabelSchema.optional(),
-    uncertain: z.boolean().optional().default(false),
-    /**
-     * Valgfritt, eksplisitt steg-nummer for å vise leserekkefølgen i
-     * diagrammet (f.eks. "1", "2", "3" ...). Flere kanter kan dele samme
-     * tall når de skjer parallelt (fan-out fra samme kilde). Hvis feltet
-     * ikke er satt, faller vieweren tilbake til kantens posisjon i
-     * `edges`-arrayet (1-indeksert) — agenten kan derfor la feltet stå
-     * tomt så lenge kantene er skrevet i faktisk rekkefølge.
-     */
-    step: z.number().int().positive().max(500).optional(),
-    evidence: EvidenceListSchema,
-  })
-  .strict();
+export const FlowEdgeSchema = z.strictObject({
+  id: IdSchema,
+  source: IdSchema,
+  target: IdSchema,
+  type: EdgeTypeSchema,
+  label: LabelSchema.optional(),
+  uncertain: z.boolean().optional().default(false),
+  /**
+   * Valgfritt, eksplisitt steg-nummer for å vise leserekkefølgen i
+   * diagrammet (f.eks. "1", "2", "3" ...). Flere kanter kan dele samme
+   * tall når de skjer parallelt (fan-out fra samme kilde). Hvis feltet
+   * ikke er satt, faller vieweren tilbake til kantens posisjon i
+   * `edges`-arrayet (1-indeksert) — agenten kan derfor la feltet stå
+   * tomt så lenge kantene er skrevet i faktisk rekkefølge.
+   */
+  step: z.number().int().positive().max(500).optional(),
+  evidence: EvidenceListSchema,
+});
 export type FlowEdge = z.infer<typeof FlowEdgeSchema>;
 
 const MAX_NODES = 200;
 const MAX_EDGES = 500;
 
-export const FlowDocumentSchema = z
-  .object({
-    version: z.literal(1),
-    title: LabelSchema,
-    description: SummarySchema.optional().default(''),
-    direction: DirectionSchema.optional().default('RIGHT'),
-    nodes: z
-      .array(FlowNodeSchema)
-      .min(1, 'dokumentet må ha minst én node')
-      .max(MAX_NODES, `maks ${MAX_NODES} nodes per dokument`),
-    edges: z.array(FlowEdgeSchema).max(MAX_EDGES, `maks ${MAX_EDGES} edges per dokument`).default([]),
-  })
-  .strict();
+export const FlowDocumentSchema = z.strictObject({
+  version: z.literal(1),
+  title: LabelSchema,
+  description: SummarySchema.optional().default(''),
+  direction: DirectionSchema.optional().default('RIGHT'),
+  nodes: z
+    .array(FlowNodeSchema)
+    .min(1, 'dokumentet må ha minst én node')
+    .max(MAX_NODES, `maks ${MAX_NODES} nodes per dokument`),
+  edges: z.array(FlowEdgeSchema).max(MAX_EDGES, `maks ${MAX_EDGES} edges per dokument`).default([]),
+});
 export type FlowDocument = z.infer<typeof FlowDocumentSchema>;
 
 export interface FlowValidationError {
@@ -220,7 +212,7 @@ export function parseFlowDocument(raw: unknown): FlowParseResult {
       ok: false,
       errors: result.error.issues.map((issue) => ({
         message: issue.message,
-        path: issue.path,
+        path: issue.path.map((key) => (typeof key === 'symbol' ? String(key) : key)),
       })),
     };
   }
