@@ -180,6 +180,10 @@ _Unngå_: Reservasjon, tildelt oppgave
 Kontrollen der en beslutter må godkjenne saksbehandlerens vurdering før vedtaket fattes. En person har høyst én aktiv totrinnsvurdering. Den har bare betydning når personen har en aktiv oppgave, men blir liggende til neste oppgave.
 _Unngå_: Totrinnskontroll, beslutterkontroll
 
+**Saksbehandlerhandling**:
+En endring i en domenetjeneste som saksbehandler har gjort eller satt i gang. Den vises i historikken, og domenetjenesten avgjør om den krever totrinnsvurdering. Innholdet ligger i domenetjenesten.
+_Unngå_: Overstyring (endringer i Spleis' tidslinje), endring alene
+
 **Subsumsjon**:
 Anvendelsen av én lovregel på fakta i en sak, med lovreferanse, fakta og utfall. Det er en subsumsjon også når den ikke endrer sykepengene, for eksempel når en gradert annen ytelse bare tas fra arbeidet. Ordet brukes om meldingene til subsumsjonsloggen. Domenetjenestene sender ikke slike meldinger. De lagrer lovreferansen og utfallet sammen med vurderingen og kaller det ikke subsumsjon.
 _Unngå_: Etterlevelse, hjemmel (hjemmelen er bare lovreferansen), subsumsjon om det domenetjenestene lagrer
