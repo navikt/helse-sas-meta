@@ -11,7 +11,7 @@ Systemet bruker Rapids & Rivers over Kafka. Flyten mellom tjenester skjer via:
 Ikke anta at behov alltid starter i Spleis eller at løsninger alltid kommer
 fra Sparkel.
 
-Alle apper ligger under `/Users/golshidbahadorian/git/nav/helse-sas-meta/`.
+Alle apper er sjekket ut som egne mapper på rota av meta-repoet (helse-sas-meta).
 
 **Ikke bruk en hardkodet liste over repos.**
 Utforsk i stedet meta-repoet selv for å finne hvilke apper som er involvert i den aktuelle flyten.
@@ -145,7 +145,7 @@ filnavn: <beskrivende-navn-uten-mellomrom>.flow.json
 ```
 
 Copilot CLI plukker opp denne seksjonen og lagrer filen til:
-`/Users/golshidbahadorian/git/nav/helse-sas-meta/arkitektur/flows/<filnavn>.flow.json`
+`arkitektur/flows/<filnavn>.flow.json` (relativt til rota av meta-repoet)
 
 Denne filen åpnes deretter i den lokale React Flow + ELK-vieweren
 (`arkitektur/viewer/`). Vieweren beregner layout lokalt (ELK) – agenten skal
