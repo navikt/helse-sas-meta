@@ -19,48 +19,59 @@ pull-all:
 # viser frem lokale commits
 [group('Git')]
 list-commits:
-    @meta --exclude . exec "git log --pretty=format:%s @{u}..HEAD"
+    @meta --exclude . exec git log --pretty=format:%s '@{u}..HEAD'
 
 # vis lokale commits og bestem om du vil pushe
 [group('Git')]
 prepush-review:
-    @meta --exclude . exec 'output=$(git log --oneline origin/HEAD..HEAD) ; [ -n "$output" ] && (git show --oneline origin/HEAD..HEAD | cat && echo "Pushe? (y/N)" && read a && [ "$a" = "y" ] && git push) || true'
+    #!/usr/bin/env bash
+    set -euo pipefail
+    # meta exec viser ikke utdata før kommandoen er ferdig, så spørsmålet ville kommet etter svaret
+    cd "{{ justfile_directory() }}"
+    for repo in $(jq -r '.projects | keys[]' .meta.yaml); do
+      [ -d "$repo/.git" ] || continue
+      [ -n "$(git -C "$repo" log --oneline origin/HEAD..HEAD 2>/dev/null)" ] || continue
+      echo "┌─ $repo"
+      git -C "$repo" --no-pager show --oneline origin/HEAD..HEAD
+      read -rp "Pushe $repo? (y/N) " a
+      if [ "$a" = "y" ]; then git -C "$repo" push || echo "Push feilet for $repo"; fi
+    done
 
 # pusher alle repos
 [group('Git')]
 push:
-    @meta exec "git push"
+    @meta exec git push
 
 # kjør git checkout . på alle repo
 [group('Git')]
 regret:
-    @meta exec "git checkout ."
+    @meta exec git checkout .
 
 # slett alle filer som git ikke vet om
 [group('Git')]
 clean:
-    @meta exec "git clean -f"
+    @meta exec git clean -f
 
 # viser åpne PR-er i alle repoer
 [group('Pull requests')]
 list-prs:
-    @meta --exclude . exec 'output=$( \
+    @meta --exclude . exec -- sh -c 'output=$( \
         gh pr list \
             --json number,title,createdAt \
             --jq ".[] | \"#\(.number) \(.title) (\(.createdAt[0:10]))\"" \
         ); \
-        [ -n "$output" ] && echo "$output" \
+        [ -z "$output" ] || echo "$output" \
         '
 
 # viser PR-er opprettet siste døgn i alle repoer
 [group('Pull requests')]
 list-prs-opprettet-i-dag:
-    @meta --exclude . exec 'output=$( \
+    @meta --exclude . exec -- sh -c 'output=$( \
             gh pr list --search "created:>$(date -v-1d +%F)" \
                 --json number,title \
                 --jq ".[] | \"#\(.number) \(.title)\"" \
         ); \
-        [ -n "$output" ] && echo "$output" \
+        [ -z "$output" ] || echo "$output" \
         '
 
 # oppdaterer alle til siste gradle-versjon
@@ -91,7 +102,7 @@ oppdater-metaoppsett:
 # viser short description av alle repoer
 [group('Verktøy')]
 describe:
-    @meta --exclude . exec "gh repo view --json description -q '.[\"description\"]'"
+    @meta --exclude . exec gh repo view --json description -q .description
 
 # bygg alt på nytt
 [group('Verktøy')]

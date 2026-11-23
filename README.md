@@ -23,12 +23,16 @@ Det kan være flere ting du må ha på plass. Spør en vennlig sjel - og oppdate
 
 ## Komme i gang
 
-For å hente og sette opp alle repoene brukes [meta](https://github.com/mateodelnorte/meta) - altså **ikke** vanlige git-kommandoer.
+For å hente og sette opp alle repoene brukes [meta](https://github.com/gitkb/meta) - altså **ikke** vanlige git-kommandoer.
 
 Først installerer man meta
 ```
-pnpm install meta -g
+brew install gitkb/tap/meta-cli
 ```
+
+Har du den gamle versjonen av meta (fra npm/pnpm), må du avinstallere den først. `which -a meta` viser hvilke versjoner du har installert.
+
+`meta exec` kjører kommandoen uten shell, så skriv `meta exec git push`, ikke `meta exec "git push"`. Trenger du pipes eller `$()`, bruk `meta exec -- sh -c '...'`.
 
 Så bruker man meta for å hente alle repoene:
 ```
@@ -39,7 +43,7 @@ Kommandoen over vil opprette en mappe kalt `helse-sas-meta`, med alle prosjekten
 
 Deretter kan man bruke git som normalt for hvert repo.
 
-Se [meta](https://github.com/mateodelnorte/meta) for flere kommandoer.
+Se [meta](https://github.com/gitkb/meta) for flere kommandoer.
 
 ### Tickets i sas-issues og cplt-sandkassen
 
