@@ -68,8 +68,6 @@ Så kjører du `meta git update` for å clone nye repositories. Om det er et gra
 
 ## Hvordan .... ?
 
-Alt nedenfor som refererer til `make` kan erstattes av `just`, men dobbeltsjekk syntaxen (den er kulere syntax med just).
-
 ### Finne ut av hva jeg kan gjøre med `just`
 
 `just --list`
@@ -79,12 +77,12 @@ og så besøke https://just.systems/man/en/ om du har lyst til å skjønne `just
 ### Oppgradere Gradle wrapper
 
 ```
-make upgrade-gradle
+just upgrade_gradle
 ```
 Kommandoen vil gå gjennom alle prosjektene og bumpe gradle til siste versjon, bygge/teste koden, og commite til slutt.
 Du kan bekrefte commits etterpå ved å kjøre:
 ```
-make list-local-commits
+just list-commits
 ```
 
 For å shippe det:
@@ -95,12 +93,12 @@ meta git push
 ### Oppgradere Kotlin JVM
 
 ```
-KOTLIN_VERSION=<kotlin_versjon> make upgrade-kotlin-jvm
+just upgrade_kotlin <kotlin_versjon>
 ```
 Kommandoen vil gå gjennom alle prosjektene og bumpe kotlin jvm til angitt versjon, bygge/teste koden, og commite til slutt.
 Du kan bekrefte commits etterpå ved å kjøre:
 ```
-make list-local-commits
+just list-commits
 ```
 
 For å shippe det:
@@ -116,12 +114,12 @@ kotlin("jvm") version "<kotlin_versjon>"
 ### Oppgradere Java Language Version
 
 ```
-JAVA_LANGUAGE_VERSION=<java_versjon> make upgrade-java-language-version
+just upgrade-java-language-version <java_versjon>
 ```
 Kommandoen vil gå gjennom alle prosjektene og bumpe Java Language Version til siste versjon, bygge/teste koden, og commite til slutt.
 Du kan bekrefte commits etterpå ved å kjøre:
 ```
-make list-local-commits
+just list-commits
 ```
 
 For å shippe det:
@@ -147,14 +145,14 @@ kotlin {
 Gjør endringer i .editorconfig på root.
 Kjør kommandoen
 ```
-make upgrade-editorconfig
+just upgrade-editorconfig
 ```
 
 Kommandoen vil gå gjennom alle prosjektene og endre til nyeste versjon, og commite til slutt.
 Du kan bekrefte commits etterpå ved å kjøre:
 
 ```
-make list-local-commits
+just list-commits
 ```
 
 ## Henvendelser

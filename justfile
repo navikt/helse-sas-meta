@@ -103,3 +103,23 @@ oppdater-metaoppsett:
 [group('Verktøy')]
 describe:
     @meta --exclude . exec gh repo view --json description -q .description
+
+# bygger alle gradle-prosjekter
+[group('Verktøy')]
+build:
+    @meta --exclude . exec -- sh -c 'if test -f ./gradlew; then ./gradlew -q build; fi'
+
+# skriver avhengighetene til alle gradle-prosjekter til gradle_deps.txt i hvert repo
+[group('Verktøy')]
+deps:
+    @meta --parallel --exclude . exec "{{ justfile_directory() }}/.bin/gradle_deps.sh"
+
+# fjerner NAIS_DEPLOY_APIKEY fra alle repoene
+[group('Verktøy')]
+remove-deploy-key:
+    @meta --parallel --exclude . exec gh secret delete NAIS_DEPLOY_APIKEY
+
+# printer ut linjer i git-historikken til alle repoene som ligner på fødselsnumre
+[group('Verktøy')]
+finnfnr:
+    @meta exec -- sh -c "git log -p | grep -E '\b[0-9]{11}\b' || true"
