@@ -103,8 +103,3 @@ oppdater-metaoppsett:
 [group('Verktøy')]
 describe:
     @meta --exclude . exec gh repo view --json description -q .description
-
-# bygg alt på nytt
-[group('Verktøy')]
-bygg-alt-pa-nytt:
-    @meta --exclude . exec "{{ justfile_directory() }}/.bin/bygg_alt_på_nytt.sh"
