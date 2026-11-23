@@ -6,7 +6,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const BIN_MAPPE = dirname(fileURLToPath(import.meta.url))
-const META_FIL = join(BIN_MAPPE, '..', '.meta')
+const META_FIL = join(BIN_MAPPE, '..', '.meta.yaml')
 const FORVENTET_FIL = join(BIN_MAPPE, 'github-innstillinger.json')
 const API = 'https://api.github.com'
 const SAMTIDIGE_REPOER = 6
@@ -18,7 +18,7 @@ const REPO_UNNTAK = {
     'navikt/sas-issues': [['repo', 'has_issues'], ['repo', 'has_projects'], ['teams', 'team-sas-alle']],
 }
 
-const bruk = `Sjekker og retter GitHub-innstillingene til repoene i .meta mot fasiten i .bin/github-innstillinger.json.
+const bruk = `Sjekker og retter GitHub-innstillingene til repoene i .meta.yaml mot fasiten i .bin/github-innstillinger.json.
 Tokenet hentes med 'gh auth token', så du må være logget inn med 'gh auth login'.
 
 Bruk:
@@ -31,8 +31,8 @@ Kommandoer:
   patch [repo ...] [--force]   Viser avvikene og hva som vil bli endret, ber om bekreftelse og retter avvikene.
                                Etterpå sjekkes repoene på nytt. Med --force rettes avvikene uten at du blir spurt.
 
-Uten repo-argumenter gjelder sjekk og patch alle repoene i .meta.
-<repo> er enten navnet i .meta (f.eks. spesialist) eller owner/repo (f.eks. navikt/helse-spesialist).
+Uten repo-argumenter gjelder sjekk og patch alle repoene i .meta.yaml.
+<repo> er enten navnet i .meta.yaml (f.eks. spesialist) eller owner/repo (f.eks. navikt/helse-spesialist).
 
 Eksempler:
   node .bin/github-innstillinger.mjs hent spesialist
@@ -143,7 +143,7 @@ function finnRepo(argument) {
         return { navn: repo, owner, repo }
     }
     const repo = lesMetaRepoer().find((r) => r.navn === argument || r.repo === argument)
-    if (!repo) throw new Error(`Fant ikke ${argument} i .meta`)
+    if (!repo) throw new Error(`Fant ikke ${argument} i .meta.yaml`)
     return repo
 }
 

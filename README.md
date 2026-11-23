@@ -35,7 +35,7 @@ Så bruker man meta for å hente alle repoene:
 meta git clone git@github.com:navikt/helse-sas-meta.git
 ```
 
-Kommandoen over vil opprette en mappe kalt `helse-sas-meta`, med alle prosjektene våre (det vil si; alle som er listet i `.meta`) inni seg.
+Kommandoen over vil opprette en mappe kalt `helse-sas-meta`, med alle prosjektene våre (det vil si; alle som er listet i `.meta.yaml`) inni seg.
 
 Deretter kan man bruke git som normalt for hvert repo.
 
@@ -57,8 +57,8 @@ Dersom du nå åpner `build.gradle.kts` med `Open` (som Project) i IntelliJ så 
 
 ## Legge til nye repos?
 
-Det enkleste er å kjøre `./oppdater_metaoppsett.sh` ettersom den selv vil innhente alle repos hvor `tbd` er owner,
-og dytte resultatet inn i `.meta` (den ekskluderer også noen repoer Team SAS ikke eier - se [oppdater_metaoppsett.sh](oppdater_metaoppsett.sh)).
+Det enkleste er å kjøre `just oppdater-metaoppsett` (eller `./oppdater_metaoppsett.sh`) ettersom den selv vil innhente alle repos hvor `tbd` er owner,
+og dytte resultatet inn i `.meta.yaml` (den ekskluderer også noen repoer Team SAS ikke eier - se [oppdater_metaoppsett.sh](oppdater_metaoppsett.sh)).
 
 Så kjører du `meta git update` for å clone nye repositories. Om det er et gradle-prosjekt må den også legges inn i `settings.gradle`
 

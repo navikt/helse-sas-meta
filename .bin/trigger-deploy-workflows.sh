@@ -13,7 +13,7 @@
 # Før du kjører:
 #   Skriptet ser bare repoer som er sjekket ut lokalt, og leser workflow-filene slik de ligger lokalt.
 #   Sjekk derfor at det ikke har kommet nye repoer siden sist, og at alt er oppdatert:
-#     ./oppdater_metaoppsett.sh   # henter repoer der tbd er owner inn i .meta
+#     ./oppdater_metaoppsett.sh   # henter repoer der tbd er owner inn i .meta.yaml
 #     meta git update             # cloner nye repoer
 #     meta git pull               # oppdaterer workflow-filene
 #   Kjør så med --dry-run og se over listen før du trigger.
