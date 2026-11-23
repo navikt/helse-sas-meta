@@ -37,13 +37,13 @@ export function App() {
         React Flow-instanser på siden (også i sammenlign-modus).
       */}
       <style>{`
-        .react-flow__edge-updater:hover {
+        .react-flow__edgeupdater:hover {
           stroke: #2563eb !important;
           stroke-width: 6px !important;
           fill: rgba(37, 99, 235, 0.15) !important;
           cursor: grab;
         }
-        .react-flow__edge-updater:active {
+        .react-flow__edgeupdater:active {
           cursor: grabbing;
         }
       `}</style>

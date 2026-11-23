@@ -13,7 +13,7 @@ import { join } from 'node:path';
  * Alt skjer lokalt via Vite sin innebygde dev-server – ingen eksterne
  * nettverkskall, ingen CDN-er, ingen telemetri.
  */
-const FLOWS_DIR = join(__dirname, '..', 'flows');
+const FLOWS_DIR = join(import.meta.dirname, '..', 'flows');
 
 /**
  * Forsvar mot DNS-rebinding: en ondsinnet nettside kan få et domene den
