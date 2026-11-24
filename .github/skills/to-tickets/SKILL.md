@@ -74,6 +74,8 @@ Make every ticket a sub-issue of the spec issue (`--parent <spec>`). Create the 
 
 Record blocking edges as native issue dependencies (`--blocked-by`), and list them in the body as well.
 
+When the epic has a rollout ticket (a title like «Rulle ut …», «Skru på …» or «… i prod») and no `**Fase:**` lines, sas-epics places each ticket in the phase of the first rollout it reaches through native blocking edges. Make every new ticket reach the rollout it belongs to: add the leaves of the new chain as blockers of the rollout (`gh issue edit <rollout> -R navikt/sas-issues --add-blocked-by <n>,<n>`), list them in its body, and update its rollout order when the new tickets change it.
+
 If tickets for the same epic already exist (`gh issue list -R navikt/sas-issues --label "epic:<spec-slug>" --state all`), read them first. Update existing issues instead of creating duplicates.
 
 Work the **frontier**: any ticket whose blockers are all closed. For a purely linear chain that means top to bottom.
