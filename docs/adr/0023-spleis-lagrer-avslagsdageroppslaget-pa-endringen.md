@@ -57,5 +57,5 @@ Presiseringene om grunnlaget, korrigerte søknader og § 8-15 ble gjort 24. nove
 - Spleis kan ikke se hvilke vurderinger en behandling bygde på, uten å spørre sp-avslagsdager.
 - sp-avslagsdager kan ikke svare på behovet når Spedisjon er nede. Behovet blir liggende til neste påminnelse.
 - Varselet `RV_SØ_8` («Utenlandsopphold oppgitt i perioden i søknaden») erstattes av varselet fra løsningen.
-- `RV_SØ_52` forkaster fortsatt selvstendige søknader med opphold i utlandet. Den fjernes når navikt/sas-issues#269 har bekreftet at søknadene har periodene med utlandsopphold.
+- `RV_SØ_52` forkaster fortsatt selvstendige søknader med opphold i utlandet. Flex sender periodene med utlandsopphold også for selvstendige, så varselet fjernes i navikt/sas-issues#420.
 - Tekstene til RV_SØ_8, RV_SØ_57 og sperren i Speil skrives og godkjennes av Morten Jonassen Netland, Øystein Espedal og Jørgen Engesvold.
