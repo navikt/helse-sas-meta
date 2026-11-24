@@ -113,12 +113,16 @@ Saksbehandlerens vurdering av ett løpende vilkår for en mengde dager, med svar
 _Unngå_: Overstyring (brukes om endringer i Spleis' tidslinje), avslag
 
 **Dag til vurdering**:
-En dag der et løpende vilkår må vurderes av saksbehandler før vedtaket kan fattes. For oppholdskravet er det en dag der personen har oppgitt opphold utenfor EØS i minst én søknad, og minst én yrkesaktivitet har dagen som sykedag, sykhelgedag, arbeidsgiverdag eller foreldet sykedag. Ferie hos én yrkesaktivitet fjerner ikke behovet for vurdering hos de andre.
+En dag der et løpende vilkår må vurderes av saksbehandler før vedtaket kan fattes. For oppholdskravet er det en dag der personen har oppgitt opphold utenfor EØS i minst én søknad, og minst én yrkesaktivitet har dagen som sykedag, arbeidsgiverdag eller foreldet sykedag, også i helgen. Ferie hos én yrkesaktivitet fjerner ikke behovet for vurdering hos de andre. Oppholdet i en søknad som er korrigert, regnes ikke med.
 _Unngå_: Åpen dag, vurderingsbehov (behov betyr noe annet på rapiden), syk utenfor EØS (dagtypen fjernes fra Spleis)
 
-**Avslagsdageroppslag**:
-Svaret sp-avslagsdager gir når Spleis beregner en periode. Svaret inneholder de gjeldende vurderingene av løpende vilkår, avslagsdagene og dagene til vurdering, sammen med søknadene og tidslinjene svaret bygde på. Et oppslag endres aldri, og en ny beregning gir et nytt oppslag. ID-en kalles avslagsdager-ID-en, men peker på hele oppslaget, også når det ikke har avslagsdager.
-_Unngå_: Løsning (det er meldingen på rapiden), snapshot
+**Grunnlag for løpende vilkår**:
+Det sp-avslagsdager svarer når Spleis beregner en periode: dagene med oppgitt utlandsopphold, dagene til vurdering, de gjeldende vurderingene av løpende vilkår, avslagsdagene, avbruddene etter § 8-15 og varslene, sammen med søknadene og tidslinjene svaret bygde på. Et grunnlag endres aldri. Samme behov og samme gjeldende vurderinger gir samme grunnlag, og en ny vurdering gir et nytt. ID-en heter `grunnlagForLøpendeVilkårId` og peker på hele grunnlaget, også når det ikke har avslagsdager.
+_Unngå_: Avslagsdageroppslag, oppslag, løsning (det er meldingen på rapiden), snapshot
+
+**Avbrutt arbeidsforhold (§ 8-15)**:
+Et arbeidsforhold som anses som midlertidig avbrutt fordi personen har hatt ugyldig opphold utenfor EØS i mer enn 14 dager. For en arbeidstaker gjelder avbruddet fra den 15. sammenhengende avslagsdagen etter § 8-9. For en selvstendig næringsdrivende gjelder det fra den første avslagsdagen, etter rundskrivet. Rekken telles fra skjæringstidspunktet, helgedager teller, og et hull, for eksempel ferie, bryter den. Retten til sykepenger som arbeidstaker faller bort etter avbruddet.
+_Unngå_: Brudd, opphør
 
 ### Andre ytelser
 
