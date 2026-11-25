@@ -50,17 +50,17 @@ list-changes:
 # pusher alle repos
 [group('Git')]
 push:
-    @meta exec git push
+    @meta --exclude . exec git push
 
 # kjør git checkout . på alle repo
 [group('Git')]
 regret:
-    @meta exec git checkout .
+    @meta --exclude . exec git checkout .
 
 # slett alle filer som git ikke vet om
 [group('Git')]
 clean:
-    @meta exec git clean -f
+    @meta --exclude . exec git clean -f
 
 # viser åpne PR-er i alle repoer
 [group('Pull requests')]
