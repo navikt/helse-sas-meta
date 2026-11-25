@@ -65,24 +65,17 @@ clean:
 # viser åpne PR-er i alle repoer
 [group('Pull requests')]
 list-prs:
-    @meta --exclude . exec -- sh -c 'output=$( \
-        gh pr list \
-            --json number,title,createdAt \
-            --jq ".[] | \"#\(.number) \(.title) (\(.createdAt[0:10]))\"" \
-        ); \
-        [ -z "$output" ] || echo "$output" \
-        '
+    @meta --parallel --exclude . exec gh pr list \
+        --json number,title,createdAt \
+        --jq '.[] | "#\(.number) \(.title) (\(.createdAt[0:10]))"'
 
 # viser PR-er opprettet siste døgn i alle repoer
 [group('Pull requests')]
 list-prs-opprettet-i-dag:
-    @meta --exclude . exec -- sh -c 'output=$( \
-            gh pr list --search "created:>$(date -v-1d +%F)" \
-                --json number,title \
-                --jq ".[] | \"#\(.number) \(.title)\"" \
-        ); \
-        [ -z "$output" ] || echo "$output" \
-        '
+    @meta --parallel --exclude . exec gh pr list \
+        --search "created:>$(date -v-1d +%F)" \
+        --json number,title \
+        --jq '.[] | "#\(.number) \(.title)"'
 
 # oppdaterer alle til siste gradle-versjon
 [group('Oppgradering')]
@@ -112,7 +105,7 @@ oppdater-metaoppsett:
 # viser short description av alle repoer
 [group('Verktøy')]
 describe:
-    @meta --exclude . exec gh repo view --json description -q .description
+    @meta --parallel --exclude . exec gh repo view --json description -q .description
 
 # bygger alle gradle-prosjekter
 [group('Verktøy')]
@@ -132,4 +125,4 @@ remove-deploy-key:
 # printer ut linjer i git-historikken til alle repoene som ligner på fødselsnumre
 [group('Verktøy')]
 finnfnr:
-    @meta exec -- sh -c "git log -p | grep -E '\b[0-9]{11}\b' || true"
+    @meta --parallel exec -- sh -c "git log -p | grep -E '\b[0-9]{11}\b' || true"
