@@ -117,7 +117,7 @@ En dag der et løpende vilkår må vurderes av saksbehandler før vedtaket kan f
 _Unngå_: Åpen dag, vurderingsbehov (behov betyr noe annet på rapiden), syk utenfor EØS (dagtypen fjernes fra Spleis)
 
 **Grunnlag for løpende vilkår**:
-Det sp-avslagsdager svarer når Spleis beregner en periode: dagene med oppgitt utlandsopphold, dagene til vurdering, de gjeldende vurderingene av løpende vilkår, avslagsdagene, avbruddene etter § 8-15 og varslene, sammen med søknadene og tidslinjene svaret bygde på. Et grunnlag endres aldri. Samme behov og samme gjeldende vurderinger gir samme grunnlag, og en ny vurdering gir et nytt. ID-en heter `grunnlagForLøpendeVilkårId` og peker på hele grunnlaget, også når det ikke har avslagsdager.
+Det sp-avslagsdager svarer når Spleis beregner en periode: dagene med oppgitt utlandsopphold, dagene til vurdering, de gjeldende vurderingene av løpende vilkår, avslagsdagene, avbruddene etter § 8-15 og varslene, sammen med søknadene og tidslinjene svaret bygde på. Et grunnlag endres aldri. Samme behov og samme gjeldende vurderinger gir samme grunnlag, og en ny vurdering gir et nytt. ID-en heter `grunnlagForLøpendeVilkårId` og peker på hele grunnlaget, også når det ikke har avslagsdager. Grunnlaget dekker alle løpende vilkår i sp-avslagsdager, med én del per vilkår.
 _Unngå_: Avslagsdageroppslag, oppslag, løsning (det er meldingen på rapiden), snapshot
 
 **Avbrutt arbeidsforhold (§ 8-15)**:

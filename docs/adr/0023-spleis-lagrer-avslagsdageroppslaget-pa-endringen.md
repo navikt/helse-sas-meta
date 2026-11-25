@@ -14,6 +14,8 @@ sp-avslagsdager eier hele regelen. I behovet `Avslagsdager` sender Spleis beregn
 
 Svaret på behovet er et grunnlag for løpende vilkår. Det har dagene med oppgitt utlandsopphold, dagene til vurdering, de gjeldende vurderingene, avslagsdagene, avbruddene etter § 8-15 og varslene, sammen med behovet det bygde på. Et grunnlag endres aldri og lagres som én rad med `jsonb` (CODING_STANDARDS).
 
+Grunnlaget dekker alle løpende vilkår som sp-avslagsdager eier. I dag er det bare oppholdskravet (§ 8-9). Et nytt vilkår får sin egen del i grunnlaget, med egne kilder, egne regler for dager til vurdering og egne varsler, men grunnlaget har fortsatt én ID. Avslagsdagene for alle vilkårene står i samme liste i løsningen, med vilkårskodene per dag. En dag kan dermed avslås etter flere vilkår.
+
 Samme behov og samme gjeldende vurderinger gir samme grunnlag. sp-avslagsdager sammenligner med det siste grunnlaget for personen og beregningsperioden. Er behovet og de gjeldende vurderingene like, svarer den med ID-en til det grunnlaget. Ellers lager den et nytt. En ny vurdering gir altså et nytt grunnlag, og et gammelt grunnlag viser fortsatt dagene som var til vurdering da.
 
 Løsningen gir ID-en til grunnlaget, `grunnlagForLøpendeVilkårId`, avslagsdagene med vilkårskoder og en liste over varsler per yrkesaktivitet. Spleis lagrer bare `grunnlagForLøpendeVilkårId` på endringen i behandlingen, ikke vurderingene eller utfallet per dag. Varselet har en generisk tekst. Spleis legger det på vedtaksperioden for yrkesaktiviteten, og det er høyst én slik periode i en beregningsperiode.
@@ -47,6 +49,7 @@ Presiseringene om grunnlaget, korrigerte søknader og § 8-15 ble gjort 24. nove
 - **En hendelseslogg per person, som i sp-andre-ytelser (ADR 0007).** Der er hendelsene saksbehandlers egne registreringer. Her er behovet et spørsmål fra Spleis, ikke en endring. For å få hendelser måtte sp-avslagsdager sammenligne hvert behov med forrige tilstand og holde en kopi av tidslinjene. Behovene for flere beregninger kommer i vilkårlig rekkefølge, så en versjon kunne blandet tidslinjer fra to beregninger. Svaret måtte også lagres for at en regelendring ikke skal endre gamle versjoner. Vurderingene og kildene får uansett bare nye rader.
 - **Et nytt grunnlag for hvert behov.** Da får hver beregning en ny ID selv om ingenting er endret, og det ser ut som behandlingene bygger på forskjellige grunnlag.
 - **Ingen ID når beregningsperioden ikke har noe å vurdere.** Spesialist slipper da å kalle sp-avslagsdager, men vi får to kodestier og mister sporet av at det ikke var noe å vurdere.
+- **Ett grunnlag per løpende vilkår.** Navnet blir mer presist, men løsningen får én ID per vilkår. Spleis må lagre ID-ene per vilkår på endringen, og Spesialist må slå opp hvert grunnlag for seg. Kontrakten mot Spleis, Spesialist og Speil brytes da for hvert nytt vilkår.
 
 ## Konsekvenser
 
