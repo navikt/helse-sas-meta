@@ -3,14 +3,11 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 STATE_FILE="$SCRIPT_DIR/.pull-state"
-META_PROJECT="$(basename "$SCRIPT_DIR")"
 
 find_repos() {
-    for dir in "$SCRIPT_DIR"/*/; do
-        local name
-        name="$(basename "$dir")"
-        if [ -d "$dir/.git" ] && [ "$name" != "$META_PROJECT" ]; then
-            echo "$dir"
+    jq -r '.projects | keys[]' "$SCRIPT_DIR/.meta.yaml" | while IFS= read -r name; do
+        if [ -d "$SCRIPT_DIR/$name/.git" ]; then
+            echo "$SCRIPT_DIR/$name/"
         fi
     done
 }
