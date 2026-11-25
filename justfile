@@ -79,12 +79,12 @@ list-prs-opprettet-i-dag:
 
 # oppdaterer alle til siste gradle-versjon
 [group('Oppgradering')]
-upgrade_gradle:
+upgrade-gradle:
     @meta --exclude . exec "{{ justfile_directory() }}/.bin/upgrade_gradle.sh"
 
 # "versjon" er den nye kotlin-versjonen alle repoene skal bygges på
 [group('Oppgradering')]
-upgrade_kotlin versjon:
+upgrade-kotlin versjon:
     @KOTLIN_VERSION={{ versjon }} meta --exclude . exec "{{ justfile_directory() }}/.bin/upgrade_kotlin_jvm.sh"
 
 # "versjon" er den nye java language version alle repoene skal bygges på

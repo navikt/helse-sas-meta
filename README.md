@@ -77,7 +77,7 @@ og så besøke https://just.systems/man/en/ om du har lyst til å skjønne `just
 ### Oppgradere Gradle wrapper
 
 ```
-just upgrade_gradle
+just upgrade-gradle
 ```
 Kommandoen vil gå gjennom alle prosjektene og bumpe gradle til siste versjon, bygge/teste koden, og commite til slutt.
 Se over commitene og push dem repo for repo med:
@@ -88,7 +88,7 @@ just prepush-review
 ### Oppgradere Kotlin JVM
 
 ```
-just upgrade_kotlin <kotlin_versjon>
+just upgrade-kotlin <kotlin_versjon>
 ```
 Kommandoen vil gå gjennom alle prosjektene og bumpe kotlin jvm til angitt versjon, bygge/teste koden, og commite til slutt.
 Se over commitene og push dem repo for repo med:
