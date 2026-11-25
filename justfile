@@ -24,18 +24,12 @@ list-commits:
 # vis lokale commits og bestem om du vil pushe
 [group('Git')]
 prepush-review:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    # meta exec viser ikke utdata før kommandoen er ferdig, så spørsmålet ville kommet etter svaret
-    cd "{{ justfile_directory() }}"
-    for repo in $(jq -r '.projects | keys[]' .meta.yaml); do
-      [ -d "$repo/.git" ] || continue
-      [ -n "$(git -C "$repo" log --oneline origin/HEAD..HEAD 2>/dev/null)" ] || continue
-      echo "┌─ $repo"
-      git -C "$repo" --no-pager show --oneline origin/HEAD..HEAD
-      read -rp "Pushe $repo? (y/N) " a
-      if [ "$a" = "y" ]; then git -C "$repo" push || echo "Push feilet for $repo"; fi
-    done
+    @meta --sequential --exclude . exec -- sh -c ' \
+        [ -n "$(git log --oneline "@{u}..HEAD" 2>/dev/null)" ] || exit 0; \
+        git --no-pager show --oneline "@{u}..HEAD"; \
+        printf "Pushe? (y/N) "; read -r a; \
+        if [ "$a" = "y" ]; then git push || echo "Push feilet"; fi \
+        '
 
 # pusher alle repos
 [group('Git')]
