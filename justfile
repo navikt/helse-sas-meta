@@ -11,10 +11,10 @@ default:
 pull:
     @{{ justfile_directory() }}/pull-and-describe.sh
 
-# pull alle repos
+# pull alle repos uten å vise utdata, bare repoer som feiler
 [group('Git')]
-pull-all:
-    @meta --exclude . exec git pull --all --rebase --autostash 
+pull-quiet:
+    @meta -s --parallel --exclude . exec git pull --all --rebase --autostash
 
 # viser frem lokale commits
 [group('Git')]

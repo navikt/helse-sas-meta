@@ -24,7 +24,7 @@ if [ -f "$STATE_FILE" ]; then
 fi
 
 # Pull all repos
-just -f "$SCRIPT_DIR/justfile" pull-all
+just -f "$SCRIPT_DIR/justfile" pull-quiet
 
 # Save new HEADs and collect new commits for printing
 > "$STATE_FILE"
