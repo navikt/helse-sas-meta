@@ -16,11 +16,6 @@ pull:
 pull-quiet:
     @meta -s --parallel --exclude . exec git pull --all --rebase --autostash
 
-# viser frem lokale commits
-[group('Git')]
-list-commits:
-    @meta --exclude . exec git log --pretty=format:%s '@{u}..HEAD'
-
 # vis lokale commits og bestem om du vil pushe
 [group('Git')]
 prepush-review:
@@ -29,6 +24,27 @@ prepush-review:
         git --no-pager show --oneline "@{u}..HEAD"; \
         printf "Pushe? (y/N) "; read -r a; \
         if [ "$a" = "y" ]; then git push || echo "Push feilet"; fi \
+        '
+
+# viser upushede commits i alle repoer
+[group('Git')]
+list-unpushed-commits:
+    @meta --parallel exec -- sh -c 'git --no-pager log --oneline "@{u}..HEAD" 2>/dev/null || true'
+
+# viser staged, unstaged og untracked endringer i alle repoer
+[group('Git')]
+list-uncommitted-changes:
+    @meta --parallel exec git status --short
+
+# viser upushede commits, staged, unstaged og untracked endringer i alle repoer
+[group('Git')]
+list-changes:
+    @meta --parallel exec -- sh -c ' \
+        commits=$(git --no-pager log --oneline "@{u}..HEAD" 2>/dev/null); \
+        status=$(git status --short); \
+        [ -z "$commits" ] || printf "Upushede commits:\n%s\n" "$commits"; \
+        [ -z "$status" ] || printf "Endringer:\n%s\n" "$status"; \
+        true \
         '
 
 # pusher alle repos

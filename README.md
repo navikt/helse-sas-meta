@@ -80,14 +80,9 @@ og så besøke https://just.systems/man/en/ om du har lyst til å skjønne `just
 just upgrade_gradle
 ```
 Kommandoen vil gå gjennom alle prosjektene og bumpe gradle til siste versjon, bygge/teste koden, og commite til slutt.
-Du kan bekrefte commits etterpå ved å kjøre:
+Se over commitene og push dem repo for repo med:
 ```
-just list-commits
-```
-
-For å shippe det:
-```
-meta git push
+just prepush-review
 ```
 
 ### Oppgradere Kotlin JVM
@@ -96,14 +91,9 @@ meta git push
 just upgrade_kotlin <kotlin_versjon>
 ```
 Kommandoen vil gå gjennom alle prosjektene og bumpe kotlin jvm til angitt versjon, bygge/teste koden, og commite til slutt.
-Du kan bekrefte commits etterpå ved å kjøre:
+Se over commitene og push dem repo for repo med:
 ```
-just list-commits
-```
-
-For å shippe det:
-```
-meta git push
+just prepush-review
 ```
 
 _Forutsetninger_: koden forutsetter at det finnes en `build.gradle.kts`-fil med en slik linje:
@@ -117,14 +107,9 @@ kotlin("jvm") version "<kotlin_versjon>"
 just upgrade-java-language-version <java_versjon>
 ```
 Kommandoen vil gå gjennom alle prosjektene og bumpe Java Language Version til siste versjon, bygge/teste koden, og commite til slutt.
-Du kan bekrefte commits etterpå ved å kjøre:
+Se over commitene og push dem repo for repo med:
 ```
-just list-commits
-```
-
-For å shippe det:
-```
-meta git push
+just prepush-review
 ```
 
 _Forutsetning_: koden forutsetter at det finnes en `build.gradle.kts`-fil med en slik linje:
@@ -149,10 +134,10 @@ just upgrade-editorconfig
 ```
 
 Kommandoen vil gå gjennom alle prosjektene og endre til nyeste versjon, og commite til slutt.
-Du kan bekrefte commits etterpå ved å kjøre:
+Se over commitene og push dem repo for repo med:
 
 ```
-just list-commits
+just prepush-review
 ```
 
 ## Henvendelser
