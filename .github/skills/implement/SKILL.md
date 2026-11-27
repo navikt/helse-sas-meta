@@ -14,7 +14,7 @@ The code itself lives in the app repo(s) checked out underneath sas-meta, named 
 
 Before you start, ask the user who else is working on the issue. Look each person up in `docs/agents/team.json` (see `docs/agents/team.md`). Then assign the issue to the user and to every person who has a GitHub username (`--add-assignee @me,<github>,...`). Everyone named, including people without a username, is a co-author of every commit. Tick off the acceptance criteria you've met in the issue body.
 
-Call the Skill tool with "tdd" where possible, at pre-agreed seams. Propose the seams following `## Tester` in `CODING_STANDARDS.md` (logic on the domain object, the repository against the database, the river at smoke level), and get them confirmed before the first test.
+Call the Skill tool with "tdd" where possible, at pre-agreed seams. Propose the seams following `## Tester` in `CODING_STANDARDS.md` (logic on the domain object, the repository against the database, the river at smoke level). List the seams in a chat message, each with the tests planned there, and end the turn: the user's reply confirms them before the first test.
 
 Compile regularly, run single test classes regularly, and run the full test suite of the affected modules once at the end.
 
